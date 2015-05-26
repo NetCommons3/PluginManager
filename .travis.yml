@@ -1,0 +1,31 @@
+language: php
+
+php:
+  - 5.4
+  - 5.5
+  - 5.6
+
+env:
+  - NETCOMMONS_VERSION=master DB=mysql
+
+sudo: required
+
+before_script:
+  - export NETCOMMONS_BUILD_DIR=`dirname $TRAVIS_BUILD_DIR`/NetCommons3
+  - git clone git://github.com/NetCommons3/NetCommons3 $NETCOMMONS_BUILD_DIR
+  - cd $NETCOMMONS_BUILD_DIR
+  - git checkout $NETCOMMONS_VERSION
+  - . tools/build/plugins/cakephp/travis/pre.sh
+
+script:
+  - . tools/build/plugins/cakephp/travis/main.sh
+
+after_script:
+  - . tools/build/plugins/cakephp/travis/post.sh
+
+notifications:
+  email:
+    recipients:
+      - netcommons3@googlegroups.com
+    on_success: never  # default: change
+    on_failure: always # default: always
