@@ -1,0 +1,48 @@
+{
+    "name":        "netcommons/plugin-manager",
+    "description": "PluginManager Plugin for NetCommons",
+    "type":        "cakephp-plugin",
+    "keywords":    ["cakephp", "plugin-manager"],
+    "homepage":    "http://www.netcommons.org/",
+    "license":     "NetCommons License",
+    "authors": [
+        {
+            "name":     "NetCommons Community",
+            "homepage": "https://github.com/NetCommons3/PluginManager/graphs/contributors"
+        }
+    ],
+    "extra": {
+        "installer-paths": {
+            "app/Plugin/{$name}": ["type:cakephp-plugin"]
+        }
+    },
+    "require": {
+        "cakephp/cakephp":              "~2.4",
+        "cakephp/debug_kit":            "~2.2",
+        "cakedc/migrations":            "~2.2",
+        "components/jquery":            "~2.1",
+        "phpunit/phpunit":              "~3.7.38",
+        "sebastian/phpcpd":             "~2.0",
+        "twbs/bootstrap":               "~3.1"
+    },
+    "require-dev": {
+        "mustangostang/spyc":           "dev-master",
+        "satooshi/php-coveralls":       "dev-master",
+        "netcommons/auth":              "dev-master",
+        "netcommons/auth-general":      "dev-master",
+        "netcommons/boxes":             "dev-master",
+        "netcommons/blocks":            "dev-master",
+        "netcommons/frames":            "dev-master",
+        "netcommons/install":           "dev-master",
+        "netcommons/m17n":              "dev-master",
+        "netcommons/net-commons":       "dev-master",
+        "netcommons/roles":             "dev-master",
+        "netcommons/rooms":             "dev-master",
+        "netcommons/pages":             "dev-master",
+        "netcommons/users":             "dev-master"
+    },
+    "config": {
+        "vendor-dir": "vendors"
+    }
+}
+
