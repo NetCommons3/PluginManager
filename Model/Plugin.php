@@ -157,4 +157,22 @@ class Plugin extends AppModel {
 
 		return $map;
 	}
+
+/**
+ * get plugins for select box options
+ *
+ * @param array $options find options
+ * @return array select box options
+ */
+	public function getKeyIndexedHash($options) {
+		$options = Hash::merge(['recursive' => -1], $options);
+
+		$plugins = $this->find('all', $options);
+		$map = [];
+		foreach ($plugins as $plugin) {
+			$map[$plugin[$this->alias]['key']] = $plugin;
+		}
+
+		return $map;
+	}
 }
