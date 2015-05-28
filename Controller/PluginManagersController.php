@@ -1,14 +1,19 @@
 <?php
-App::uses('AppController', 'Controller');
 /**
  * PluginManagers Controller
  *
  * @property PluginManager $PluginManager
  * @property PaginatorComponent $Paginator
  *
-* @author Jun Nishikawa <topaz2@m0n0m0n0.com>
-* @link http://www.netcommons.org NetCommons Project
-* @license http://www.netcommons.org/license.txt NetCommons License
+ * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ */
+
+App::uses('AppController', 'Controller');
+
+/**
+ * Summary for PluginManagers Controller
  */
 class PluginManagersController extends AppController {
 
