@@ -169,6 +169,7 @@ class Plugin extends AppModel {
 
 		$plugins = $this->find('all', $options);
 		$map = [];
+		var_dump($plugins);
 		foreach ($plugins as $plugin) {
 			$map[$plugin[$this->alias]['key']] = $plugin;
 		}
