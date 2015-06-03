@@ -85,7 +85,7 @@ class Plugin extends AppModel {
  */
 	public $belongsTo = array(
 		'Language' => array(
-			'className' => 'Language',
+			'className' => 'M17n.Language',
 			'foreignKey' => 'language_id',
 			'conditions' => '',
 			'fields' => '',
