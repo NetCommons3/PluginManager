@@ -2,9 +2,9 @@
 /**
  * PluginFixture
  *
-* @author Jun Nishikawa <topaz2@m0n0m0n0.com>
-* @link http://www.netcommons.org NetCommons Project
-* @license http://www.netcommons.org/license.txt NetCommons License
+ * @author Jun Nishikawa <topaz2@m0n0m0n0.com>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
  */
 
 /**
@@ -107,6 +107,17 @@ e.g.) packagist', 'charset' => 'utf8'),
 			'modified_user' => 1,
 			'modified' => '2015-05-25 09:16:05'
 		),
+
+		//For PluginsRole
+		array(
+			'id' => 5,
+			'language_id' => 2,
+			'key' => 'roles',
+			'name' => 'Lorem ipsum dolor sit amet',
+			'namespace' => 'Lorem ipsum dolor sit amet',
+			'type' => '2'
+		),
+
 	);
 
 }
