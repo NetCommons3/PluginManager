@@ -15,7 +15,8 @@ before_script:
   - git clone git://github.com/NetCommons3/NetCommons3 $NETCOMMONS_BUILD_DIR
   - cd $NETCOMMONS_BUILD_DIR
   - git checkout $NETCOMMONS_VERSION
-  - . tools/build/plugins/cakephp/travis/pre.sh
+  - travis_wait . tools/build/plugins/cakephp/travis/pre.sh
+  - . tools/build/plugins/cakephp/travis/environment.sh
 
 script:
   - . tools/build/plugins/cakephp/travis/main.sh
