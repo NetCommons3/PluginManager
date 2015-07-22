@@ -173,10 +173,10 @@ class Plugin extends AppModel {
 
 				Configure::write('Config.language', $lang);
 
-				$plugin['Plugin'] = Hash::merge($records['Plugin'], array(
+				$plugin['Plugin'] = Hash::merge(array(
 					'language_id' => $languages[$lang],
 					'name' => __d($records['Plugin']['key'], $records['Plugin']['name'])
-				));
+				), $records['Plugin']);
 
 				$this->Plugin->save($plugin, false);
 			}
