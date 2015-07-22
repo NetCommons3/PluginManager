@@ -24,16 +24,6 @@ App::uses('AppModel', 'Model');
 class PluginsRole extends AppModel {
 
 /**
- * constant value for frame
- */
-	const PLUGIN_TYPE_FOR_FRAME = '1';
-
-/**
- * constant value for control panel
- */
-	const PLUGIN_TYPE_FOR_CONTROL_PANEL = '2';
-
-/**
  * belongsTo associations
  *
  * @var array
@@ -72,8 +62,7 @@ class PluginsRole extends AppModel {
 		//$roleId = (int)$roleId;
 
 		//plugins_languagesテーブルの取得
-		$langId = (int)$langId;
-		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = $langId;
+		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = (int)$langId;
 
 		//pluginsテーブルの取得
 		$plugins = $this->find('all', array(
@@ -100,18 +89,14 @@ class PluginsRole extends AppModel {
 			return false;
 		}
 
-		//ロールIDのセット
-		$roleId = (int)$roleId;
-
 		//plugins_languagesテーブルの取得
-		$langId = (int)$langId;
-		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = $langId;
+		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = (int)$langId;
 
 		//pluginsテーブルの取得
 		$plugin = $this->find('first', array(
 			'conditions' => array(
 				'Plugin.key' => $key,
-				'Role.id' => $roleId
+				'Role.id' => (int)$roleId
 			)
 		));
 

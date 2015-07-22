@@ -40,6 +40,7 @@ class PluginsRoleTest extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 		$this->PluginsRole = ClassRegistry::init('PluginManager.PluginsRole');
+		$this->Plugin = ClassRegistry::init('PluginManager.Plugin');
 	}
 
 /**
@@ -60,7 +61,7 @@ class PluginsRoleTest extends CakeTestCase {
 	public function testGetPlugins() {
 		$roleKey = 'system_administrator';
 		$langId = 2;
-		$type = PluginsRole::PLUGIN_TYPE_FOR_CONTROL_PANEL;
+		$type = Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL;
 		$plugins = $this->PluginsRole->getPlugins($type, $roleKey, $langId);
 		$this->assertCount(1, $plugins);
 
@@ -79,7 +80,7 @@ class PluginsRoleTest extends CakeTestCase {
 	public function testGetPluginsError() {
 		$roleId = 0;
 		$langId = 0;
-		$type = PluginsRole::PLUGIN_TYPE_FOR_CONTROL_PANEL;
+		$type = Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL;
 		$plugins = $this->PluginsRole->getPlugins($type, $roleId, $langId);
 
 		$this->assertFalse($plugins);

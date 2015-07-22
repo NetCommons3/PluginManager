@@ -20,11 +20,6 @@ App::uses('AppModel', 'Model');
 class PluginsRoom extends AppModel {
 
 /**
- * constant value for frame
- */
-	const PLUGIN_TYPE_FOR_FRAME = '1';
-
-/**
  * belongsTo associations
  *
  * @var array
@@ -64,9 +59,10 @@ class PluginsRoom extends AppModel {
 		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = $langId;
 
 		//pluginsテーブルの取得
+		$Plugin = $this->Plugin;
 		$plugins = $this->find('all', array(
 			'conditions' => array(
-				'Plugin.type' => self::PLUGIN_TYPE_FOR_FRAME,
+				'Plugin.type' => $Plugin::PLUGIN_TYPE_FOR_FRAME,
 				/* 'Plugin.language_id' => $langId, */
 				'Room.id' => $roomId
 			),

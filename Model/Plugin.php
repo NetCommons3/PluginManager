@@ -20,6 +20,21 @@ App::uses('AppModel', 'Model');
 class Plugin extends AppModel {
 
 /**
+ * constant value for not yet
+ */
+	const PLUGIN_TYPE_FOR_NOT_YET = '0';
+
+/**
+ * constant value for frame
+ */
+	const PLUGIN_TYPE_FOR_FRAME = '1';
+
+/**
+ * constant value for control panel
+ */
+	const PLUGIN_TYPE_FOR_CONTROL_PANEL = '2';
+
+/**
  * Validation rules
  *
  * @var array
@@ -128,6 +143,27 @@ class Plugin extends AppModel {
 		}
 
 		return $map;
+	}
+
+/**
+ * Get plugin data from type and roleId, $langId
+ *
+ * @param int $type array|int 1:for frame/2:for controll panel
+ * @param int $langId languages.id
+ * @return mixed array|bool
+ */
+	public function getPlugins($type, $langId) {
+		//pluginsテーブルの取得
+		$plugins = $this->find('all', array(
+			'recursive' => -1,
+			'conditions' => array(
+				'Plugin.type' => $type,
+				'Plugin.language_id' => (int)$langId
+			),
+			'order' => array($this->alias . '.weight' => 'desc', $this->alias . '.id' => 'desc'),
+		));
+
+		return $plugins;
 	}
 
 /**
