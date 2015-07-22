@@ -95,53 +95,6 @@ class Plugin extends AppModel {
 	);
 
 /**
- * hasAndBelongsToMany associations
- *
- * @var array
- */
-	public $hasAndBelongsToMany = array(
-		/* 'File' => array( */
-		/* 	'className' => 'File', */
-		/* 	'joinTable' => 'files_plugins', */
-		/* 	'foreignKey' => 'plugin_id', */
-		/* 	'associationForeignKey' => 'file_id', */
-		/* 	'unique' => 'keepExisting', */
-		/* 	'conditions' => '', */
-		/* 	'fields' => '', */
-		/* 	'order' => '', */
-		/* 	'limit' => '', */
-		/* 	'offset' => '', */
-		/* 	'finderQuery' => '', */
-		/* ), */
-		/* 'Role' => array( */
-		/* 	'className' => 'Role', */
-		/* 	'joinTable' => 'plugins_roles', */
-		/* 	'foreignKey' => 'plugin_id', */
-		/* 	'associationForeignKey' => 'role_id', */
-		/* 	'unique' => 'keepExisting', */
-		/* 	'conditions' => '', */
-		/* 	'fields' => '', */
-		/* 	'order' => '', */
-		/* 	'limit' => '', */
-		/* 	'offset' => '', */
-		/* 	'finderQuery' => '', */
-		/* ), */
-		/* 'Room' => array( */
-		/* 	'className' => 'Room', */
-		/* 	'joinTable' => 'plugins_rooms', */
-		/* 	'foreignKey' => 'plugin_id', */
-		/* 	'associationForeignKey' => 'room_id', */
-		/* 	'unique' => 'keepExisting', */
-		/* 	'conditions' => '', */
-		/* 	'fields' => '', */
-		/* 	'order' => '', */
-		/* 	'limit' => '', */
-		/* 	'offset' => '', */
-		/* 	'finderQuery' => '', */
-		/* ) */
-	);
-
-/**
  * get plugins for select box options
  *
  * @param array $options find options
@@ -176,4 +129,160 @@ class Plugin extends AppModel {
 
 		return $map;
 	}
+
+/**
+ * Save plugin
+ *
+ * @param array $records Plugin data
+ * @return void
+ */
+	public function savePlugin($records) {
+		$this->loadModels([
+			'Plugin' => 'PluginManager.Plugin',
+			'PluginsRole' => 'PluginManager.PluginsRole',
+			'PluginsRoom' => 'PluginManager.PluginsRoom',
+			'Language' => 'M17n.Language',
+		]);
+
+		//トランザクションBegin
+		$this->setDataSource('master');
+		$dataSource = $this->getDataSource();
+		$dataSource->begin();
+
+		try {
+			//言語データ取得
+			$languages = $this->Language->find('list', array(
+				'fields' => array('Language.code', 'Language.id')
+			));
+
+			$currentLang = Configure::read('Config.language');
+
+			//Pluginテーブルの登録
+			foreach (Configure::read('Config.languageEnabled') as $lang) {
+				$conditions = array(
+					'Plugin.language_id' => $languages[$lang],
+					'Plugin.key' => $records['Plugin']['key'],
+				);
+
+				if (! $plugin = $this->Plugin->find('first', array(
+					'recursive' => -1,
+					'conditions' => $conditions,
+				))) {
+					$plugin = $this->Plugin->create(array('id' => null));
+				}
+
+				Configure::write('Config.language', $lang);
+
+				$plugin['Plugin'] = Hash::merge($records['Plugin'], array(
+					'language_id' => $languages[$lang],
+					'name' => __d($records['Plugin']['key'], $records['Plugin']['name'])
+				));
+
+				$this->Plugin->save($plugin, false);
+			}
+
+			Configure::write('Config.language', $currentLang);
+
+			//PluginsRoleテーブルの登録
+			if (isset($records['PluginsRole'])) {
+				foreach ($records['PluginsRole'] as $pluginRole) {
+					$conditions = array(
+						'role_key' => $pluginRole['role_key'],
+						'plugin_key' => $records['Plugin']['key'],
+					);
+
+					$count = $this->PluginsRole->find('count', array(
+						'recursive' => -1,
+						'conditions' => $conditions,
+					));
+					if ($count > 0) {
+						continue;
+					}
+
+					$data['PluginsRole'] = Hash::merge($records['PluginsRole'], $conditions);
+					$this->PluginsRole->create();
+					$this->PluginsRole->save($data, false);
+				}
+			}
+
+			//PluginsRoomテーブルの登録
+			if (isset($records['PluginsRoom'])) {
+				foreach ($records['PluginsRoom'] as $pluginsRoom) {
+					$conditions = array(
+						'room_id' => $pluginsRoom['room_id'],
+						'plugin_key' => $records['Plugin']['key'],
+					);
+
+					$count = $this->PluginsRoom->find('count', array(
+						'recursive' => -1,
+						'conditions' => $conditions,
+					));
+					if ($count > 0) {
+						continue;
+					}
+
+					$data['PluginsRoom'] = Hash::merge($records['PluginsRoom'], $conditions);
+					$this->PluginsRoom->create();
+					$this->PluginsRoom->save($data, false);
+				}
+			}
+
+			//トランザクションCommit
+			$dataSource->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$dataSource->rollback();
+			CakeLog::error($ex);
+			throw $ex;
+		}
+
+		return true;
+	}
+
+/**
+ * Delete plugin
+ *
+ * @param array $records Plugin data
+ * @return void
+ */
+	public function deletePlugin($records) {
+		$this->loadModels([
+			'Plugin' => 'PluginManager.Plugin',
+			'PluginsRole' => 'PluginManager.PluginsRole',
+			'PluginsRoom' => 'PluginManager.PluginsRoom',
+		]);
+
+		//トランザクションBegin
+		$this->setDataSource('master');
+		$dataSource = $this->getDataSource();
+		$dataSource->begin();
+
+		try {
+			//Pluginの削除
+			if (! $this->deleteAll(array($this->alias . '.key' => $records[$this->alias]['key']), false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			//PluginsRoomの削除
+			if (! $this->PluginsRoom->deleteAll(array($this->PluginsRoom->alias . '.plugin_key' => $records[$this->alias]['key']), false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			//PluginsRoleの削除
+			if (! $this->PluginsRole->deleteAll(array($this->PluginsRole->alias . '.plugin_key' => $records[$this->alias]['key']), false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			//トランザクションCommit
+			$dataSource->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$dataSource->rollback();
+			CakeLog::error($ex);
+			throw $ex;
+		}
+
+		return true;
+	}
+
 }
