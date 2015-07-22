@@ -277,6 +277,48 @@ class Plugin extends AppModel {
 	}
 
 /**
+ * Save plugin
+ *
+ * @param array $records Plugin data
+ * @return void
+ */
+	public function saveWeight($data) {
+		$this->loadModels([
+			'Plugin' => 'PluginManager.Plugin',
+		]);
+
+		//トランザクションBegin
+		$this->setDataSource('master');
+		$dataSource = $this->getDataSource();
+		$dataSource->begin();
+
+		try {
+			//Pluginテーブルの登録
+			foreach ($data as $plugin) {
+				if (! $this->updateAll(
+					array('Plugin.weight' => (int)$plugin['Plugin']['weight']),
+					array(
+						'Plugin.key' => $dataSource->value($plugin['Plugin']['key'], 'string'),
+					)
+				)) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+			}
+
+			//トランザクションCommit
+			$dataSource->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$dataSource->rollback();
+			CakeLog::error($ex);
+			throw $ex;
+		}
+
+		return true;
+	}
+
+/**
  * Delete plugin
  *
  * @param array $records Plugin data

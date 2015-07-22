@@ -15,7 +15,7 @@
 <div ng-controller="PluginManager" class="nc-content-list"
 	 ng-init="initialize(<?php echo h(json_encode(array(
 			'plugins' => PluginManagerController::camelizeKeyRecursive($plugins),
-			'pluginsMap' => PluginManagerController::camelizeKeyRecursive($pluginsMap)
+			'pluginsMap' => $pluginsMap
 		), true)); ?>)">
 
 	<article>

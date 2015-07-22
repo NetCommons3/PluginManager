@@ -25,8 +25,6 @@ class PluginManagerController extends PluginManagerAppController {
  * @return void
  */
 	public function index() {
-		//$this->PluginManager->recursive = 0;
-		//$this->set('pluginManagers', $this->Paginator->paginate());
 		$Plugin = $this->Plugin;
 
 		$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_FRAME] = $this->Plugin->getPlugins(
@@ -96,26 +94,42 @@ class PluginManagerController extends PluginManagerAppController {
  * @throws NotFoundException
  * @return void
  */
-	//public function edit($id = null) {
-	//	if (!$this->PluginManager->exists($id)) {
-	//		throw new NotFoundException(__('Invalid plugin manager'));
-	//	}
-	//	if ($this->request->is(array('post', 'put'))) {
-	//		if ($this->PluginManager->save($this->request->data)) {
-	//			$this->Session->setFlash(__('The plugin manager has been saved.'));
-	//			return $this->redirect(array('action' => 'index'));
-	//		} else {
-	//			$this->Session->setFlash(__('The plugin manager could not be saved. Please, try again.'));
-	//		}
-	//	} else {
-	//		$options = array('conditions' => array('PluginManager.' . $this->PluginManager->primaryKey => $id));
-	//		$this->request->data = $this->PluginManager->find('first', $options);
-	//	}
-	//	$languages = $this->PluginManager->Language->find('list');
-	//	$trackableCreators = $this->PluginManager->TrackableCreator->find('list');
-	//	$trackableUpdaters = $this->PluginManager->TrackableUpdater->find('list');
-	//	$this->set(compact('languages', 'trackableCreators', 'trackableUpdaters'));
-	//}
+	public function order() {
+		if (! $this->request->isPost()) {
+			$this->throwBadRequest();
+			return;
+		}
+
+		if (! $this->PluginManager->saveWeight($this->data)) {
+			$this->throwBadRequest();
+			return;
+		}
+
+		$this->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
+		if (! $this->request->is('ajax')) {
+			$this->redirect($this->request->referer());
+		}
+
+
+		//if (!$this->PluginManager->exists($id)) {
+		//	throw new NotFoundException(__('Invalid plugin manager'));
+		//}
+		//if ($this->request->is(array('post', 'put'))) {
+		//	if ($this->PluginManager->save($this->request->data)) {
+		//		$this->Session->setFlash(__('The plugin manager has been saved.'));
+		//		return $this->redirect(array('action' => 'index'));
+		//	} else {
+		//		$this->Session->setFlash(__('The plugin manager could not be saved. Please, try again.'));
+		//	}
+		//} else {
+		//	$options = array('conditions' => array('PluginManager.' . $this->PluginManager->primaryKey => $id));
+		//	$this->request->data = $this->PluginManager->find('first', $options);
+		//}
+		//$languages = $this->PluginManager->Language->find('list');
+		//$trackableCreators = $this->PluginManager->TrackableCreator->find('list');
+		//$trackableUpdaters = $this->PluginManager->TrackableUpdater->find('list');
+		//$this->set(compact('languages', 'trackableCreators', 'trackableUpdaters'));
+	}
 
 /**
  * delete method

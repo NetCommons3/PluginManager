@@ -17,7 +17,8 @@
 	</div>
 
 	<?php foreach ($pluginsMap['type' . $pluginType] as $key => $value) : ?>
-		<?php $this->Form->unlockField($value. '.Plugin.weight'); ?>
+		<?php echo $key; ?>
+		<?php $this->Form->unlockField($value . '.Plugin.weight'); ?>
 	<?php endforeach; ?>
 	<table class="table table-condensed" ng-show="plugins.type<?php echo $pluginType; ?>.length">
 		<thead>
@@ -48,6 +49,7 @@
 					</button>
 
 					<input type="hidden" name="data[{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][id]" ng-value="plugin.plugin.id">
+					<input type="hidden" name="data[{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][key]" ng-value="plugin.plugin.key">
 					<input type="hidden" name="data[{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][weight]" ng-value="{{$index + 1}}">
 
 				</td>
