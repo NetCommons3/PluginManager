@@ -88,7 +88,7 @@ class PluginsRoom extends AppModel {
 				'plugin_key' => $data['Plugin']['key'],
 			);
 
-			$count = $this->PluginsRoom->find('count', array(
+			$count = $this->find('count', array(
 				'recursive' => -1,
 				'conditions' => $conditions,
 			));
@@ -97,8 +97,8 @@ class PluginsRoom extends AppModel {
 			}
 
 			$pluginsRoom = Hash::merge($pluginsRoom, $conditions);
-			$this->PluginsRoom->create();
-			if (! $this->PluginsRoom->save($pluginsRoom, false)) {
+			$this->create();
+			if (! $this->save($pluginsRoom, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}

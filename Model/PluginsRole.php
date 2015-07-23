@@ -119,7 +119,7 @@ class PluginsRole extends AppModel {
 				'plugin_key' => $data['Plugin']['key'],
 			);
 
-			$count = $this->PluginsRole->find('count', array(
+			$count = $this->find('count', array(
 				'recursive' => -1,
 				'conditions' => $conditions,
 			));
