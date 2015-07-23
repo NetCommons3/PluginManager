@@ -22,6 +22,11 @@ class Plugin extends AppModel {
 /**
  * constant value for not yet
  */
+	const PACKAGIST_URL = 'https://packagist.org/packages/';
+
+/**
+ * constant value for not yet
+ */
 	const PLUGIN_TYPE_FOR_NOT_YET = '0';
 
 /**

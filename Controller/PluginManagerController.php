@@ -35,6 +35,30 @@ class PluginManagerController extends PluginManagerAppController {
 	const TAB_FOR_CONTROL_PANEL = 'system_plugins';
 
 /**
+ * Called before the controller action. You can use this method to configure and customize components
+ * or perform logic that needs to happen before each controller action.
+ *
+ * @return void
+ * @link http://book.cakephp.org/2.0/en/controllers.html#request-life-cycle-callbacks
+ */
+	public function beforeFilter() {
+		parent::beforeFilter();
+
+		$Plugin = $this->Plugin;
+
+		if (isset($this->params['pass'][1])) {
+			$pluginType = $this->params['pass'][1];
+		} else {
+			$pluginType =  $Plugin::PLUGIN_TYPE_FOR_FRAME;
+		}
+		if ($pluginType === $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) {
+			$this->set('active', self::TAB_FOR_CONTROL_PANEL);
+		} else {
+			$this->set('active', self::TAB_FOR_FRAME);
+		}
+	}
+
+/**
  * index method
  *
  * @return void
@@ -62,22 +86,19 @@ class PluginManagerController extends PluginManagerAppController {
 
 		$this->set('plugins', $plugins);
 		$this->set('pluginsMap', $pluginsMap);
-
-		if (isset($this->params['named']['active'])) {
-			$this->set('active', $this->params['named']['active']);
-		} else {
-			$this->set('active', 'installed');
-		}
 	}
 
 /**
  * view method
  *
- * @param string $id id
+ * @param int $pluginType Plugin type
+ * @param string $pluginKey Plugin key
  * @throws NotFoundException
  * @return void
  */
-	public function view($id = null) {
+	public function view() {
+
+
 		//if (!$this->PluginManager->exists($id)) {
 		//	throw new NotFoundException(__('Invalid plugin manager'));
 		//}
@@ -127,13 +148,7 @@ class PluginManagerController extends PluginManagerAppController {
 		}
 
 		$this->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
-		$Plugin = $this->Plugin;
-		if ($pluginType === $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) {
-			$active = PluginManagerController::TAB_FOR_CONTROL_PANEL;
-		} else {
-			$active = PluginManagerController::TAB_FOR_FRAME;
-		}
-		$this->redirect('/plugin_manager/plugin_manager/index/active:' . $active);
+		$this->redirect('/plugin_manager/plugin_manager/index/' . $pluginType . '/');
 	}
 
 /**

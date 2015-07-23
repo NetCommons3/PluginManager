@@ -21,7 +21,7 @@
 	<article>
 		<?php echo $this->element('PluginManager.title'); ?>
 
-		<?php echo $this->element('PluginManager.tabs'); ?>
+		<?php echo $this->element('PluginManager.tabs', array('disabled' => '')); ?>
 
 		<div class="tab-content">
 			<div class="tab-pane<?php echo ($active === 'installed' ? ' active' : ''); ?>" id="installed">
