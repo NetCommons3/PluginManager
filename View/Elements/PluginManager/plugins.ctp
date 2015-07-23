@@ -67,7 +67,8 @@
 					</a>
 				</td>
 				<td>
-
+					{{plugin.composer.version}}
+					<span class="text-muted" ng-if="plugin.composer.version">({{plugin.composer.source.reference|limitTo:10}})</span>
 				</td>
 			</tr>
 		</tbody>

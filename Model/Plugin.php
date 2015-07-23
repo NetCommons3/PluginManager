@@ -13,6 +13,7 @@
  */
 
 App::uses('AppModel', 'Model');
+App::uses('File', 'Utility');
 
 /**
  * Summary for Plugin Model
@@ -153,6 +154,32 @@ class Plugin extends AppModel {
 /**
  * Get plugin data from type and roleId, $langId
  *
+ * @param string $namespace Plugin namespace
+ * @return mixed array|bool
+ */
+	public function getComposer($namespace = null) {
+		static $composers = null;
+
+		if (! $composers) {
+			$filePath = ROOT . DS . 'composer.lock';
+			$file = new File($filePath);
+			$contents = $file->read();
+			$file->close();
+
+			$composers = json_decode($contents, true);
+		}
+
+		$ret = Hash::extract($composers['packages-dev'], '{n}[name=' . $namespace . ']');
+		if ($ret) {
+			return $ret[0];
+		} else {
+			return null;
+		}
+	}
+
+/**
+ * Get plugin data from type and roleId, $langId
+ *
  * @param int $type array|int 1:for frame/2:for controll panel
  * @param int $langId languages.id
  * @return mixed array|bool
@@ -167,6 +194,10 @@ class Plugin extends AppModel {
 			),
 			'order' => array($this->alias . '.weight' => 'asc', $this->alias . '.id' => 'desc'),
 		));
+
+		foreach ($plugins as $i => $plugin) {
+			$plugins[$i]['composer'] = $this->getComposer($plugin['Plugin']['namespace']);
+		}
 
 		return $plugins;
 	}
