@@ -14,20 +14,20 @@
 ?>
 
 <ul class="nav nav-tabs" role="tablist">
-	<li class="<?php echo ($active === 'installed' ? 'active' : ''); ?>">
-		<a href="#installed" role="tab" data-toggle="tab">
+	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_FRAME ? 'active' : ''); ?>">
+		<a href="#<?php echo PluginManagerController::TAB_FOR_FRAME; ?>" role="tab" data-toggle="tab">
 			<?php echo __d('plugin_manager', 'Installed plugins'); ?>
 		</a>
 	</li>
 
-	<li class="<?php echo ($active === 'not_yet_installed' ? 'active' : ''); ?>">
-		<a href="#not_yet_installed" role="tab" data-toggle="tab">
+	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_NOT_YET ? 'active' : ''); ?>">
+		<a href="#<?php echo PluginManagerController::TAB_FOR_NOT_YET; ?>" role="tab" data-toggle="tab">
 			<?php echo __d('plugin_manager', 'Plugins not yet installed'); ?>
 		</a>
 	</li>
 
-	<li class="<?php echo ($active === 'system_plugins' ? 'active' : ''); ?>">
-		<a href="#system_plugins" role="tab" data-toggle="tab">
+	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_CONTROL_PANEL ? 'active' : ''); ?>">
+		<a href="#<?php echo PluginManagerController::TAB_FOR_CONTROL_PANEL; ?>" role="tab" data-toggle="tab">
 			<?php echo __d('plugin_manager', 'System plugins'); ?>
 		</a>
 	</li>

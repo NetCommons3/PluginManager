@@ -16,10 +16,6 @@
 		<p><?php echo __d('net_commons', 'Not found.'); ?></p>
 	</div>
 
-	<?php foreach ($pluginsMap['type' . $pluginType] as $key => $value) : ?>
-		<?php echo $key; ?>
-		<?php $this->Form->unlockField($value . '.Plugin.weight'); ?>
-	<?php endforeach; ?>
 	<table class="table table-condensed" ng-show="plugins.type<?php echo $pluginType; ?>.length">
 		<thead>
 			<tr>
@@ -36,6 +32,16 @@
 			</tr>
 		</thead>
 		<tbody>
+			<?php foreach ($pluginsMap['type' . $pluginType] as $key => $value) : ?>
+				<?php echo $this->Form->hidden($value . '.Plugin.id', array(
+						'value' => $plugins['type' . $pluginType][$value]['Plugin']['id'],
+					)); ?>
+				<?php echo $this->Form->hidden($value . '.Plugin.key', array(
+						'value' => $plugins['type' . $pluginType][$value]['Plugin']['key'],
+					)); ?>
+				<?php $this->Form->unlockField($value . '.Plugin.weight'); ?>
+			<?php endforeach; ?>
+
 			<tr ng-repeat="plugin in plugins.type<?php echo $pluginType; ?> track by $index">
 				<td>
 					<button type="button" class="btn btn-default btn-sm"
@@ -48,10 +54,7 @@
 						<span class="glyphicon glyphicon-arrow-down"></span>
 					</button>
 
-					<input type="hidden" name="data[{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][id]" ng-value="plugin.plugin.id">
-					<input type="hidden" name="data[{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][key]" ng-value="plugin.plugin.key">
-					<input type="hidden" name="data[{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][weight]" ng-value="{{$index + 1}}">
-
+				<input type="hidden" name="data[{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][weight]" ng-value="{{$index + 1}}">
 				</td>
 				<td>
 					{{plugin.plugin.name}}

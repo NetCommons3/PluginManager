@@ -71,4 +71,39 @@ class PluginsRoom extends AppModel {
 
 		return $plugins;
 	}
+
+/**
+ * Save plugin rooms
+ * Here does not transaction. Please do the transaction and validation in the caller.
+ *
+ * @param array $data Plugin rooms data
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	public function savePluginRooms($data) {
+		//PluginsRoleテーブルの登録
+		foreach ($data['PluginsRoom'] as $pluginsRoom) {
+			$conditions = array(
+				'room_id' => $pluginsRoom['room_id'],
+				'plugin_key' => $data['Plugin']['key'],
+			);
+
+			$count = $this->PluginsRoom->find('count', array(
+				'recursive' => -1,
+				'conditions' => $conditions,
+			));
+			if ($count > 0) {
+				continue;
+			}
+
+			$pluginsRoom = Hash::merge($pluginsRoom, $conditions);
+			$this->PluginsRoom->create();
+			if (! $this->PluginsRoom->save($pluginsRoom, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
+
+		return true;
+	}
+
 }

@@ -103,4 +103,38 @@ class PluginsRole extends AppModel {
 		return $plugin;
 	}
 
+/**
+ * Save plugin roles
+ * Here does not transaction. Please do the transaction and validation in the caller.
+ *
+ * @param array $data Plugin roles data
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	public function savePluginRoles($data) {
+		//PluginsRoleテーブルの登録
+		foreach ($data['PluginsRole'] as $pluginRole) {
+			$conditions = array(
+				'role_key' => $pluginRole['role_key'],
+				'plugin_key' => $data['Plugin']['key'],
+			);
+
+			$count = $this->PluginsRole->find('count', array(
+				'recursive' => -1,
+				'conditions' => $conditions,
+			));
+			if ($count > 0) {
+				continue;
+			}
+
+			$pluginRole = Hash::merge($pluginRole, $conditions);
+			$this->create();
+			if (! $this->save($pluginRole, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
+
+		return true;
+	}
+
 }

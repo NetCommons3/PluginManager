@@ -80,16 +80,16 @@ class Plugin extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-		'default_action' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
+		//'default_action' => array(
+		//	'notEmpty' => array(
+		//		'rule' => array('notEmpty'),
+		//		//'message' => 'Your custom message here',
+		//		//'allowEmpty' => false,
+		//		//'required' => false,
+		//		//'last' => false, // Stop validation after this rule
+		//		//'on' => 'create', // Limit validation to 'create' or 'update' operations
+		//	),
+		//),
 	);
 
 	//The Associations below have been created with all possible keys, those that are not needed can be removed
@@ -160,7 +160,7 @@ class Plugin extends AppModel {
 				'Plugin.type' => $type,
 				'Plugin.language_id' => (int)$langId
 			),
-			'order' => array($this->alias . '.weight' => 'desc', $this->alias . '.id' => 'desc'),
+			'order' => array($this->alias . '.weight' => 'asc', $this->alias . '.id' => 'desc'),
 		));
 
 		return $plugins;
@@ -169,10 +169,11 @@ class Plugin extends AppModel {
 /**
  * Save plugin
  *
- * @param array $records Plugin data
- * @return void
+ * @param array $data Plugin data
+ * @return bool True on success
+ * @throws InternalErrorException
  */
-	public function savePlugin($records) {
+	public function savePlugin($data) {
 		$this->loadModels([
 			'Plugin' => 'PluginManager.Plugin',
 			'PluginsRole' => 'PluginManager.PluginsRole',
@@ -185,19 +186,19 @@ class Plugin extends AppModel {
 		$dataSource = $this->getDataSource();
 		$dataSource->begin();
 
+		//言語データ取得
+		$languages = $this->Language->find('list', array(
+			'fields' => array('Language.code', 'Language.id')
+		));
+
+		$currentLang = Configure::read('Config.language');
+
 		try {
-			//言語データ取得
-			$languages = $this->Language->find('list', array(
-				'fields' => array('Language.code', 'Language.id')
-			));
-
-			$currentLang = Configure::read('Config.language');
-
 			//Pluginテーブルの登録
 			foreach (Configure::read('Config.languageEnabled') as $lang) {
 				$conditions = array(
 					'Plugin.language_id' => $languages[$lang],
-					'Plugin.key' => $records['Plugin']['key'],
+					'Plugin.key' => $data['Plugin']['key'],
 				);
 
 				if (! $plugin = $this->Plugin->find('first', array(
@@ -209,9 +210,9 @@ class Plugin extends AppModel {
 
 				Configure::write('Config.language', $lang);
 
-				$plugin['Plugin'] = Hash::merge($records['Plugin'], array(
+				$plugin['Plugin'] = Hash::merge($data['Plugin'], array(
 					'language_id' => $languages[$lang],
-					'name' => __d($records['Plugin']['key'], $records['Plugin']['name'])
+					'name' => __d($data['Plugin']['key'], $data['Plugin']['name'])
 				));
 
 				$this->Plugin->save($plugin, false);
@@ -220,47 +221,13 @@ class Plugin extends AppModel {
 			Configure::write('Config.language', $currentLang);
 
 			//PluginsRoleテーブルの登録
-			if (isset($records['PluginsRole'])) {
-				foreach ($records['PluginsRole'] as $pluginRole) {
-					$conditions = array(
-						'role_key' => $pluginRole['role_key'],
-						'plugin_key' => $records['Plugin']['key'],
-					);
-
-					$count = $this->PluginsRole->find('count', array(
-						'recursive' => -1,
-						'conditions' => $conditions,
-					));
-					if ($count > 0) {
-						continue;
-					}
-
-					$data['PluginsRole'] = Hash::merge($records['PluginsRole'], $conditions);
-					$this->PluginsRole->create();
-					$this->PluginsRole->save($data, false);
-				}
+			if (isset($data['PluginsRole'])) {
+				$this->PluginsRole->savePluginRoles($data);
 			}
 
 			//PluginsRoomテーブルの登録
-			if (isset($records['PluginsRoom'])) {
-				foreach ($records['PluginsRoom'] as $pluginsRoom) {
-					$conditions = array(
-						'room_id' => $pluginsRoom['room_id'],
-						'plugin_key' => $records['Plugin']['key'],
-					);
-
-					$count = $this->PluginsRoom->find('count', array(
-						'recursive' => -1,
-						'conditions' => $conditions,
-					));
-					if ($count > 0) {
-						continue;
-					}
-
-					$data['PluginsRoom'] = Hash::merge($records['PluginsRoom'], $conditions);
-					$this->PluginsRoom->create();
-					$this->PluginsRoom->save($data, false);
-				}
+			if (isset($data['PluginsRoom'])) {
+				$this->PluginsRoom->savePluginRooms($data);
 			}
 
 			//トランザクションCommit
@@ -279,8 +246,9 @@ class Plugin extends AppModel {
 /**
  * Save plugin
  *
- * @param array $records Plugin data
- * @return void
+ * @param array $data Request data
+ * @return bool True on success
+ * @throws InternalErrorException
  */
 	public function saveWeight($data) {
 		$this->loadModels([
@@ -294,14 +262,22 @@ class Plugin extends AppModel {
 
 		try {
 			//Pluginテーブルの登録
-			foreach ($data as $plugin) {
-				if (! $this->updateAll(
-					array('Plugin.weight' => (int)$plugin['Plugin']['weight']),
-					array(
-						'Plugin.key' => $dataSource->value($plugin['Plugin']['key'], 'string'),
-					)
-				)) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			$fieldList = array('weight');
+			foreach ($data as $req) {
+				$plugins = $this->find('all', array(
+					'recursive' => -1,
+					'conditions' => array('key' => $req['Plugin']['key']),
+				));
+				foreach ($plugins as $plugin) {
+					if ($plugin['Plugin']['weight'] === $req['Plugin']['weight']) {
+						continue;
+					}
+					unset($plugin['Plugin']['modified_user'], $plugin['Plugin']['modified']);
+
+					$plugin['Plugin']['weight'] = (int)$req['Plugin']['weight'];
+					if (! $this->save($plugin, array('fieldList' => $fieldList))) {
+						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+					}
 				}
 			}
 
@@ -321,10 +297,11 @@ class Plugin extends AppModel {
 /**
  * Delete plugin
  *
- * @param array $records Plugin data
- * @return void
+ * @param array $data Plugin data
+ * @return bool True on success
+ * @throws InternalErrorException
  */
-	public function deletePlugin($records) {
+	public function deletePlugin($data) {
 		$this->loadModels([
 			'Plugin' => 'PluginManager.Plugin',
 			'PluginsRole' => 'PluginManager.PluginsRole',
@@ -338,15 +315,15 @@ class Plugin extends AppModel {
 
 		try {
 			//Pluginの削除
-			if (! $this->deleteAll(array($this->alias . '.key' => $records[$this->alias]['key']), false)) {
+			if (! $this->deleteAll(array($this->alias . '.key' => $data[$this->alias]['key']), false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			//PluginsRoomの削除
-			if (! $this->PluginsRoom->deleteAll(array($this->PluginsRoom->alias . '.plugin_key' => $records[$this->alias]['key']), false)) {
+			if (! $this->PluginsRoom->deleteAll(array($this->PluginsRoom->alias . '.plugin_key' => $data[$this->alias]['key']), false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			//PluginsRoleの削除
-			if (! $this->PluginsRole->deleteAll(array($this->PluginsRole->alias . '.plugin_key' => $records[$this->alias]['key']), false)) {
+			if (! $this->PluginsRole->deleteAll(array($this->PluginsRole->alias . '.plugin_key' => $data[$this->alias]['key']), false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
