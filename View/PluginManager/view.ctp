@@ -8,43 +8,135 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+
+echo $this->Html->css(
+	array(
+		'/plugin_manager/css/style.css'
+	),
+	array('plugin' => false)
+);
 ?>
 
 <?php echo $this->Html->script('/rss_readers/js/rss_readers.js', false); ?>
 
-<div class="nc-content-list" id="nc-rss-readers-<?php echo (int)$frameId; ?>"
-		ng-controller="RssReaders"
-		ng-init="initialize(<?php echo h(json_encode(['frameId' => $frameId])); ?>)">
-
+<div class="nc-content-list">
 	<article>
-		<div class="clearfix">
-			<div class="pull-left">
-				<?php if (isset($rssReader['link'])) : ?>
-					<button class="btn btn-default" tooltip="<?php echo __d('rss_readers', 'Site Info'); ?>"
-							ng-class="{active:siteInfo}" ng-click="siteInfo = !siteInfo; switchDisplaySiteInfo();">
+		<?php echo $this->element('PluginManager.title'); ?>
 
-						<span class="glyphicon glyphicon-info-sign nc-tooltip"> </span>
-					</button >
+		<?php echo $this->element('PluginManager.tabs', array('disabled' => 'disabled')); ?>
 
-					<?php echo $this->element('NetCommons.status_label',
-							array('status' => $rssReader['status'])); ?>
+		<div class="panel panel-default" >
+			<div class="panel-body">
+				<h2 class="nc-title-in-panel">
+					<strong><?php echo h($plugin['Plugin']['name']); ?></strong>
+				</h2>
+				<?php if ($plugin['composer']) : ?>
+					<div class="plugin-manager-description">
+						<?php echo __d(h($plugin['Plugin']['key']), h($plugin['composer']['description'])); ?>
+					</div>
+				<?php endif; ?>
+
+				<?php if ($plugin['composer']) : ?>
+					<div class="row plugin-manager-list">
+						<div class="col-md-2 col-sm-3 col-xs-12">
+							<?php echo __d('plugin_manager', 'Package'); ?>
+						</div>
+						<div class="col-md-10 col-sm-9 col-xs-12">
+							<a target="_blank" href="<?php echo Plugin::PACKAGIST_URL . h($plugin['composer']['name']); ?>">
+								<?php echo h($plugin['composer']['name']); ?>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (isset($plugin['composer']['source'])) : ?>
+					<div class="row plugin-manager-list">
+						<div class="col-md-2 col-sm-3 col-xs-12">
+							<?php echo __d('plugin_manager', 'Version'); ?>
+						</div>
+						<div class="col-md-10 col-sm-9 col-xs-12">
+							<?php echo h($plugin['composer']['version']); ?>
+							<span class="text-muted">(<?php echo h($plugin['composer']['source']['reference']); ?>)</span>
+						</div>
+					</div>
+
+					<div class="row plugin-manager-list">
+						<div class="col-md-2 col-sm-3 col-xs-12">
+							<?php echo __d('plugin_manager', 'Source'); ?>
+						</div>
+						<div class="col-md-10 col-sm-9 col-xs-12">
+							<a target="_blank" href="<?php echo h($plugin['composer']['source']['url']); ?>">
+								<?php echo h($plugin['composer']['source']['url']); ?>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (isset($plugin['composer']['authors'])) : ?>
+					<div class="row plugin-manager-list">
+						<div class="col-md-2 col-sm-3 col-xs-12">
+							<?php echo __d('plugin_manager', 'Author(s)'); ?>
+						</div>
+						<div class="col-md-10 col-sm-9 col-xs-12">
+							<ul class="plugin-manager-autors-ul">
+								<?php foreach ($plugin['composer']['authors'] as $author) : ?>
+									<?php
+										$name = '';
+										if (isset($author['role']) && strtolower($author['role']) === 'developer') {
+											$author['name'] = h($author['name']) .
+													' <span class="small"><span class="text-danger">' .
+														__d('plugin_manager', '[Developer]') .
+													'</span></span>';
+										}
+										if (isset($author['homepage'])) {
+											$name .= $this->Html->link($author['name'], $author['homepage'], array('target' => '_blank', 'escapeTitle' => false));
+										} else {
+											$name .= h($author['name']);
+										}
+									?>
+									<li>
+										<?php echo $name; ?>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (isset($plugin['composer']['license'])) : ?>
+					<div class="row plugin-manager-list">
+						<div class="col-md-2 col-sm-3 col-xs-12">
+							<?php echo __d('plugin_manager', 'License'); ?>
+						</div>
+						<div class="col-md-10 col-sm-9 col-xs-12">
+							<?php echo implode(', ', $plugin['composer']['license']); ?>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if (isset($plugin['composer']['homepage'])) : ?>
+					<div class="row plugin-manager-list">
+						<div class="col-md-2 col-sm-3 col-xs-12">
+							<?php echo __d('plugin_manager', 'Home page'); ?>
+						</div>
+						<div class="col-md-10 col-sm-9 col-xs-12">
+							<a target="_blank" href="<?php echo h($plugin['composer']['homepage']); ?>">
+								<?php echo h($plugin['composer']['homepage']); ?>
+							</a>
+						</div>
+					</div>
 				<?php endif; ?>
 			</div>
+			<div class="panel-footer text-center">
+				<button type="button" class="btn btn-default btn-workflow"
+						onclick="location.href='<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . $pluginType . '/'); ?>'">
 
-			<?php if ($contentEditable) : ?>
-				<div class="pull-right">
-					<span class="nc-tooltip" tooltip="<?php echo __d('net_commons', 'Edit'); ?>">
-						<a href="<?php echo $this->Html->url('/rss_readers/rss_readers/edit/' . $frameId) ?>" class="btn btn-primary">
-							<span class="glyphicon glyphicon-edit"> </span>
-						</a>
-					</span>
-				</div>
-			<?php endif; ?>
+					<span class="glyphicon glyphicon-remove"></span>
+					<?php echo __d('net_commons', 'Cancel'); ?>
+				</button>
+
+			</div>
 		</div>
-
-		<?php echo $this->element('RssReaders/view_site_info'); ?>
-
-		<?php echo $this->element('RssReaders/view_items'); ?>
 	</article>
 </div>
 

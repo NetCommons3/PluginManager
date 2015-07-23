@@ -28,7 +28,7 @@ class Plugin extends AppModel {
 /**
  * constant value for not yet
  */
-	const PLUGIN_TYPE_FOR_NOT_YET = '0';
+	const PLUGIN_TYPE_CORE = '0';
 
 /**
  * constant value for frame
@@ -39,6 +39,11 @@ class Plugin extends AppModel {
  * constant value for control panel
  */
 	const PLUGIN_TYPE_FOR_CONTROL_PANEL = '2';
+
+/**
+ * constant value for not yet
+ */
+	const PLUGIN_TYPE_FOR_NOT_YET = '3';
 
 /**
  * Validation rules
@@ -168,7 +173,6 @@ class Plugin extends AppModel {
 
 			$composers = json_decode($contents, true);
 		}
-
 		$ret = Hash::extract($composers['packages-dev'], '{n}[name=' . $namespace . ']');
 		if ($ret) {
 			return $ret[0];
@@ -178,22 +182,58 @@ class Plugin extends AppModel {
 	}
 
 /**
+ * getMaxWeight
+ *
+ * @param int $type plugins.type
+ * @return int
+ */
+	public function getMaxWeight($type) {
+		$order = $this->find('first', array(
+				'recursive' => -1,
+				'fields' => array('weight'),
+				'conditions' => array('type' => $type),
+				'order' => array('weight' => 'DESC')
+			));
+
+		if (isset($order[$this->alias]['weight'])) {
+			$weight = (int)$order[$this->alias]['weight'];
+		} else {
+			$weight = 0;
+		}
+		return $weight;
+	}
+
+/**
  * Get plugin data from type and roleId, $langId
  *
  * @param int $type array|int 1:for frame/2:for controll panel
  * @param int $langId languages.id
+ * @param string $key plugins.key
  * @return mixed array|bool
  */
-	public function getPlugins($type, $langId) {
+	public function getPlugins($type, $langId, $key = null) {
+		$conditions = array(
+			'Plugin.type' => $type,
+			'Plugin.language_id' => (int)$langId
+		);
+		if (isset($key)) {
+			$conditions['Plugin.key'] = $key;
+			$order = array();
+		} else {
+			$order = array(
+				$this->alias . '.weight' => 'asc',
+				$this->alias . '.id' => 'desc'
+			);
+		}
+
 		//pluginsテーブルの取得
-		$plugins = $this->find('all', array(
+		if (! $plugins = $this->find('all', array(
 			'recursive' => -1,
-			'conditions' => array(
-				'Plugin.type' => $type,
-				'Plugin.language_id' => (int)$langId
-			),
-			'order' => array($this->alias . '.weight' => 'asc', $this->alias . '.id' => 'desc'),
-		));
+			'conditions' => $conditions,
+			'order' => $order,
+		))) {
+			return null;
+		}
 
 		foreach ($plugins as $i => $plugin) {
 			$plugins[$i]['composer'] = $this->getComposer($plugin['Plugin']['namespace']);
@@ -242,6 +282,12 @@ class Plugin extends AppModel {
 					'conditions' => $conditions,
 				))) {
 					$plugin = $this->Plugin->create(array('id' => null));
+					if (! isset($data['Plugin']['type'])) {
+						$plugin['Plugin']['type'] = self::PLUGIN_TYPE_CORE;
+					}
+					if (! isset($data['Plugin']['weight'])) {
+						$plugin['Plugin']['weight'] = $this->getMaxWeight($plugin['Plugin']['type']) + 1;
+					}
 				}
 
 				Configure::write('Config.language', $lang);

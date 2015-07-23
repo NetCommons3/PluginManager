@@ -13,6 +13,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: NetCommons/View/Helper/ComposerHelper.php:88
+#: PluginManager/View/PluginManager/view.ctp:78
+msgid "Author(s)"
+msgstr ""
+
+#: NetCommons/View/Helper/ComposerHelper.php:95
+#: PluginManager/View/PluginManager/view.ctp:88
+msgid "[Developer]"
+msgstr ""
+
+#: PluginManager/View/Elements/tabs.ctp:18
+msgid "Installed plugins"
+msgstr ""
+
+#: PluginManager/View/Elements/tabs.ctp:24
+msgid "Plugins not yet installed"
+msgstr ""
+
+#: PluginManager/View/Elements/tabs.ctp:30
+msgid "System plugins"
+msgstr ""
+
+#: PluginManager/View/Elements/title.ctp:14
 msgid "Plugin Manager"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:34
+msgid "Plugin name"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:37
+#: PluginManager/View/PluginManager/view.ctp:42
+msgid "Package"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:40
+#: PluginManager/View/PluginManager/view.ctp:55
+msgid "Version"
+msgstr ""
+
+#: PluginManager/View/PluginManager/view.ctp:65
+msgid "Source"
+msgstr ""
+
+#: PluginManager/View/PluginManager/view.ctp:109
+msgid "License"
+msgstr ""
+
+#: PluginManager/View/PluginManager/view.ctp:120
+msgid "Home page"
 msgstr ""
 

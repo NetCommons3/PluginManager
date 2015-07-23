@@ -46,8 +46,8 @@ class PluginManagerController extends PluginManagerAppController {
 
 		$Plugin = $this->Plugin;
 
-		if (isset($this->params['pass'][1])) {
-			$pluginType = $this->params['pass'][1];
+		if (isset($this->params['pass'][0])) {
+			$pluginType = $this->params['pass'][0];
 		} else {
 			$pluginType =  $Plugin::PLUGIN_TYPE_FOR_FRAME;
 		}
@@ -93,17 +93,15 @@ class PluginManagerController extends PluginManagerAppController {
  *
  * @param int $pluginType Plugin type
  * @param string $pluginKey Plugin key
- * @throws NotFoundException
  * @return void
  */
-	public function view() {
+	public function view($pluginType = null, $pluginKey = null) {
+		$plugins = $this->Plugin->getPlugins($pluginType, Configure::read('Config.languageId'), $pluginKey);
+		if ($plugins) {
+			$this->set('plugin', $plugins[0]);
+		}
 
-
-		//if (!$this->PluginManager->exists($id)) {
-		//	throw new NotFoundException(__('Invalid plugin manager'));
-		//}
-		//$options = array('conditions' => array('PluginManager.' . $this->PluginManager->primaryKey => $id));
-		//$this->set('pluginManager', $this->PluginManager->find('first', $options));
+		$this->set('pluginType', (int)$pluginType);
 	}
 
 /**

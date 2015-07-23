@@ -15,14 +15,14 @@ App::uses('NetCommonsMigration', 'NetCommons.Config/Migration');
  *
  * @package NetCommons\PluginManager\Config\Migration
  */
-class AddPluginRecords extends NetCommonsMigration {
+class PluginRecords extends NetCommonsMigration {
 
 /**
  * Migration description
  *
  * @var string
  */
-	public $description = 'add_plugin_records';
+	public $description = 'plugin_records';
 
 /**
  * Actions to be performed
@@ -42,7 +42,7 @@ class AddPluginRecords extends NetCommonsMigration {
 	public $records = array(
 		'Plugin' => array(
 			'key' => 'plugin_manager',
-			'namespace' => 'netcommons/plugin_manager',
+			'namespace' => 'netcommons/plugin-manager',
 			'name' => 'Plugin Manager',
 			'type' => 2,
 			'default_action' => 'plugin_manager/index',

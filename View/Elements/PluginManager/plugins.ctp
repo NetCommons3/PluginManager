@@ -67,15 +67,19 @@
 					</a>
 				</td>
 				<td>
-					{{plugin.composer.version}}
-					<span class="text-muted" ng-if="plugin.composer.version">({{plugin.composer.source.reference|limitTo:10}})</span>
+					<a target="_blank" ng-href="{{plugin.composer.source.url}}" ng-if="plugin.composer">
+						{{plugin.composer.version}}
+						<span class="text-muted">({{plugin.composer.source.reference|limitTo:10}})</span>
+					</a>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 
 	<div class="text-center">
-		<button type="button" class="btn btn-default btn-workflow" onclick="">
+		<button type="button" class="btn btn-default btn-workflow"
+				onclick="location.href='<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . $pluginType . '/'); ?>'">
+
 			<span class="glyphicon glyphicon-remove"></span>
 			<?php echo __d('net_commons', 'Cancel'); ?>
 		</button>

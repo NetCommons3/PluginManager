@@ -1,0 +1,20 @@
+/**
+ * bbses/css/style.css
+ *
+ * @author   Takako Miyagawa <nekoget@gmail.com>
+ * @link     http://www.netcommons.org NetCommons Project
+ * @license  http://www.netcommons.org/license.txt NetCommons License
+ */
+
+ul.plugin-manager-autors-ul {
+	padding-left: 20px;
+	margin-bottom: 0px;
+}
+
+.plugin-manager-list {
+	margin-top: 15;
+	margin-bottom: 15px;
+}
+.plugin-manager-description {
+	margin-bottom: 25px;
+}

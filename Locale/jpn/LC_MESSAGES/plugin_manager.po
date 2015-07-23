@@ -15,5 +15,56 @@ msgstr ""
 "Language: ja\n"
 "X-Generator: Poedit 1.8.1\n"
 
+#: NetCommons/View/Helper/ComposerHelper.php:88
+#: PluginManager/View/PluginManager/view.ctp:78
+msgid "Author(s)"
+msgstr "開発者"
+
+#: NetCommons/View/Helper/ComposerHelper.php:95
+#: PluginManager/View/PluginManager/view.ctp:88
+msgid "[Developer]"
+msgstr ""
+
+#: PluginManager/View/Elements/tabs.ctp:18
+msgid "Installed plugins"
+msgstr "インストール済みプラグイン"
+
+#: PluginManager/View/Elements/tabs.ctp:24
+msgid "Plugins not yet installed"
+msgstr "未インストールプラグイン"
+
+#: PluginManager/View/Elements/tabs.ctp:30
+msgid "System plugins"
+msgstr "管理系プラグイン"
+
+#: PluginManager/Config/Migration/9999999999_plugin_records.ctp
+#: PluginManager/View/Elements/title.ctp:14
 msgid "Plugin Manager"
 msgstr "プラグイン管理"
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:34
+msgid "Plugin name"
+msgstr "プラグイン名"
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:37
+#: PluginManager/View/PluginManager/view.ctp:42
+msgid "Package"
+msgstr "パッケージ"
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:40
+#: PluginManager/View/PluginManager/view.ctp:55
+msgid "Version"
+msgstr "バージョン"
+
+#: PluginManager/View/PluginManager/view.ctp:65
+msgid "Source"
+msgstr "ソース"
+
+#: PluginManager/View/PluginManager/view.ctp:109
+msgid "License"
+msgstr "ライセンス"
+
+#: PluginManager/View/PluginManager/view.ctp:120
+msgid "Home page"
+msgstr "ホームページ"
+
