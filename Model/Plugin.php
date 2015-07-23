@@ -277,27 +277,27 @@ class Plugin extends AppModel {
 					'Plugin.key' => $data['Plugin']['key'],
 				);
 
-				if (! $plugin = $this->Plugin->find('first', array(
+				if (! $plugin = $this->find('first', array(
 					'recursive' => -1,
 					'conditions' => $conditions,
 				))) {
-					$plugin = $this->Plugin->create(array('id' => null));
+					$plugin = $this->create(array('id' => null));
 					if (! isset($data['Plugin']['type'])) {
-						$plugin['Plugin']['type'] = self::PLUGIN_TYPE_CORE;
+						$data['Plugin']['type'] = self::PLUGIN_TYPE_CORE;
 					}
 					if (! isset($data['Plugin']['weight'])) {
-						$plugin['Plugin']['weight'] = $this->getMaxWeight($plugin['Plugin']['type']) + 1;
+						$data['Plugin']['weight'] = $this->getMaxWeight($data['Plugin']['type']) + 1;
 					}
 				}
 
 				Configure::write('Config.language', $lang);
 
-				$plugin['Plugin'] = Hash::merge($data['Plugin'], array(
+				$plugin['Plugin'] = Hash::merge($plugin['Plugin'], $data['Plugin'], array(
 					'language_id' => $languages[$lang],
 					'name' => __d($data['Plugin']['key'], $data['Plugin']['name'])
 				));
 
-				$this->Plugin->save($plugin, false);
+				$this->save($plugin, false);
 			}
 
 			Configure::write('Config.language', $currentLang);
