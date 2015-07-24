@@ -23,34 +23,50 @@ msgstr ""
 msgid "[Developer]"
 msgstr ""
 
-#: PluginManager/View/Elements/tabs.ctp:18
-msgid "Installed plugins"
+#: PluginManager/View/Elements/PluginManager/btn_form.ctp:24
+msgid "Update"
 msgstr ""
 
-#: PluginManager/View/Elements/tabs.ctp:24
-msgid "Plugins not yet installed"
+#: PluginManager/View/Elements/PluginManager/btn_form.ctp:29
+msgid "Do you want to update the plugin?"
 msgstr ""
 
-#: PluginManager/View/Elements/tabs.ctp:30
-msgid "System plugins"
-msgstr ""
-
-#: PluginManager/View/Elements/title.ctp:14
-msgid "Plugin Manager"
-msgstr ""
-
-#: PluginManager/View/Elements/PluginManager/plugins.ctp:34
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:36
 msgid "Plugin name"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/plugins.ctp:37
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:39
 #: PluginManager/View/PluginManager/view.ctp:42
 msgid "Package"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/plugins.ctp:40
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:42
 #: PluginManager/View/PluginManager/view.ctp:55
 msgid "Version"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:16
+msgid "NetCommons3: "
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:26
+msgid "Installed plugins"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:32
+msgid "Plugins not yet installed"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:38
+msgid "System plugins"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:44
+msgid "External plugins"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/title.ctp:14
+msgid "Plugin Manager"
 msgstr ""
 
 #: PluginManager/View/PluginManager/view.ctp:65
