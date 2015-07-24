@@ -47,6 +47,7 @@ class PluginRecords extends NetCommonsMigration {
 			'type' => 2,
 			'default_action' => 'plugin_manager/index',
 			'default_setting_action' => '',
+			'weight' => 5,
 		),
 		'PluginsRole' => array(
 			array(
