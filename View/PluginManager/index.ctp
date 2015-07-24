@@ -21,18 +21,32 @@
 	<article>
 		<?php echo $this->element('PluginManager/title'); ?>
 
-		<?php echo $this->element('PluginManager/tabs', array('disabled' => '')); ?>
+		<?php echo $this->element('PluginManager/tabs'); ?>
 
 		<div class="tab-content">
-			<div class="tab-pane<?php echo ($active === 'installed' ? ' active' : ''); ?>" id="installed">
-				<?php echo $this->element('PluginManager/plugins', array('pluginType' => Plugin::PLUGIN_TYPE_FOR_FRAME)); ?>
-			</div>
-			<div class="tab-pane<?php echo ($active === 'not_yet_installed' ? ' active' : ''); ?>" id="not_yet_installed">
-				not_yet_installed
-			</div>
-			<div class="tab-pane<?php echo ($active === 'system_plugins' ? ' active' : ''); ?>" id="system_plugins">
-				<?php echo $this->element('PluginManager/plugins', array('pluginType' => Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL)); ?>
-			</div>
+			<?php if ($active === PluginManagerController::TAB_FOR_FRAME) : ?>
+				<div class="tab-pane active">
+					<?php echo $this->element('PluginManager/plugins', array('pluginType' => Plugin::PLUGIN_TYPE_FOR_FRAME, 'hasFormTag' => true)); ?>
+				</div>
+			<?php endif; ?>
+
+			<?php if ($active === PluginManagerController::TAB_FOR_NOT_YET) : ?>
+				<div class="tab-pane active">
+					not_yet_installed
+				</div>
+			<?php endif; ?>
+
+			<?php if ($active === PluginManagerController::TAB_FOR_CONTROL_PANEL) : ?>
+				<div class="tab-pane active">
+					<?php echo $this->element('PluginManager/plugins', array('pluginType' => Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL, 'hasFormTag' => true)); ?>
+				</div>
+			<?php endif; ?>
+
+			<?php if ($active === PluginManagerController::TAB_FOR_EXTERNAL) : ?>
+				<div class="tab-pane active">
+					<?php echo $this->element('PluginManager/plugins', array('pluginType' => Plugin::PLUGIN_TYPE_FOR_EXTERNAL, 'hasFormTag' => false)); ?>
+				</div>
+			<?php endif; ?>
 		</div>
 	</article>
 </div>

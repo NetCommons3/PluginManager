@@ -23,7 +23,7 @@ echo $this->Html->css(
 	<article>
 		<?php echo $this->element('PluginManager/title'); ?>
 
-		<?php echo $this->element('PluginManager/tabs', array('disabled' => 'disabled')); ?>
+		<?php echo $this->element('PluginManager/tabs'); ?>
 
 		<div class="panel panel-default" >
 			<div class="panel-body">
@@ -78,7 +78,7 @@ echo $this->Html->css(
 							<?php echo __d('plugin_manager', 'Author(s)'); ?>
 						</div>
 						<div class="col-md-10 col-sm-9 col-xs-12">
-							<ul class="plugin-manager-autors-ul">
+							<ul class="plugin-manager-autors-ul list-inline">
 								<?php foreach ($plugin['composer']['authors'] as $author) : ?>
 									<?php
 										$name = '';

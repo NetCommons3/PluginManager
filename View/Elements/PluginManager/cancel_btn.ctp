@@ -11,7 +11,7 @@
  */
 ?>
 
-<button type="button" class="btn btn-default btn-workflow"
+<button type="button" class="btn btn-default btn-workflow" ng-disabled="sending"
 		onclick="location.href='<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . $pluginType . '/'); ?>'">
 
 	<span class="glyphicon glyphicon-remove"></span>

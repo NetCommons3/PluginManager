@@ -38,12 +38,19 @@ class ComposerBehavior extends ModelBehavior {
 
 			$composers = json_decode($contents, true);
 		}
+		if (! $namespace) {
+			return $composers;
+		}
+
+		$ret = Hash::extract($composers['packages'], '{n}[name=' . $namespace . ']');
+		if ($ret) {
+			return $ret[0];
+		}
 		$ret = Hash::extract($composers['packages-dev'], '{n}[name=' . $namespace . ']');
 		if ($ret) {
 			return $ret[0];
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 /**

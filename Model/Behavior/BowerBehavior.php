@@ -24,7 +24,7 @@ class BowerBehavior extends ModelBehavior {
  * Bower update
  *
  * @param Model $model Model using this behavior
- * @param string $package Plugin namespace
+ * @param string $plugin Plugin namespace
  * @param string $option It is '' or '--save'. '--save' is used install.
  * @return bool True on success
  */

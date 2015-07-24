@@ -7,12 +7,14 @@
  */
 
 ul.plugin-manager-autors-ul {
-	padding-left: 20px;
 	margin-bottom: 0px;
+}
+ul.plugin-manager-autors-ul > li {
+	padding-right: 15px;
 }
 
 .plugin-manager-list {
-	margin-top: 15;
+	margin-top: 15px;
 	margin-bottom: 15px;
 }
 .plugin-manager-description {

@@ -10,6 +10,7 @@
  */
 
 App::uses('ModelBehavior', 'Model');
+App::uses('File', 'Utility');
 
 /**
  * Plugin Behavior
@@ -148,6 +149,52 @@ class PluginBehavior extends ModelBehavior {
 		}
 
 		return true;
+	}
+
+/**
+ * Get external plugin
+ *
+ * @param Model $model Model using this behavior
+ * @param array $pluginKey Plugin key
+ * @return mixed array|null array is plugins data on success. null on empty
+ * @throws InternalErrorException
+ */
+	public function getExternalPlugins(Model $model, $pluginKey = null) {
+		static $plugins = null;
+
+		if (! $plugins) {
+			$composers = $model->getComposer();
+			$index = 0;
+			$packageKeys = array('packages', 'packages-dev');
+			foreach ($packageKeys as $key) {
+				foreach ($composers[$key] as $package) {
+					if (preg_match('#^netcommons/#', $package['name'])) {
+						continue;
+					}
+
+					$plugins[$index]['Plugin']['key'] = Security::hash($package['name'], 'md5');
+					$plugins[$index]['Plugin']['namespace'] = $package['name'];
+					$plugins[$index]['Plugin']['name'] = $package['name'];
+
+					$plugins[$index]['composer'] = $package;
+					$index++;
+				}
+			}
+
+			$plugins = Hash::sort($plugins, '{n}.Plugin.name');
+		}
+
+		if (! $pluginKey) {
+			return $plugins;
+		}
+
+		$ret[0]['Plugin'] = Hash::extract($plugins, '{n}.Plugin[key=' . $pluginKey . ']')[0];
+		$ret[0]['composer'] = Hash::extract($plugins, '{n}.composer[name=' . $ret[0]['Plugin']['namespace'] . ']')[0];
+		if ($ret) {
+			return $ret;
+		}
+
+		return null;
 	}
 
 }

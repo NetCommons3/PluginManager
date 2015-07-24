@@ -18,12 +18,12 @@ msgstr ""
 #: NetCommons/View/Helper/ComposerHelper.php:88
 #: PluginManager/View/PluginManager/view.ctp:78
 msgid "Author(s)"
-msgstr "開発者"
+msgstr "開発元"
 
 #: NetCommons/View/Helper/ComposerHelper.php:95
 #: PluginManager/View/PluginManager/view.ctp:88
 msgid "[Developer]"
-msgstr ""
+msgstr "[開発者]"
 
 #: PluginManager/View/Elements/tabs.ctp:18
 msgid "Installed plugins"
