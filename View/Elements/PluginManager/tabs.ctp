@@ -30,6 +30,12 @@
 			<?php echo __d('plugin_manager', 'System plugins'); ?>
 		</a>
 	</li>
+
+	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_EXTERNAL ? 'active' : $disabled); ?>">
+		<a href=<?php echo (! $disabled ? '"#' . PluginManagerController::TAB_FOR_EXTERNAL . '" role="tab" data-toggle="tab"' : '""'); ?>>
+			<?php echo __d('plugin_manager', 'External plugins'); ?>
+		</a>
+	</li>
 </ul>
 
 <br />

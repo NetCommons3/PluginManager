@@ -1,0 +1,167 @@
+<?php
+/**
+ * Page Behavior
+ *
+ * @property Room $Room
+ * @property Page $ParentPage
+ * @property Box $Box
+ * @property Page $ChildPage
+ * @property Box $Box
+ * @property Container $Container
+ * @property Language $Language
+ *
+ * @copyright Copyright 2014, NetCommons Project
+ * @author Kohei Teraguchi <kteraguchi@commonsnet.org>
+ * @link http://www.netcommons.org NetCommons Project
+ * @license http://www.netcommons.org/license.txt NetCommons License
+ */
+
+App::uses('ModelBehavior', 'Model');
+
+/**
+ * Page Behavior
+ *
+ * @author Kohei Teraguchi <kteraguchi@commonsnet.org>
+ * @package NetCommons\Pages\Model
+ */
+class PluginBehavior extends ModelBehavior {
+
+/**
+ * use model
+ *
+ * @var array
+ */
+	public $model;
+
+/**
+ * Install plugin data.
+ *
+ * @param Model $model Model using this behavior
+ * @param array $data Plugin data
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	public function installPlugin(Model $model, $data) {
+		$model->loadModels([
+			'Plugin' => 'PluginManager.Plugin',
+			'PluginsRole' => 'PluginManager.PluginsRole',
+			'PluginsRoom' => 'PluginManager.PluginsRoom',
+			'Language' => 'M17n.Language',
+		]);
+
+		//トランザクションBegin
+		$model->setDataSource('master');
+		$dataSource = $model->getDataSource();
+		$dataSource->begin();
+
+		//言語データ取得
+		$languages = $model->Language->find('list', array(
+			'fields' => array('Language.code', 'Language.id')
+		));
+
+		try {
+			//Pluginテーブルの登録
+			$currentLang = Configure::read('Config.language');
+
+			foreach (Configure::read('Config.languageEnabled') as $lang) {
+				$conditions = array(
+					'Plugin.language_id' => $languages[$lang],
+					'Plugin.key' => $data['Plugin']['key'],
+				);
+
+				if (! $plugin = $model->find('first', array(
+					'recursive' => -1,
+					'conditions' => $conditions,
+				))) {
+					$plugin = $model->create(array('id' => null));
+					if (! isset($data['Plugin']['type'])) {
+						$data['Plugin']['type'] = self::PLUGIN_TYPE_CORE;
+					}
+					if (! isset($data['Plugin']['weight'])) {
+						$data['Plugin']['weight'] = $model->getMaxWeight($data['Plugin']['type']) + 1;
+					}
+				}
+
+				Configure::write('Config.language', $lang);
+
+				$plugin['Plugin'] = Hash::merge($plugin['Plugin'], $data['Plugin'], array(
+					'language_id' => $languages[$lang],
+					'name' => __d($data['Plugin']['key'], $data['Plugin']['name'])
+				));
+
+				$model->save($plugin, false);
+			}
+
+			Configure::write('Config.language', $currentLang);
+
+			//PluginsRoleテーブルの登録
+			if (isset($data['PluginsRole'])) {
+				$model->PluginsRole->savePluginRoles($data);
+			}
+
+			//PluginsRoomテーブルの登録
+			if (isset($data['PluginsRoom'])) {
+				$model->PluginsRoom->savePluginRooms($data);
+			}
+
+			//トランザクションCommit
+			$dataSource->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$dataSource->rollback();
+			CakeLog::error($ex);
+			throw $ex;
+		}
+
+		return true;
+	}
+
+/**
+ * Delete plugin
+ *
+ * @param Model $model Model using this behavior
+ * @param array $data Plugin data
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	public function uninstallPlugin(Model $model, $data) {
+		$model->loadModels([
+			'Plugin' => 'PluginManager.Plugin',
+			'PluginsRole' => 'PluginManager.PluginsRole',
+			'PluginsRoom' => 'PluginManager.PluginsRoom',
+		]);
+
+		//トランザクションBegin
+		$model->setDataSource('master');
+		$dataSource = $model->getDataSource();
+		$dataSource->begin();
+
+		try {
+			//Pluginの削除
+			if (! $model->deleteAll(array($model->alias . '.key' => $data[$model->alias]['key']), false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			//PluginsRoomの削除
+			if (! $model->PluginsRoom->deleteAll(array($model->PluginsRoom->alias . '.plugin_key' => $data[$model->alias]['key']), false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			//PluginsRoleの削除
+			if (! $model->PluginsRole->deleteAll(array($model->PluginsRole->alias . '.plugin_key' => $data[$model->alias]['key']), false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			//トランザクションCommit
+			$dataSource->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$dataSource->rollback();
+			CakeLog::error($ex);
+			throw $ex;
+		}
+
+		return true;
+	}
+
+}

@@ -35,6 +35,11 @@ class PluginManagerController extends PluginManagerAppController {
 	const TAB_FOR_CONTROL_PANEL = 'system_plugins';
 
 /**
+ * constant value for control panel
+ */
+	const TAB_FOR_EXTERNAL = 'external_plugins';
+
+/**
  * Called before the controller action. You can use this method to configure and customize components
  * or perform logic that needs to happen before each controller action.
  *
@@ -51,10 +56,19 @@ class PluginManagerController extends PluginManagerAppController {
 		} else {
 			$pluginType =  $Plugin::PLUGIN_TYPE_FOR_FRAME;
 		}
-		if ($pluginType === $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) {
-			$this->set('active', self::TAB_FOR_CONTROL_PANEL);
-		} else {
-			$this->set('active', self::TAB_FOR_FRAME);
+
+		switch ($pluginType) {
+			case $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
+				$this->set('active', self::TAB_FOR_CONTROL_PANEL);
+				break;
+			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
+				$this->set('active', self::TAB_FOR_CONTROL_PANEL);
+				break;
+			case $Plugin::PLUGIN_TYPE_FOR_EXTERNAL:
+				$this->set('active', self::TAB_FOR_EXTERNAL);
+				break;
+			default:
+				$this->set('active', self::TAB_FOR_FRAME);
 		}
 	}
 
@@ -101,7 +115,7 @@ class PluginManagerController extends PluginManagerAppController {
 			$this->set('plugin', $plugins[0]);
 		}
 
-		$this->set('pluginType', (int)$pluginType);
+		$this->set('pluginType', $pluginType);
 	}
 
 /**
@@ -110,6 +124,32 @@ class PluginManagerController extends PluginManagerAppController {
  * @return void
  */
 	public function add() {
+		//	if ($this->request->is('post')) {
+		//		$this->PluginManager->create();
+		//		if ($this->PluginManager->save($this->request->data)) {
+		//			$this->Session->setFlash(__('The plugin manager has been saved.'));
+		//			return $this->redirect(array('action' => 'index'));
+		//		} else {
+		//			$this->Session->setFlash(__('The plugin manager could not be saved. Please, try again.'));
+		//		}
+		//	}
+		//	$languages = $this->PluginManager->Language->find('list');
+		//	$trackableCreators = $this->PluginManager->TrackableCreator->find('list');
+		//	$trackableUpdaters = $this->PluginManager->TrackableUpdater->find('list');
+		//	$this->set(compact('languages', 'trackableCreators', 'trackableUpdaters'));
+	}
+
+/**
+ * update method
+ *
+ * @return void
+ */
+	public function update() {
+		if (! $this->request->isPost()) {
+			$this->throwBadRequest();
+			return;
+		}
+
 		//	if ($this->request->is('post')) {
 		//		$this->PluginManager->create();
 		//		if ($this->PluginManager->save($this->request->data)) {

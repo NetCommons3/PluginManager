@@ -1,6 +1,6 @@
 <?php
 /**
- * RssReaders view template
+ * PluginManager view template
  *
  * @author Noriko Arai <arai@nii.ac.jp>
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
@@ -21,9 +21,9 @@ echo $this->Html->css(
 
 <div class="nc-content-list">
 	<article>
-		<?php echo $this->element('PluginManager.title'); ?>
+		<?php echo $this->element('PluginManager/title'); ?>
 
-		<?php echo $this->element('PluginManager.tabs', array('disabled' => 'disabled')); ?>
+		<?php echo $this->element('PluginManager/tabs', array('disabled' => 'disabled')); ?>
 
 		<div class="panel panel-default" >
 			<div class="panel-body">
@@ -127,15 +127,8 @@ echo $this->Html->css(
 					</div>
 				<?php endif; ?>
 			</div>
-			<div class="panel-footer text-center">
-				<button type="button" class="btn btn-default btn-workflow"
-						onclick="location.href='<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . $pluginType . '/'); ?>'">
 
-					<span class="glyphicon glyphicon-remove"></span>
-					<?php echo __d('net_commons', 'Cancel'); ?>
-				</button>
-
-			</div>
+			<?php echo $this->element('PluginManager/btn_form'); ?>
 		</div>
 	</article>
 </div>

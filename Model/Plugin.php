@@ -26,24 +26,38 @@ class Plugin extends AppModel {
 	const PACKAGIST_URL = 'https://packagist.org/packages/';
 
 /**
- * constant value for not yet
+ * constant value for core plugins
  */
 	const PLUGIN_TYPE_CORE = '0';
 
 /**
- * constant value for frame
+ * constant value for frame plugins
  */
 	const PLUGIN_TYPE_FOR_FRAME = '1';
 
 /**
- * constant value for control panel
+ * constant value for control panel plugins
  */
 	const PLUGIN_TYPE_FOR_CONTROL_PANEL = '2';
 
 /**
- * constant value for not yet
+ * constant value for not yet plugins
  */
 	const PLUGIN_TYPE_FOR_NOT_YET = '3';
+
+/**
+ * constant value for external plugins
+ */
+	const PLUGIN_TYPE_FOR_EXTERNAL = '4';
+
+/**
+ * Behaviors
+ *
+ * @var array
+ */
+	public $actsAs = array(
+		'PluginManager.Plugin'
+	);
 
 /**
  * Validation rules
@@ -245,89 +259,6 @@ class Plugin extends AppModel {
 /**
  * Save plugin
  *
- * @param array $data Plugin data
- * @return bool True on success
- * @throws InternalErrorException
- */
-	public function savePlugin($data) {
-		$this->loadModels([
-			'Plugin' => 'PluginManager.Plugin',
-			'PluginsRole' => 'PluginManager.PluginsRole',
-			'PluginsRoom' => 'PluginManager.PluginsRoom',
-			'Language' => 'M17n.Language',
-		]);
-
-		//トランザクションBegin
-		$this->setDataSource('master');
-		$dataSource = $this->getDataSource();
-		$dataSource->begin();
-
-		//言語データ取得
-		$languages = $this->Language->find('list', array(
-			'fields' => array('Language.code', 'Language.id')
-		));
-
-		$currentLang = Configure::read('Config.language');
-
-		try {
-			//Pluginテーブルの登録
-			foreach (Configure::read('Config.languageEnabled') as $lang) {
-				$conditions = array(
-					'Plugin.language_id' => $languages[$lang],
-					'Plugin.key' => $data['Plugin']['key'],
-				);
-
-				if (! $plugin = $this->find('first', array(
-					'recursive' => -1,
-					'conditions' => $conditions,
-				))) {
-					$plugin = $this->create(array('id' => null));
-					if (! isset($data['Plugin']['type'])) {
-						$data['Plugin']['type'] = self::PLUGIN_TYPE_CORE;
-					}
-					if (! isset($data['Plugin']['weight'])) {
-						$data['Plugin']['weight'] = $this->getMaxWeight($data['Plugin']['type']) + 1;
-					}
-				}
-
-				Configure::write('Config.language', $lang);
-
-				$plugin['Plugin'] = Hash::merge($plugin['Plugin'], $data['Plugin'], array(
-					'language_id' => $languages[$lang],
-					'name' => __d($data['Plugin']['key'], $data['Plugin']['name'])
-				));
-
-				$this->save($plugin, false);
-			}
-
-			Configure::write('Config.language', $currentLang);
-
-			//PluginsRoleテーブルの登録
-			if (isset($data['PluginsRole'])) {
-				$this->PluginsRole->savePluginRoles($data);
-			}
-
-			//PluginsRoomテーブルの登録
-			if (isset($data['PluginsRoom'])) {
-				$this->PluginsRoom->savePluginRooms($data);
-			}
-
-			//トランザクションCommit
-			$dataSource->commit();
-
-		} catch (Exception $ex) {
-			//トランザクションRollback
-			$dataSource->rollback();
-			CakeLog::error($ex);
-			throw $ex;
-		}
-
-		return true;
-	}
-
-/**
- * Save plugin
- *
  * @param array $data Request data
  * @return bool True on success
  * @throws InternalErrorException
@@ -361,52 +292,6 @@ class Plugin extends AppModel {
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}
 				}
-			}
-
-			//トランザクションCommit
-			$dataSource->commit();
-
-		} catch (Exception $ex) {
-			//トランザクションRollback
-			$dataSource->rollback();
-			CakeLog::error($ex);
-			throw $ex;
-		}
-
-		return true;
-	}
-
-/**
- * Delete plugin
- *
- * @param array $data Plugin data
- * @return bool True on success
- * @throws InternalErrorException
- */
-	public function deletePlugin($data) {
-		$this->loadModels([
-			'Plugin' => 'PluginManager.Plugin',
-			'PluginsRole' => 'PluginManager.PluginsRole',
-			'PluginsRoom' => 'PluginManager.PluginsRoom',
-		]);
-
-		//トランザクションBegin
-		$this->setDataSource('master');
-		$dataSource = $this->getDataSource();
-		$dataSource->begin();
-
-		try {
-			//Pluginの削除
-			if (! $this->deleteAll(array($this->alias . '.key' => $data[$this->alias]['key']), false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			//PluginsRoomの削除
-			if (! $this->PluginsRoom->deleteAll(array($this->PluginsRoom->alias . '.plugin_key' => $data[$this->alias]['key']), false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			//PluginsRoleの削除
-			if (! $this->PluginsRole->deleteAll(array($this->PluginsRole->alias . '.plugin_key' => $data[$this->alias]['key']), false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
 			//トランザクションCommit
