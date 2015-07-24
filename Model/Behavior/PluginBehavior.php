@@ -1,37 +1,23 @@
 <?php
 /**
- * Page Behavior
+ * Plugin Behavior
  *
- * @property Room $Room
- * @property Page $ParentPage
- * @property Box $Box
- * @property Page $ChildPage
- * @property Box $Box
- * @property Container $Container
- * @property Language $Language
- *
- * @copyright Copyright 2014, NetCommons Project
- * @author Kohei Teraguchi <kteraguchi@commonsnet.org>
+ * @author Noriko Arai <arai@nii.ac.jp>
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @link http://www.netcommons.org NetCommons Project
  * @license http://www.netcommons.org/license.txt NetCommons License
+ * @copyright Copyright 2014, NetCommons Project
  */
 
 App::uses('ModelBehavior', 'Model');
 
 /**
- * Page Behavior
+ * Plugin Behavior
  *
- * @author Kohei Teraguchi <kteraguchi@commonsnet.org>
- * @package NetCommons\Pages\Model
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @package NetCommons\PluginManager\Model\Behavior
  */
 class PluginBehavior extends ModelBehavior {
-
-/**
- * use model
- *
- * @var array
- */
-	public $model;
 
 /**
  * Install plugin data.
@@ -118,7 +104,7 @@ class PluginBehavior extends ModelBehavior {
 	}
 
 /**
- * Delete plugin
+ * Uninstall plugin
  *
  * @param Model $model Model using this behavior
  * @param array $data Plugin data

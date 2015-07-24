@@ -144,25 +144,44 @@ class PluginManagerController extends PluginManagerAppController {
  *
  * @return void
  */
-	public function update() {
+	public function update($pluginType = null, $pluginKey = null) {
 		if (! $this->request->isPost()) {
 			$this->throwBadRequest();
 			return;
 		}
 
-		//	if ($this->request->is('post')) {
-		//		$this->PluginManager->create();
-		//		if ($this->PluginManager->save($this->request->data)) {
-		//			$this->Session->setFlash(__('The plugin manager has been saved.'));
-		//			return $this->redirect(array('action' => 'index'));
-		//		} else {
-		//			$this->Session->setFlash(__('The plugin manager could not be saved. Please, try again.'));
-		//		}
-		//	}
-		//	$languages = $this->PluginManager->Language->find('list');
-		//	$trackableCreators = $this->PluginManager->TrackableCreator->find('list');
-		//	$trackableUpdaters = $this->PluginManager->TrackableUpdater->find('list');
-		//	$this->set(compact('languages', 'trackableCreators', 'trackableUpdaters'));
+		$plugins = $this->Plugin->getPlugins($pluginType, Configure::read('Config.languageId'), $pluginKey);
+		if (! $plugins) {
+			$this->throwBadRequest();
+			return;
+		}
+
+		if (! $this->Plugin->Composer->updateComposer($plugins[0]['composer']['name'])) {
+			$this->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'composer'), array(
+				'class' => 'danger',
+				'interval' => self::ALERT_VALIDATE_ERROR_INTERVAL
+			));
+			return;
+		}
+
+		if (! $this->Plugin->Migration->runMigration($plugins[0]['Plugin']['key'])) {
+			$this->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'migration'), array(
+				'class' => 'danger',
+				'interval' => self::ALERT_VALIDATE_ERROR_INTERVAL
+			));
+			return;
+		}
+
+		if (! $this->Plugin->Bower->updateBower($plugins[0]['Plugin']['key'])) {
+			$this->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'bower'), array(
+				'class' => 'danger',
+				'interval' => self::ALERT_VALIDATE_ERROR_INTERVAL
+			));
+			return;
+		}
+
+		$this->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
+		$this->redirect('/plugin_manager/plugin_manager/view/' . $pluginType . '/' . $pluginKey);
 	}
 
 /**
