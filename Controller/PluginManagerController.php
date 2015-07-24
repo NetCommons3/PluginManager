@@ -138,6 +138,9 @@ class PluginManagerController extends PluginManagerAppController {
 			$this->set('plugin', $plugins[0]);
 		}
 
+		$nc3plugin = $this->Plugin->getComposer('netcommons/net-commons');
+		$this->set('nc3plugin', $nc3plugin);
+
 		$this->set('pluginType', $pluginType);
 	}
 
