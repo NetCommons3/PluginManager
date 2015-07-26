@@ -12,14 +12,6 @@
  */
 ?>
 
-<h3 class="text-right">
-	<?php echo __d('plugin_manager', 'NetCommons3: '); ?>
-	<a href="<?php echo h($nc3plugin['source']['url']); ?>" target="_blank">
-		<?php echo h($nc3plugin['version']); ?>
-		<small><span class="text-muted">(<?php echo h(substr($nc3plugin['source']['reference'], 0, 10)); ?>)</span></small>
-	</a>
-</h3>
-
 <ul class="nav nav-tabs" role="tablist">
 	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_FRAME ? 'active' : ''); ?>">
 		<a href="<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . Plugin::PLUGIN_TYPE_FOR_FRAME . '/'); ?>">
@@ -46,4 +38,10 @@
 	</li>
 </ul>
 
-<br />
+<h3 class="text-right">
+	<?php echo __d('plugin_manager', 'NetCommons3: '); ?>
+	<a href="<?php echo h($nc3plugin['source']['url']); ?>" target="_blank">
+		<?php echo h($nc3plugin['version']); ?>
+		<small><span class="text-muted">(<?php echo h(substr($nc3plugin['source']['reference'], 0, 10)); ?>)</span></small>
+	</a>
+</h3>

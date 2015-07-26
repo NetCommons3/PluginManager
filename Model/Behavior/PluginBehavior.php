@@ -156,7 +156,7 @@ class PluginBehavior extends ModelBehavior {
  *
  * @param Model $model Model using this behavior
  * @param array $pluginKey Plugin key
- * @return mixed array|null array is plugins data on success. null on empty
+ * @return array Plugins data
  * @throws InternalErrorException
  */
 	public function getExternalPlugins(Model $model, $pluginKey = null) {
@@ -174,7 +174,11 @@ class PluginBehavior extends ModelBehavior {
 
 					$plugins[$index]['Plugin']['key'] = Security::hash($package['name'], 'md5');
 					$plugins[$index]['Plugin']['namespace'] = $package['name'];
-					$plugins[$index]['Plugin']['name'] = $package['name'];
+					if (isset($package['extra']['installer-name'])) {
+						$plugins[$index]['Plugin']['name'] = $package['extra']['installer-name'];
+					} else {
+						$plugins[$index]['Plugin']['name'] = $package['name'];
+					}
 
 					$plugins[$index]['composer'] = $package;
 					$index++;
@@ -188,13 +192,12 @@ class PluginBehavior extends ModelBehavior {
 			return $plugins;
 		}
 
-		$ret[0]['Plugin'] = Hash::extract($plugins, '{n}.Plugin[key=' . $pluginKey . ']')[0];
-		$ret[0]['composer'] = Hash::extract($plugins, '{n}.composer[name=' . $ret[0]['Plugin']['namespace'] . ']')[0];
-		if ($ret) {
-			return $ret;
-		}
+		$plugin = Hash::extract($plugins, '{n}.Plugin[key=' . $pluginKey . ']');
+		$ret[0]['Plugin'] = $plugin[0];
+		$composer = Hash::extract($plugins, '{n}.composer[name=' . $ret[0]['Plugin']['namespace'] . ']');
+		$ret[0]['composer'] = $composer[0];
 
-		return null;
+		return $ret;
 	}
 
 }
