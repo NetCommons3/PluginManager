@@ -21,7 +21,7 @@ echo $this->Html->script(
 
 <?php echo $this->element('PluginManager/tabs'); ?>
 
-<div ng-controller="PluginManager" class="nc-content-list"
+<div ng-controller="PluginManager"
 	 ng-init="initialize(<?php echo h(json_encode(array(
 			'plugins' => PluginManagerController::camelizeKeyRecursive($plugins),
 			'pluginsMap' => $pluginsMap
