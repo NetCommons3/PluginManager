@@ -38,10 +38,4 @@
 	</li>
 </ul>
 
-<h3 class="text-right">
-	<?php echo __d('plugin_manager', 'NetCommons3: '); ?>
-	<a href="<?php echo h($nc3plugin['source']['url']); ?>" target="_blank">
-		<?php echo h($nc3plugin['version']); ?>
-		<small><span class="text-muted">(<?php echo h(substr($nc3plugin['source']['reference'], 0, 10)); ?>)</span></small>
-	</a>
-</h3>
+<br>

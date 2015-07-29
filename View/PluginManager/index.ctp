@@ -17,7 +17,7 @@ echo $this->Html->script(
 );
 ?>
 
-<?php $this->assign('title', __d('plugin_manager', 'Plugin Manager')); ?>
+<?php echo $this->element('PluginManager/title'); ?>
 
 <?php echo $this->element('PluginManager/tabs'); ?>
 
