@@ -62,7 +62,7 @@ msgid "System plugins"
 msgstr ""
 
 #: PluginManager/View/Elements/PluginManager/tabs.ctp:44
-msgid "External plugins"
+msgid "External libraries"
 msgstr ""
 
 #: PluginManager/Config/Migration/9999999999_plugin_records.ctp

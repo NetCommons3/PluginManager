@@ -33,7 +33,7 @@
 
 	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_EXTERNAL ? 'active' : ''); ?>">
 		<a href="<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . Plugin::PLUGIN_TYPE_FOR_EXTERNAL . '/'); ?>">
-			<?php echo __d('plugin_manager', 'External plugins'); ?>
+			<?php echo __d('plugin_manager', 'External libraries'); ?>
 		</a>
 	</li>
 </ul>

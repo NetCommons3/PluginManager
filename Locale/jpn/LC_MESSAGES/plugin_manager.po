@@ -64,8 +64,8 @@ msgid "System plugins"
 msgstr "管理系プラグイン"
 
 #: PluginManager/View/Elements/PluginManager/tabs.ctp:44
-msgid "External plugins"
-msgstr "外部プラグイン"
+msgid "External libraries"
+msgstr "外部ライブラリ"
 
 #: PluginManager/Config/Migration/9999999999_plugin_records.ctp
 #: PluginManager/View/Elements/PluginManager/title.ctp:14
