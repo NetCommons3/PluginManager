@@ -41,13 +41,28 @@ class PluginRecords extends NetCommonsMigration {
  */
 	public $records = array(
 		'Plugin' => array(
-			'key' => 'plugin_manager',
-			'namespace' => 'netcommons/plugin-manager',
-			'name' => 'Plugin Manager',
-			'type' => 2,
-			'default_action' => 'plugin_manager/index',
-			'default_setting_action' => '',
-			'weight' => 5,
+			//日本語
+			array(
+				'language_id' => '1',
+				'key' => 'plugin_manager',
+				'namespace' => 'netcommons/plugin-manager',
+				'name' => 'プラグイン管理',
+				'type' => 2,
+				'default_action' => 'plugin_manager/index',
+				'default_setting_action' => '',
+				'weight' => 5,
+			),
+			//英語
+			array(
+				'language_id' => '1',
+				'key' => 'plugin_manager',
+				'namespace' => 'netcommons/plugin-manager',
+				'name' => 'Plugin Manager',
+				'type' => 2,
+				'default_action' => 'plugin_manager/index',
+				'default_setting_action' => '',
+				'weight' => 5,
+			),
 		),
 		'PluginsRole' => array(
 			array(
@@ -78,9 +93,14 @@ class PluginRecords extends NetCommonsMigration {
 		]);
 
 		if ($direction === 'down') {
-			$this->Plugin->uninstallPlugin($this->records);
-		} else {
-			$this->Plugin->installPlugin($this->records);
+			$this->Plugin->uninstallPlugin($this->records['Plugin'][0]['key']);
+			return true;
+		}
+
+		foreach ($this->records as $model => $records) {
+			if (!$this->updateRecords($model, $records)) {
+				return false;
+			}
 		}
 		return true;
 	}

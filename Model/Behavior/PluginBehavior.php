@@ -124,17 +124,23 @@ class PluginBehavior extends ModelBehavior {
 		$dataSource = $model->getDataSource();
 		$dataSource->begin();
 
+		if (is_string($data)) {
+			$key = $data;
+		} else {
+			$key = $data[$model->alias]['key'];
+		}
+
 		try {
 			//Pluginの削除
-			if (! $model->deleteAll(array($model->alias . '.key' => $data[$model->alias]['key']), false)) {
+			if (! $model->deleteAll(array($model->alias . '.key' => $key), false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			//PluginsRoomの削除
-			if (! $model->PluginsRoom->deleteAll(array($model->PluginsRoom->alias . '.plugin_key' => $data[$model->alias]['key']), false)) {
+			if (! $model->PluginsRoom->deleteAll(array($model->PluginsRoom->alias . '.plugin_key' => $key), false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			//PluginsRoleの削除
-			if (! $model->PluginsRole->deleteAll(array($model->PluginsRole->alias . '.plugin_key' => $data[$model->alias]['key']), false)) {
+			if (! $model->PluginsRole->deleteAll(array($model->PluginsRole->alias . '.plugin_key' => $key), false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
