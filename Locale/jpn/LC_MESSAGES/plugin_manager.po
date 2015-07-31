@@ -67,11 +67,6 @@ msgstr "管理系プラグイン"
 msgid "External libraries"
 msgstr "外部ライブラリ"
 
-#: PluginManager/Config/Migration/9999999999_plugin_records.ctp
-#: PluginManager/View/Elements/PluginManager/title.ctp:14
-msgid "Plugin Manager"
-msgstr "プラグイン管理"
-
 #: PluginManager/View/PluginManager/view.ctp:65
 msgid "Source"
 msgstr "ソース"
