@@ -43,7 +43,7 @@ class PluginRecords extends NetCommonsMigration {
 		'Plugin' => array(
 			//日本語
 			array(
-				'language_id' => '1',
+				'language_id' => '2',
 				'key' => 'plugin_manager',
 				'namespace' => 'netcommons/plugin-manager',
 				'name' => 'プラグイン管理',
