@@ -10,7 +10,6 @@
  */
 ?>
 
-<?php $this->assign('title', __d('plugin_manager', 'Plugin Manager')); ?>
 <?php $this->start('subtitle'); ?>
 <div class="pull-right">
 	<?php echo __d('plugin_manager', 'NetCommons3: '); ?>
