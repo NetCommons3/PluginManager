@@ -112,4 +112,23 @@ e.g.) packagist', 'charset' => 'utf8'),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 
+/**
+ * plugins_spaces table
+ *
+ * @var array
+ */
+	public $plugins_spaces = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
+		'space_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false),
+		'plugin_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
+		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1),
+		),
+		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'),
+	);
+
 }
