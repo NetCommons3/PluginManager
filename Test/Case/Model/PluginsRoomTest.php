@@ -14,7 +14,8 @@ App::uses('PluginsRoom', 'PluginManager.Model');
 /**
  * PluginsRoom Test Case
  *
- * @package NetCommons\Rooms\Test\Case\Model
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @package NetCommons\PluginManager\Test\Case\Model
  */
 class PluginsRoomTest extends CakeTestCase {
 

@@ -15,7 +15,7 @@ App::uses('AppModel', 'Model');
  * PluginsRoom Model
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
- * @package NetCommons\Rooms\Model
+ * @package NetCommons\PluginManager\Model
  */
 class PluginsRoom extends AppModel {
 

@@ -19,7 +19,7 @@ App::uses('AppModel', 'Model');
  * PluginsRole Model
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
- * @package NetCommons\Roles\Model
+ * @package NetCommons\PluginManager\Model
  */
 class PluginsRole extends AppModel {
 
