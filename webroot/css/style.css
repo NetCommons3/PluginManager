@@ -20,3 +20,8 @@ ul.plugin-manager-autors-ul > li {
 .plugin-manager-description {
 	margin-bottom: 25px;
 }
+
+.plugin-checkbox-separator {
+	width: 15em;
+	margin: 5px 10px;
+}
