@@ -13,7 +13,11 @@ echo $this->Html->script(
 	array(
 		'/plugin_manager/js/plugin_manager.js'
 	),
-	array('plugin' => false)
+	array(
+		'plugin' => false,
+		'once' => true,
+		'inline' => false
+	)
 );
 ?>
 

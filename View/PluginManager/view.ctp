@@ -13,7 +13,11 @@ echo $this->Html->css(
 	array(
 		'/plugin_manager/css/style.css'
 	),
-	array('plugin' => false)
+	array(
+		'plugin' => false,
+		'once' => true,
+		'inline' => false
+	)
 );
 ?>
 
