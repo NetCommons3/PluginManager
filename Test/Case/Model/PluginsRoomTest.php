@@ -25,11 +25,11 @@ class PluginsRoomTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'plugin.m17n.language',
+		//'plugin.m17n.language',
 		'plugin.plugin_manager.plugin',
 		'plugin.plugin_manager.plugins_room',
-		'plugin.rooms.room',
-		'plugin.users.user',
+		//'plugin.rooms.room',
+		//'plugin.users.user',
 	);
 
 /**
