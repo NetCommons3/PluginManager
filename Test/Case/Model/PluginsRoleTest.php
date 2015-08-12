@@ -10,6 +10,7 @@
  */
 
 App::uses('PluginsRole', 'PluginManager.Model');
+App::uses('YACakeTestCase', 'NetCommons.TestSuite');
 
 /**
  * PluginsRole Test Case
@@ -17,7 +18,7 @@ App::uses('PluginsRole', 'PluginManager.Model');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\PluginManager\Test\Case\Model
  */
-class PluginsRoleTest extends CakeTestCase {
+class PluginsRoleTest extends YACakeTestCase {
 
 /**
  * Fixtures

@@ -10,6 +10,7 @@
  */
 
 App::uses('PluginsRoom', 'PluginManager.Model');
+App::uses('YACakeTestCase', 'NetCommons.TestSuite');
 
 /**
  * PluginsRoom Test Case
@@ -17,7 +18,7 @@ App::uses('PluginsRoom', 'PluginManager.Model');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\PluginManager\Test\Case\Model
  */
-class PluginsRoomTest extends CakeTestCase {
+class PluginsRoomTest extends YACakeTestCase {
 
 /**
  * Fixtures
