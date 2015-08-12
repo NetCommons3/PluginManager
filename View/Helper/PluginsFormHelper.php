@@ -84,7 +84,7 @@ class PluginsFormHelper extends FormHelper {
 		//チェックボックスの設定
 		$options = Hash::combine($plugins, '{n}.Plugin.key', '{n}.Plugin.name');
 		$this->_View->request->data['Plugin']['key'] = array_keys($options);
-		foreach ($this->_View->request->data['Plugin']['key'] as $index => $key) {
+		foreach (array_keys($this->_View->request->data['Plugin']['key']) as $index) {
 			$html .= $this->Form->hidden('Plugin.' . $index . '.key');
 		}
 
