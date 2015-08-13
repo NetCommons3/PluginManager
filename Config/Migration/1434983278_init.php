@@ -83,7 +83,7 @@ e.g.) packagist', 'charset' => 'utf8'),
 		),
 		'down' => array(
 			'drop_table' => array(
-				'plugins', 'plugins_roles', 'plugins_rooms, plugins_spaces'
+				'plugins', 'plugins_roles', 'plugins_rooms'
 			),
 		),
 	);
