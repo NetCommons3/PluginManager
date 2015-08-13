@@ -15,14 +15,9 @@ App::uses('AppModel', 'Model');
  * PluginsRoom Model
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
- * @package NetCommons\Rooms\Model
+ * @package NetCommons\PluginManager\Model
  */
 class PluginsRoom extends AppModel {
-
-/**
- * constant value for frame
- */
-	const PLUGIN_TYPE_FOR_FRAME = '1';
 
 /**
  * belongsTo associations
@@ -64,9 +59,10 @@ class PluginsRoom extends AppModel {
 		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = $langId;
 
 		//pluginsテーブルの取得
+		$Plugin = $this->Plugin;
 		$plugins = $this->find('all', array(
 			'conditions' => array(
-				'Plugin.type' => self::PLUGIN_TYPE_FOR_FRAME,
+				'Plugin.type' => $Plugin::PLUGIN_TYPE_FOR_FRAME,
 				/* 'Plugin.language_id' => $langId, */
 				'Room.id' => $roomId
 			),
@@ -75,4 +71,39 @@ class PluginsRoom extends AppModel {
 
 		return $plugins;
 	}
+
+/**
+ * Save plugin rooms
+ * Here does not transaction. Please do the transaction and validation in the caller.
+ *
+ * @param array $data Plugin rooms data
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	public function savePluginRooms($data) {
+		//PluginsRoleテーブルの登録
+		foreach ($data['PluginsRoom'] as $pluginsRoom) {
+			$conditions = array(
+				'room_id' => $pluginsRoom['room_id'],
+				'plugin_key' => $data['Plugin']['key'],
+			);
+
+			$count = $this->find('count', array(
+				'recursive' => -1,
+				'conditions' => $conditions,
+			));
+			if ($count > 0) {
+				continue;
+			}
+
+			$pluginsRoom = Hash::merge($pluginsRoom, $conditions);
+			$this->create();
+			if (! $this->save($pluginsRoom, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+		}
+
+		return true;
+	}
+
 }

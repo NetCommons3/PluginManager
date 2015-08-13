@@ -10,6 +10,7 @@
  */
 
 App::uses('PluginsRole', 'PluginManager.Model');
+App::uses('YACakeTestCase', 'NetCommons.TestSuite');
 
 /**
  * PluginsRole Test Case
@@ -17,7 +18,7 @@ App::uses('PluginsRole', 'PluginManager.Model');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\PluginManager\Test\Case\Model
  */
-class PluginsRoleTest extends CakeTestCase {
+class PluginsRoleTest extends YACakeTestCase {
 
 /**
  * Fixtures
@@ -25,11 +26,8 @@ class PluginsRoleTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'plugin.m17n.language',
 		'plugin.plugin_manager.plugin',
 		'plugin.plugin_manager.plugins_role',
-		'plugin.roles.role',
-		'plugin.users.user',
 	);
 
 /**
@@ -40,6 +38,7 @@ class PluginsRoleTest extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 		$this->PluginsRole = ClassRegistry::init('PluginManager.PluginsRole');
+		$this->Plugin = ClassRegistry::init('PluginManager.Plugin');
 	}
 
 /**
@@ -60,7 +59,7 @@ class PluginsRoleTest extends CakeTestCase {
 	public function testGetPlugins() {
 		$roleKey = 'system_administrator';
 		$langId = 2;
-		$type = PluginsRole::PLUGIN_TYPE_FOR_CONTROL_PANEL;
+		$type = Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL;
 		$plugins = $this->PluginsRole->getPlugins($type, $roleKey, $langId);
 		$this->assertCount(1, $plugins);
 
@@ -79,7 +78,7 @@ class PluginsRoleTest extends CakeTestCase {
 	public function testGetPluginsError() {
 		$roleId = 0;
 		$langId = 0;
-		$type = PluginsRole::PLUGIN_TYPE_FOR_CONTROL_PANEL;
+		$type = Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL;
 		$plugins = $this->PluginsRole->getPlugins($type, $roleId, $langId);
 
 		$this->assertFalse($plugins);

@@ -10,13 +10,15 @@
  */
 
 App::uses('PluginsRoom', 'PluginManager.Model');
+App::uses('YACakeTestCase', 'NetCommons.TestSuite');
 
 /**
  * PluginsRoom Test Case
  *
- * @package NetCommons\Rooms\Test\Case\Model
+ * @author Shohei Nakajima <nakajimashouhei@gmail.com>
+ * @package NetCommons\PluginManager\Test\Case\Model
  */
-class PluginsRoomTest extends CakeTestCase {
+class PluginsRoomTest extends YACakeTestCase {
 
 /**
  * Fixtures
@@ -24,11 +26,8 @@ class PluginsRoomTest extends CakeTestCase {
  * @var array
  */
 	public $fixtures = array(
-		'plugin.m17n.language',
 		'plugin.plugin_manager.plugin',
 		'plugin.plugin_manager.plugins_room',
-		'plugin.rooms.room',
-		'plugin.users.user',
 	);
 
 /**

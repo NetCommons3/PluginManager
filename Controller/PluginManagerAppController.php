@@ -18,4 +18,23 @@ App::uses('AppController', 'Controller');
  */
 class PluginManagerAppController extends AppController {
 
+/**
+ * use model
+ *
+ * @var array
+ */
+	public $uses = array(
+		'PluginManager.Plugin'
+	);
+
+/**
+ * use component
+ *
+ * @var array
+ */
+	public $components = array(
+		'ControlPanel.ControlPanelLayout',
+		'Security',
+	);
+
 }
