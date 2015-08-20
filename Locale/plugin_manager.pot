@@ -45,28 +45,24 @@ msgstr ""
 msgid "Version"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/tabs.ctp:16
-msgid "NetCommons3: "
-msgstr ""
-
-#: PluginManager/View/Elements/PluginManager/tabs.ctp:26
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:18
 msgid "Installed plugins"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/tabs.ctp:32
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:24
 msgid "Plugins not yet installed"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/tabs.ctp:38
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:30
 msgid "System plugins"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/tabs.ctp:44
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:36
 msgid "External libraries"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/title.ctp:14
-msgid "Plugin Manager"
+#: PluginManager/View/Elements/PluginManager/title.ctp:15
+msgid "NetCommons3: "
 msgstr ""
 
 #: PluginManager/View/PluginManager/view.ctp:65
