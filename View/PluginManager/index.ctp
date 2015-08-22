@@ -40,7 +40,7 @@ echo $this->Html->script(
 
 		<?php if ($active === PluginManagerController::TAB_FOR_NOT_YET) : ?>
 			<div class="tab-pane active">
-				not_yet_installed
+				
 			</div>
 		<?php endif; ?>
 
