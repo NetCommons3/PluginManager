@@ -185,7 +185,7 @@ class PluginManagerController extends PluginManagerAppController {
 
 		if (! $this->Plugin->updateComposer($plugins[0]['composer']['name'])) {
 			$this->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'composer'), array(
-				'type' => 'danger',
+				'class' => 'danger',
 				'interval' => self::ALERT_VALIDATE_ERROR_INTERVAL
 			));
 			return;
@@ -193,7 +193,7 @@ class PluginManagerController extends PluginManagerAppController {
 
 		if (! $this->Plugin->runMigration($plugins[0]['Plugin']['key'])) {
 			$this->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'migration'), array(
-				'type' => 'danger',
+				'class' => 'danger',
 				'interval' => self::ALERT_VALIDATE_ERROR_INTERVAL
 			));
 			return;
@@ -207,7 +207,7 @@ class PluginManagerController extends PluginManagerAppController {
 			return;
 		}
 
-		$this->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('type' => 'success'));
+		$this->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
 		$this->redirect('/plugin_manager/plugin_manager/view/' . $pluginType . '/' . $this->data['Plugin']['key']);
 	}
 
@@ -231,7 +231,7 @@ class PluginManagerController extends PluginManagerAppController {
 			return;
 		}
 
-		$this->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('type' => 'success'));
+		$this->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
 		$this->redirect('/plugin_manager/plugin_manager/index/' . $pluginType . '/');
 	}
 
