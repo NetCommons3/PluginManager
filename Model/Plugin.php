@@ -137,40 +137,42 @@ class Plugin extends AppModel {
 	);
 
 /**
+ * 後で削除
  * get plugins for select box options
  *
  * @param array $options find options
  * @return array select box options
  */
-	public function getForOptions($options) {
-		$options = Hash::merge(['recursive' => -1], $options);
-
-		$plugins = $this->find('all', $options);
-		$map = [];
-		foreach ($plugins as $plugin) {
-			$map[$plugin[$this->alias]['key']] = $plugin[$this->alias]['name'];
-		}
-
-		return $map;
-	}
+	//public function getForOptions($options) {
+	//	$options = Hash::merge(['recursive' => -1], $options);
+	//
+	//	$plugins = $this->find('all', $options);
+	//	$map = [];
+	//	foreach ($plugins as $plugin) {
+	//		$map[$plugin[$this->alias]['key']] = $plugin[$this->alias]['name'];
+	//	}
+	//
+	//	return $map;
+	//}
 
 /**
+ * 後で削除
  * get plugins for select box options
  *
  * @param array $options find options
  * @return array select box options
  */
-	public function getKeyIndexedHash($options) {
-		$options = Hash::merge(['recursive' => -1], $options);
-
-		$plugins = $this->find('all', $options);
-		$map = [];
-		foreach ($plugins as $plugin) {
-			$map[$plugin[$this->alias]['key']] = $plugin;
-		}
-
-		return $map;
-	}
+	//public function getKeyIndexedHash($options) {
+	//	$options = Hash::merge(['recursive' => -1], $options);
+	//
+	//	$plugins = $this->find('all', $options);
+	//	$map = [];
+	//	foreach ($plugins as $plugin) {
+	//		$map[$plugin[$this->alias]['key']] = $plugin;
+	//	}
+	//
+	//	return $map;
+	//}
 
 /**
  * getMaxWeight
