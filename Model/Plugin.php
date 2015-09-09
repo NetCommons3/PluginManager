@@ -78,8 +78,8 @@ class Plugin extends AppModel {
 			),
 		),
 		'key' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -88,8 +88,8 @@ class Plugin extends AppModel {
 			),
 		),
 		'name' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -98,8 +98,8 @@ class Plugin extends AppModel {
 			),
 		),
 		'namespace' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
@@ -108,8 +108,8 @@ class Plugin extends AppModel {
 			),
 		),
 		//'default_action' => array(
-		//	'notEmpty' => array(
-		//		'rule' => array('notEmpty'),
+		//	'notBlank' => array(
+		//		'rule' => array('notBlank'),
 		//		//'message' => 'Your custom message here',
 		//		//'allowEmpty' => false,
 		//		//'required' => false,
