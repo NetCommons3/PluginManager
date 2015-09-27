@@ -130,7 +130,7 @@ e.g.) packagist', 'charset' => 'utf8'),
  * @return void
  */
 	public function init() {
-		if (class_exists('NetCommonsCakeTestCase')) {
+		if (class_exists('NetCommonsCakeTestCase') && NetCommonsCakeTestCase::$plugin) {
 			$records = array_keys($this->records);
 			foreach ($records as $i) {
 				if ($this->records[$i]['key'] !== 'test_plugin') {
