@@ -130,13 +130,13 @@ e.g.) packagist', 'charset' => 'utf8'),
  * @return void
  */
 	public function init() {
-		if (class_exists('NetCommonsCakeTestCase') && NetCommonsCakeTestCase::$plugin) {
+		if (class_exists('NetCommonsTestSuite') && NetCommonsTestSuite::$plugin) {
 			$records = array_keys($this->records);
 			foreach ($records as $i) {
 				if ($this->records[$i]['key'] !== 'test_plugin') {
 					continue;
 				}
-				$this->records[$i]['key'] = NetCommonsCakeTestCase::$plugin;
+				$this->records[$i]['key'] = NetCommonsTestSuite::$plugin;
 			}
 		}
 		parent::init();
