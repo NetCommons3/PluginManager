@@ -88,7 +88,7 @@ class PluginsRoomTest extends YACakeTestCase {
 			$langId = $check['langId'];
 			$plugins = $this->PluginsRoom->getPlugins($roomId, $langId);
 
-			$this->assertFalse($plugins, print_r($check, true));
+			$this->assertFalse($plugins);
 		}
 	}
 
@@ -108,7 +108,7 @@ class PluginsRoomTest extends YACakeTestCase {
 			$langId = $check['langId'];
 			$plugins = $this->PluginsRoom->getPlugins($roomId, $langId);
 
-			$this->assertFalse(isset($plugins['Plugin']), print_r($check, true));
+			$this->assertFalse(isset($plugins['Plugin']));
 		}
 	}
 
