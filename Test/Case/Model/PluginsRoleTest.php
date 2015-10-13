@@ -10,7 +10,7 @@
  */
 
 App::uses('PluginsRole', 'PluginManager.Model');
-App::uses('YACakeTestCase', 'NetCommons.TestSuite');
+App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
 
 /**
  * PluginsRole Test Case
@@ -18,7 +18,7 @@ App::uses('YACakeTestCase', 'NetCommons.TestSuite');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\PluginManager\Test\Case\Model
  */
-class PluginsRoleTest extends YACakeTestCase {
+class PluginsRoleTest extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
@@ -58,13 +58,12 @@ class PluginsRoleTest extends YACakeTestCase {
  */
 	public function testGetPlugins() {
 		$roleKey = 'system_administrator';
-		$langId = 2;
 		$type = Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL;
-		$plugins = $this->PluginsRole->getPlugins($type, $roleKey, $langId);
+		$plugins = $this->PluginsRole->getPlugins($type, $roleKey);
 		$this->assertCount(1, $plugins);
 
 		$expected = array(
-			'PluginsRole', 'Role', 'Plugin', 'TrackableCreator', 'TrackableUpdater'
+			'PluginsRole', 'Role', 'Plugin'
 		);
 		$result = array_keys($plugins[0]);
 		$this->assertEquals($expected, $result);
@@ -77,41 +76,8 @@ class PluginsRoleTest extends YACakeTestCase {
  */
 	public function testGetPluginsError() {
 		$roleId = 0;
-		$langId = 0;
 		$type = Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL;
-		$plugins = $this->PluginsRole->getPlugins($type, $roleId, $langId);
-
-		$this->assertFalse($plugins);
-	}
-
-/**
- * testGetPluginByFolder
- *
- * @return void
- */
-	public function testGetPluginByKey() {
-		$roleId = 1;
-		$langId = 2;
-		$key = 'roles';
-		$plugins = $this->PluginsRole->getPluginByKey($key, $roleId, $langId);
-
-		$expected = array(
-			'PluginsRole', 'Role', 'Plugin', 'TrackableCreator', 'TrackableUpdater'
-		);
-		$result = array_keys($plugins);
-		$this->assertEquals($expected, $result);
-	}
-
-/**
- * testGetPluginByFolderError
- *
- * @return void
- */
-	public function testGetPluginByKeyError() {
-		$roleId = 0;
-		$langId = 0;
-		$key = 'roles';
-		$plugins = $this->PluginsRole->getPluginByKey($key, $roleId, $langId);
+		$plugins = $this->PluginsRole->getPlugins($type, $roleId);
 
 		$this->assertFalse($plugins);
 	}

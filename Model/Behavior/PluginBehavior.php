@@ -36,9 +36,7 @@ class PluginBehavior extends ModelBehavior {
 		]);
 
 		//トランザクションBegin
-		$model->setDataSource('master');
-		$dataSource = $model->getDataSource();
-		$dataSource->begin();
+		$model->begin();
 
 		if (is_string($data)) {
 			$key = $data;
@@ -61,13 +59,11 @@ class PluginBehavior extends ModelBehavior {
 			}
 
 			//トランザクションCommit
-			$dataSource->commit();
+			$model->commit();
 
 		} catch (Exception $ex) {
 			//トランザクションRollback
-			$dataSource->rollback();
-			CakeLog::error($ex);
-			throw $ex;
+			$model->rollback($ex);
 		}
 
 		return true;

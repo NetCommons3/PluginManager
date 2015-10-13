@@ -10,7 +10,7 @@
  */
 
 App::uses('PluginsRoom', 'PluginManager.Model');
-App::uses('YACakeTestCase', 'NetCommons.TestSuite');
+App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
 
 /**
  * PluginsRoom Test Case
@@ -18,7 +18,7 @@ App::uses('YACakeTestCase', 'NetCommons.TestSuite');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\PluginManager\Test\Case\Model
  */
-class PluginsRoomTest extends YACakeTestCase {
+class PluginsRoomTest extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
@@ -66,8 +66,7 @@ class PluginsRoomTest extends YACakeTestCase {
  */
 	public function testGetPlugins() {
 		$roomId = 1;
-		$langId = 2;
-		$plugins = $this->PluginsRoom->getPlugins($roomId, $langId);
+		$plugins = $this->PluginsRoom->getPlugins($roomId);
 
 		$this->assertTrue(is_array($plugins));
 	}
@@ -79,36 +78,15 @@ class PluginsRoomTest extends YACakeTestCase {
  */
 	public function testGetPluginsRoomIdError() {
 		$checks = array(
-			array('roomId' => null, 'langId' => 2),
-			array('roomId' => 0, 'langId' => 2),
-			array('roomId' => 'aaaa', 'langId' => 2),
+			array('roomId' => null),
+			array('roomId' => 0),
+			array('roomId' => 'aaaa'),
 		);
 		foreach ($checks as $check) {
 			$roomId = $check['roomId'];
-			$langId = $check['langId'];
-			$plugins = $this->PluginsRoom->getPlugins($roomId, $langId);
+			$plugins = $this->PluginsRoom->getPlugins($roomId);
 
 			$this->assertFalse($plugins);
-		}
-	}
-
-/**
- * testGetPluginsIrregular
- *
- * @return void
- */
-	public function testGetPluginsLangIdError() {
-		$checks = array(
-			array('roomId' => 1, 'langId' => null),
-			array('roomId' => 1, 'langId' => 0),
-			array('roomId' => 1, 'langId' => 'aaaa'),
-		);
-		foreach ($checks as $check) {
-			$roomId = $check['roomId'];
-			$langId = $check['langId'];
-			$plugins = $this->PluginsRoom->getPlugins($roomId, $langId);
-
-			$this->assertFalse(isset($plugins['Plugin']));
 		}
 	}
 

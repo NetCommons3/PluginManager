@@ -162,14 +162,13 @@ class Plugin extends AppModel {
  * Get plugin data from type and roleId, $langId
  *
  * @param int $type array|int 1:for frame/2:for controll panel
- * @param int $langId languages.id
  * @param string $key plugins.key
  * @return mixed array|bool
  */
-	public function getPlugins($type, $langId, $key = null) {
+	public function getPlugins($type, $key = null) {
 		$conditions = array(
 			'Plugin.type' => $type,
-			'Plugin.language_id' => (int)$langId
+			'Plugin.language_id' => Current::read('Language.id')
 		);
 		if (isset($key)) {
 			$conditions['Plugin.key'] = $key;

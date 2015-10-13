@@ -50,11 +50,10 @@ class PluginsRole extends AppModel {
  *
  * @param mixed $type array|int 1:for frame/2:for controll panel
  * @param int $roleKey roles.key
- * @param int $langId languages.id
  * @return mixed array|bool
  */
-	public function getPlugins($type, $roleKey, $langId) {
-		if (! $roleKey || ! $langId) {
+	public function getPlugins($type, $roleKey) {
+		if (! $roleKey) {
 			return false;
 		}
 
@@ -62,7 +61,7 @@ class PluginsRole extends AppModel {
 		//$roleId = (int)$roleId;
 
 		//plugins_languagesテーブルの取得
-		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = (int)$langId;
+		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = Current::read('Language.id');
 
 		//pluginsテーブルの取得
 		$plugins = $this->find('all', array(
@@ -74,33 +73,6 @@ class PluginsRole extends AppModel {
 		));
 
 		return $plugins;
-	}
-
-/**
- * Get plugin data from folder and roomId, langId
- *
- * @param int $key plugins.folder
- * @param int $roleId roles.id
- * @param int $langId languages.id
- * @return int blocks.id
- */
-	public function getPluginByKey($key, $roleId, $langId) {
-		if (! $roleId || ! $langId) {
-			return false;
-		}
-
-		//plugins_languagesテーブルの取得
-		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = (int)$langId;
-
-		//pluginsテーブルの取得
-		$plugin = $this->find('first', array(
-			'conditions' => array(
-				'Plugin.key' => $key,
-				'Role.id' => (int)$roleId
-			)
-		));
-
-		return $plugin;
 	}
 
 /**

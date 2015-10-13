@@ -42,21 +42,17 @@ class PluginsRoom extends AppModel {
  * Get plugin data from type and roomId, $langId
  *
  * @param int $roomId rooms.id
- * @param int $langId languages.id
  * @return mixed array or false
  */
-	public function getPlugins($roomId, $langId) {
+	public function getPlugins($roomId) {
 		//ルームIDのセット
 		$roomId = (int)$roomId;
-		//言語IDのセット
-		$langId = (int)$langId;
-
 		if (! $roomId) {
 			return false;
 		}
 
 		//plugins_languagesテーブルの取得
-		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = $langId;
+		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = Current::read('Language.id');
 
 		//pluginsテーブルの取得
 		$Plugin = $this->Plugin;
