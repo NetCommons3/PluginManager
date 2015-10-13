@@ -9,16 +9,7 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-echo $this->Html->script(
-	array(
-		'/plugin_manager/js/plugin_manager.js'
-	),
-	array(
-		'plugin' => false,
-		'once' => true,
-		'inline' => false
-	)
-);
+echo $this->NetCommonsHtml->script('/plugin_manager/js/plugin_manager.js');
 ?>
 
 <?php echo $this->element('PluginManager/title'); ?>
@@ -40,7 +31,7 @@ echo $this->Html->script(
 
 		<?php if ($active === PluginManagerController::TAB_FOR_NOT_YET) : ?>
 			<div class="tab-pane active">
-				
+
 			</div>
 		<?php endif; ?>
 
