@@ -20,26 +20,6 @@ App::uses('PluginManagerAppController', 'PluginManager.Controller');
 class PluginManagerController extends PluginManagerAppController {
 
 /**
- * constant value for not yet
- */
-	const TAB_FOR_NOT_YET = 'not_yet_installed';
-
-/**
- * constant value for frame
- */
-	const TAB_FOR_FRAME = 'installed';
-
-/**
- * constant value for control panel
- */
-	const TAB_FOR_CONTROL_PANEL = 'system_plugins';
-
-/**
- * constant value for control panel
- */
-	const TAB_FOR_EXTERNAL = 'external_plugins';
-
-/**
  * Called before the controller action. You can use this method to configure and customize components
  * or perform logic that needs to happen before each controller action.
  *
@@ -57,19 +37,7 @@ class PluginManagerController extends PluginManagerAppController {
 			$pluginType = $Plugin::PLUGIN_TYPE_FOR_FRAME;
 		}
 
-		switch ($pluginType) {
-			case $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
-				$this->set('active', self::TAB_FOR_CONTROL_PANEL);
-				break;
-			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
-				$this->set('active', self::TAB_FOR_NOT_YET);
-				break;
-			case $Plugin::PLUGIN_TYPE_FOR_EXTERNAL:
-				$this->set('active', self::TAB_FOR_EXTERNAL);
-				break;
-			default:
-				$this->set('active', self::TAB_FOR_FRAME);
-		}
+		$this->set('active', $pluginType);
 	}
 
 /**
@@ -84,7 +52,7 @@ class PluginManagerController extends PluginManagerAppController {
 		$pluginsMap = array();
 
 		switch ($this->viewVars['active']) {
-			case self::TAB_FOR_CONTROL_PANEL:
+			case $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
 				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL] = $this->Plugin->getPlugins(
 					$Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL,
 					Configure::read('Config.languageId')
@@ -95,10 +63,10 @@ class PluginManagerController extends PluginManagerAppController {
 				$this->ControlPanelLayout->plugins = $plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL];
 				break;
 
-			case self::TAB_FOR_NOT_YET:
+			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
 				break;
 
-			case self::TAB_FOR_EXTERNAL:
+			case $Plugin::PLUGIN_TYPE_FOR_EXTERNAL:
 				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_EXTERNAL] = $this->Plugin->getExternalPlugins();
 				break;
 
@@ -111,6 +79,7 @@ class PluginManagerController extends PluginManagerAppController {
 						array_flip(array_keys(Hash::combine($plugins['type' . $Plugin::PLUGIN_TYPE_FOR_FRAME], '{n}.Plugin.key')));
 		}
 
+		$this->request->data['Plugins'] = Hash::extract($plugins, '{s}.{n}');
 		$this->set('plugins', $plugins);
 		$this->set('pluginsMap', $pluginsMap);
 
@@ -135,6 +104,7 @@ class PluginManagerController extends PluginManagerAppController {
 		}
 
 		if ($plugins) {
+			$this->request->data['Plugin'] = $plugins[0]['Plugin'];
 			$this->set('plugin', $plugins[0]);
 		}
 
@@ -166,13 +136,13 @@ class PluginManagerController extends PluginManagerAppController {
 	}
 
 /**
- * update method
+ * edit method
  *
  * @param int $pluginType Plugin type
  * @return void
  */
-	public function update($pluginType = null) {
-		if (! $this->request->isPost()) {
+	public function edit($pluginType = null) {
+		if (! $this->request->isPut()) {
 			$this->throwBadRequest();
 			return;
 		}

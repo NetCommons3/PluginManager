@@ -13,7 +13,6 @@ echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 ?>
 
 <?php echo $this->element('PluginManager/title'); ?>
-
 <?php echo $this->element('PluginManager/tabs'); ?>
 
 <div class="panel panel-default" >
@@ -119,5 +118,5 @@ echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 		<?php endif; ?>
 	</div>
 
-	<?php echo $this->element('PluginManager/btn_form'); ?>
+	<?php echo $this->element('PluginManager/edit_form'); ?>
 </div>

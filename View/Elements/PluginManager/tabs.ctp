@@ -13,26 +13,26 @@
 ?>
 
 <ul class="nav nav-tabs" role="tablist">
-	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_FRAME ? 'active' : ''); ?>">
-		<a href="<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . Plugin::PLUGIN_TYPE_FOR_FRAME . '/'); ?>">
+	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_FOR_FRAME ? 'active' : ''); ?>">
+		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_FOR_FRAME)); ?>">
 			<?php echo __d('plugin_manager', 'Installed plugins'); ?>
 		</a>
 	</li>
 
-	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_NOT_YET ? 'active' : ''); ?>">
-		<a href="<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . Plugin::PLUGIN_TYPE_FOR_NOT_YET . '/'); ?>">
+	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_FOR_NOT_YET ? 'active' : ''); ?>">
+		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_FOR_NOT_YET)); ?>">
 			<?php echo __d('plugin_manager', 'Plugins not yet installed'); ?>
 		</a>
 	</li>
 
-	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_CONTROL_PANEL ? 'active' : ''); ?>">
-		<a href="<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL . '/'); ?>">
+	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL ? 'active' : ''); ?>">
+		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL)); ?>">
 			<?php echo __d('plugin_manager', 'System plugins'); ?>
 		</a>
 	</li>
 
-	<li class="<?php echo ($active === PluginManagerController::TAB_FOR_EXTERNAL ? 'active' : ''); ?>">
-		<a href="<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . Plugin::PLUGIN_TYPE_FOR_EXTERNAL . '/'); ?>">
+	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_FOR_EXTERNAL ? 'active' : ''); ?>">
+		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_FOR_EXTERNAL)); ?>">
 			<?php echo __d('plugin_manager', 'External libraries'); ?>
 		</a>
 	</li>
