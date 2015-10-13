@@ -34,6 +34,11 @@ class PluginManagerAppController extends AppController {
  */
 	public $components = array(
 		'ControlPanel.ControlPanelLayout',
+		//アクセスの権限
+		'NetCommons.Permission' => array(
+			'type' => PermissionComponent::CHECK_TYEP_SYSTEM_PLUGIN,
+			'allow' => array()
+		),
 		'Security',
 	);
 
