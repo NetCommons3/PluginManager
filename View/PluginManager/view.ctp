@@ -9,20 +9,10 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
-echo $this->Html->css(
-	array(
-		'/plugin_manager/css/style.css'
-	),
-	array(
-		'plugin' => false,
-		'once' => true,
-		'inline' => false
-	)
-);
+echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 ?>
 
 <?php echo $this->element('PluginManager/title'); ?>
-
 <?php echo $this->element('PluginManager/tabs'); ?>
 
 <div class="panel panel-default" >
@@ -128,5 +118,5 @@ echo $this->Html->css(
 		<?php endif; ?>
 	</div>
 
-	<?php echo $this->element('PluginManager/btn_form'); ?>
+	<?php echo $this->element('PluginManager/edit_form'); ?>
 </div>

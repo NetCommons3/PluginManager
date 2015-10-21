@@ -20,26 +20,6 @@ App::uses('PluginManagerAppController', 'PluginManager.Controller');
 class PluginManagerController extends PluginManagerAppController {
 
 /**
- * constant value for not yet
- */
-	const TAB_FOR_NOT_YET = 'not_yet_installed';
-
-/**
- * constant value for frame
- */
-	const TAB_FOR_FRAME = 'installed';
-
-/**
- * constant value for control panel
- */
-	const TAB_FOR_CONTROL_PANEL = 'system_plugins';
-
-/**
- * constant value for control panel
- */
-	const TAB_FOR_EXTERNAL = 'external_plugins';
-
-/**
  * Called before the controller action. You can use this method to configure and customize components
  * or perform logic that needs to happen before each controller action.
  *
@@ -50,26 +30,12 @@ class PluginManagerController extends PluginManagerAppController {
 		parent::beforeFilter();
 
 		$Plugin = $this->Plugin;
-
 		if (isset($this->params['pass'][0])) {
 			$pluginType = $this->params['pass'][0];
 		} else {
 			$pluginType = $Plugin::PLUGIN_TYPE_FOR_FRAME;
 		}
-
-		switch ($pluginType) {
-			case $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
-				$this->set('active', self::TAB_FOR_CONTROL_PANEL);
-				break;
-			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
-				$this->set('active', self::TAB_FOR_NOT_YET);
-				break;
-			case $Plugin::PLUGIN_TYPE_FOR_EXTERNAL:
-				$this->set('active', self::TAB_FOR_EXTERNAL);
-				break;
-			default:
-				$this->set('active', self::TAB_FOR_FRAME);
-		}
+		$this->set('active', $pluginType);
 	}
 
 /**
@@ -84,10 +50,9 @@ class PluginManagerController extends PluginManagerAppController {
 		$pluginsMap = array();
 
 		switch ($this->viewVars['active']) {
-			case self::TAB_FOR_CONTROL_PANEL:
+			case $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
 				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL] = $this->Plugin->getPlugins(
-					$Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL,
-					Configure::read('Config.languageId')
+					$Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL
 				);
 				$pluginsMap['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL] =
 						array_flip(array_keys(Hash::combine($plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL], '{n}.Plugin.key')));
@@ -95,22 +60,22 @@ class PluginManagerController extends PluginManagerAppController {
 				$this->ControlPanelLayout->plugins = $plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL];
 				break;
 
-			case self::TAB_FOR_NOT_YET:
+			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
 				break;
 
-			case self::TAB_FOR_EXTERNAL:
+			case $Plugin::PLUGIN_TYPE_FOR_EXTERNAL:
 				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_EXTERNAL] = $this->Plugin->getExternalPlugins();
 				break;
 
 			default:
 				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_FRAME] = $this->Plugin->getPlugins(
-					$Plugin::PLUGIN_TYPE_FOR_FRAME,
-					Configure::read('Config.languageId')
+					$Plugin::PLUGIN_TYPE_FOR_FRAME
 				);
 				$pluginsMap['type' . $Plugin::PLUGIN_TYPE_FOR_FRAME] =
 						array_flip(array_keys(Hash::combine($plugins['type' . $Plugin::PLUGIN_TYPE_FOR_FRAME], '{n}.Plugin.key')));
 		}
 
+		$this->request->data['Plugins'] = Hash::extract($plugins, '{s}.{n}');
 		$this->set('plugins', $plugins);
 		$this->set('pluginsMap', $pluginsMap);
 
@@ -129,12 +94,13 @@ class PluginManagerController extends PluginManagerAppController {
 		$Plugin = $this->Plugin;
 
 		if ($pluginType === $Plugin::PLUGIN_TYPE_FOR_FRAME || $pluginType === $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) {
-			$plugins = $this->Plugin->getPlugins($pluginType, Configure::read('Config.languageId'), $pluginKey);
+			$plugins = $this->Plugin->getPlugins($pluginType, $pluginKey);
 		} else {
 			$plugins = $this->Plugin->getExternalPlugins($pluginKey);
 		}
 
 		if ($plugins) {
+			$this->request->data['Plugin'] = $plugins[0]['Plugin'];
 			$this->set('plugin', $plugins[0]);
 		}
 
@@ -166,49 +132,64 @@ class PluginManagerController extends PluginManagerAppController {
 	}
 
 /**
- * update method
+ * edit method
  *
  * @param int $pluginType Plugin type
  * @return void
  */
-	public function update($pluginType = null) {
-		if (! $this->request->isPost()) {
+	public function edit($pluginType = null) {
+		if (! $this->request->isPut()) {
 			$this->throwBadRequest();
 			return;
 		}
 
-		$plugins = $this->Plugin->getPlugins($pluginType, Configure::read('Config.languageId'), $this->data['Plugin']['key']);
+		$plugins = $this->Plugin->getPlugins($pluginType, $this->data['Plugin']['key']);
 		if (! $plugins) {
 			$this->throwBadRequest();
 			return;
 		}
 
+		$error = false;
+
 		if (! $this->Plugin->updateComposer($plugins[0]['composer']['name'])) {
 			$this->NetCommons->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'composer'), array(
 				'class' => 'danger',
-				'interval' => self::ALERT_VALIDATE_ERROR_INTERVAL
+				'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
 			));
+			$error = true;
 			return;
 		}
 
 		if (! $this->Plugin->runMigration($plugins[0]['Plugin']['key'])) {
 			$this->NetCommons->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'migration'), array(
 				'class' => 'danger',
-				'interval' => self::ALERT_VALIDATE_ERROR_INTERVAL
+				'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
 			));
+			$error = true;
 			return;
 		}
 
 		if (! $this->Plugin->updateBower($plugins[0]['Plugin']['key'])) {
 			$this->NetCommons->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'bower'), array(
 				'class' => 'danger',
-				'interval' => self::ALERT_VALIDATE_ERROR_INTERVAL
+				'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
 			));
+			$error = true;
 			return;
 		}
 
-		$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
-		$this->redirect('/plugin_manager/plugin_manager/view/' . $pluginType . '/' . $this->data['Plugin']['key']);
+		if (! $error) {
+			$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
+		}
+
+		$redirectUrl = NetCommonsUrl::actionUrl(array(
+			'plugin' => $this->params['plugin'],
+			'controller' => $this->params['controller'],
+			'action' => 'view',
+			$pluginType,
+			$this->data['Plugin']['key']
+		));
+		$this->redirect($redirectUrl);
 	}
 
 /**
@@ -232,7 +213,13 @@ class PluginManagerController extends PluginManagerAppController {
 		}
 
 		$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
-		$this->redirect('/plugin_manager/plugin_manager/index/' . $pluginType . '/');
+		$redirectUrl = NetCommonsUrl::actionUrl(array(
+			'plugin' => $this->params['plugin'],
+			'controller' => $this->params['controller'],
+			'action' => 'index',
+			$pluginType,
+		));
+		$this->redirect($redirectUrl);
 	}
 
 /**

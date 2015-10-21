@@ -9,6 +9,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
+App::uses('NetCommonsTestSuite', 'NetCommons.TestSuite');
+
 /**
  * PluginManager All Test Case
  *
@@ -16,7 +18,7 @@
  * @package NetCommons\PluginManager\Test\Case
  * @codeCoverageIgnore
  */
-class AllPluginManagerTest extends CakeTestSuite {
+class AllPluginManagerTest extends NetCommonsTestSuite {
 
 /**
  * All test suite
@@ -25,7 +27,7 @@ class AllPluginManagerTest extends CakeTestSuite {
  */
 	public static function suite() {
 		$plugin = preg_replace('/^All([\w]+)Test$/', '$1', __CLASS__);
-		$suite = new CakeTestSuite(sprintf('All %s Plugin tests', $plugin));
+		$suite = new NetCommonsTestSuite(sprintf('All %s Plugin tests', $plugin));
 		$suite->addTestDirectoryRecursive(CakePlugin::path($plugin) . 'Test' . DS . 'Case');
 		return $suite;
 	}

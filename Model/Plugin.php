@@ -137,44 +137,6 @@ class Plugin extends AppModel {
 	);
 
 /**
- * 後で削除
- * get plugins for select box options
- *
- * @param array $options find options
- * @return array select box options
- */
-	//public function getForOptions($options) {
-	//	$options = Hash::merge(['recursive' => -1], $options);
-	//
-	//	$plugins = $this->find('all', $options);
-	//	$map = [];
-	//	foreach ($plugins as $plugin) {
-	//		$map[$plugin[$this->alias]['key']] = $plugin[$this->alias]['name'];
-	//	}
-	//
-	//	return $map;
-	//}
-
-/**
- * 後で削除
- * get plugins for select box options
- *
- * @param array $options find options
- * @return array select box options
- */
-	//public function getKeyIndexedHash($options) {
-	//	$options = Hash::merge(['recursive' => -1], $options);
-	//
-	//	$plugins = $this->find('all', $options);
-	//	$map = [];
-	//	foreach ($plugins as $plugin) {
-	//		$map[$plugin[$this->alias]['key']] = $plugin;
-	//	}
-	//
-	//	return $map;
-	//}
-
-/**
  * getMaxWeight
  *
  * @param int $type plugins.type
@@ -200,14 +162,13 @@ class Plugin extends AppModel {
  * Get plugin data from type and roleId, $langId
  *
  * @param int $type array|int 1:for frame/2:for controll panel
- * @param int $langId languages.id
  * @param string $key plugins.key
  * @return mixed array|bool
  */
-	public function getPlugins($type, $langId, $key = null) {
+	public function getPlugins($type, $key = null) {
 		$conditions = array(
 			'Plugin.type' => $type,
-			'Plugin.language_id' => (int)$langId
+			'Plugin.language_id' => Current::read('Language.id')
 		);
 		if (isset($key)) {
 			$conditions['Plugin.key'] = $key;
@@ -248,14 +209,12 @@ class Plugin extends AppModel {
 		]);
 
 		//トランザクションBegin
-		$this->setDataSource('master');
-		$dataSource = $this->getDataSource();
-		$dataSource->begin();
+		$this->begin();
 
 		try {
 			//Pluginテーブルの登録
 			$fieldList = array('weight');
-			foreach ($data as $req) {
+			foreach ($data['Plugins'] as $req) {
 				$plugins = $this->find('all', array(
 					'recursive' => -1,
 					'conditions' => array('key' => $req['Plugin']['key']),
@@ -274,13 +233,11 @@ class Plugin extends AppModel {
 			}
 
 			//トランザクションCommit
-			$dataSource->commit();
+			$this->commit();
 
 		} catch (Exception $ex) {
 			//トランザクションRollback
-			$dataSource->rollback();
-			CakeLog::error($ex);
-			throw $ex;
+			$this->rollback($ex);
 		}
 
 		return true;

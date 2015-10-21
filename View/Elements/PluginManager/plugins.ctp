@@ -12,19 +12,18 @@
 ?>
 
 <?php if ($hasFormTag) : ?>
-	<?php echo $this->Form->create(null, array('novalidate' => true, 'url' => '/plugin_manager/plugin_manager/order/' . $pluginType)); ?>
+	<?php echo $this->NetCommonsForm->create('Plugins', array(
+			'url' => $this->NetCommonsHtml->url(array('action' => 'order', $pluginType))
+		)); ?>
+
 		<div ng-hide="plugins.type<?php echo $pluginType; ?>.length">
 			<p><?php echo __d('net_commons', 'Not found.'); ?></p>
 		</div>
 
 		<?php foreach ($pluginsMap['type' . $pluginType] as $key => $value) : ?>
-			<?php echo $this->Form->hidden($value . '.Plugin.id', array(
-					'value' => $plugins['type' . $pluginType][$value]['Plugin']['id'],
-				)); ?>
-			<?php echo $this->Form->hidden($value . '.Plugin.key', array(
-					'value' => $plugins['type' . $pluginType][$value]['Plugin']['key'],
-				)); ?>
-			<?php $this->Form->unlockField($value . '.Plugin.weight'); ?>
+			<?php echo $this->NetCommonsForm->hidden('Plugins.' . $value . '.Plugin.id'); ?>
+			<?php echo $this->NetCommonsForm->hidden('Plugins.' . $value . '.Plugin.key'); ?>
+			<?php $this->NetCommonsForm->unlockField('Plugins.' . $value . '.Plugin.weight'); ?>
 		<?php endforeach; ?>
 <?php endif; ?>
 
@@ -48,23 +47,24 @@
 				<td>
 					<?php if ($hasFormTag) : ?>
 						<button type="button" class="btn btn-default btn-sm"
-								ng-click="move('type<?php echo $pluginType; ?>', 'up', $index)" ng-disabled="$first">
+								ng-click="move('type<?php echo $pluginType; ?>', 'up', $index)" ng-disabled="($first || sending)">
 							<span class="glyphicon glyphicon-arrow-up"></span>
 						</button>
 
 						<button type="button" class="btn btn-default btn-sm"
-								ng-click="move('type<?php echo $pluginType; ?>', 'down', $index)" ng-disabled="$last">
+								ng-click="move('type<?php echo $pluginType; ?>', 'down', $index)" ng-disabled="($last || sending)">
 							<span class="glyphicon glyphicon-arrow-down"></span>
 						</button>
 
-						<input type="hidden" name="data[{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][weight]" ng-value="{{$index + 1}}">
+						<input type="hidden" ng-value="{{$index + 1}}"
+							   name="data[Plugins][{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][weight]">
 
 					<?php else : ?>
 						{{$index + 1}}
 					<?php endif; ?>
 				</td>
 				<td>
-					<a ng-href="<?php echo $this->Html->url(array('action' => 'view')) . '/' . $pluginType . '/'; ?>{{plugin.plugin.key}}/">
+					<a ng-href="<?php echo $this->NetCommonsHtml->url(array('action' => 'view', $pluginType)) . '/'; ?>{{plugin.plugin.key}}/">
 						{{plugin.plugin.name}}
 					</a>
 				</td>
@@ -83,22 +83,14 @@
 		</tbody>
 	</table>
 
+<?php if ($hasFormTag) : ?>
 	<div class="text-center">
-		<?php if ($hasFormTag) : ?>
-			<button type="button" class="btn btn-default btn-workflow"
-					onclick="location.href='<?php echo $this->Html->url('/plugin_manager/plugin_manager/index/' . $pluginType . '/'); ?>'">
-
-				<span class="glyphicon glyphicon-remove"></span>
-				<?php echo __d('net_commons', 'Cancel'); ?>
-			</button>
-
-			<?php echo $this->Form->button(__d('net_commons', 'OK'), array(
-					'class' => 'btn btn-primary btn-workflow',
-					'name' => 'save',
-				)); ?>
-		<?php endif; ?>
+		<?php echo $this->Button->cancelAndSave(
+				__d('net_commons', 'Cancel'),
+				__d('net_commons', 'OK'),
+				$this->NetCommonsHtml->url(array('action' => 'index', $pluginType))
+			); ?>
 	</div>
 
-<?php if ($hasFormTag) : ?>
-	<?php echo $this->Form->end(); ?>
+	<?php echo $this->NetCommonsForm->end(); ?>
 <?php endif;
