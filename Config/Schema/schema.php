@@ -17,7 +17,7 @@
  * @SuppressWarnings(PHPMD.LongVariable)
  * @SuppressWarnings(PHPMD.TooManyFields)
  */
-class AppSchema extends CakeSchema {
+class PluginManagerSchema extends CakeSchema {
 
 /**
  * Database connection
