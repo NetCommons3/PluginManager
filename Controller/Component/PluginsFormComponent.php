@@ -20,6 +20,28 @@ App::uses('Component', 'Controller');
 class PluginsFormComponent extends Component {
 
 /**
+ * ルームID
+ *
+ * $roomIdがnullの場合、Current::read('Room.id')を使用する
+ *
+ * @var string
+ */
+	public $roomId = null;
+
+/**
+ * Called after the Controller::beforeFilter() and before the controller action
+ *
+ * @param Controller $controller Controller with components to startup
+ * @return void
+ * @link http://book.cakephp.org/2.0/en/controllers/components.html#Component::startup
+ */
+	public function startup(Controller $controller) {
+		if (! $this->roomId) {
+			$this->roomId = Current::read('Room.id');
+		}
+	}
+
+/**
  * beforeRender
  *
  * @param Controller $controller Controller
@@ -58,7 +80,10 @@ class PluginsFormComponent extends Component {
 				$Plugin->alias . '.type' => Plugin::PLUGIN_TYPE_FOR_FRAME,
 				$Plugin->alias . '.language_id' => Current::read('Language.id'),
 			),
-			'order' => array($Plugin->alias . '.weight' => 'asc')
+			'order' => array(
+				$Plugin->alias . '.weight' => 'asc',
+				$Plugin->alias . '.id' => 'asc',
+			)
 		);
 
 		//データ取得
@@ -71,7 +96,7 @@ class PluginsFormComponent extends Component {
 					'type' => 'LEFT',
 					'conditions' => array(
 						$Plugin->alias . '.key' . ' = ' . $PluginsRoom->alias . ' .plugin_key',
-						$PluginsRoom->alias . '.room_id' => Current::read('Room.id'),
+						$PluginsRoom->alias . '.room_id' => $this->roomId,
 					),
 				)
 			),

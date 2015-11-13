@@ -19,14 +19,16 @@ App::uses('AppHelper', 'View/Helper');
 class PluginsFormHelper extends AppHelper {
 
 /**
- * Other helpers used by FormHelper
+ * 使用ヘルパー
  *
  * @var array
  */
-	public $helpers = array('Form');
+	public $helpers = array(
+		'NetCommons.NetCommonsForm',
+	);
 
 /**
- * Outputs room plugins
+ * Roomに対するプラグインチェックボックスリスト
  *
  * @param array $attributes The HTML attributes of the select element.
  * @return string Formatted CHECKBOX element
@@ -39,14 +41,14 @@ class PluginsFormHelper extends AppHelper {
 		$options = Hash::combine($this->_View->viewVars['pluginsRoom'], '{n}.Plugin.key', '{n}.Plugin.name');
 		$this->_View->request->data['Plugin']['key'] = array_keys($options);
 		foreach (array_keys($this->_View->request->data['Plugin']['key']) as $index) {
-			$html .= $this->Form->hidden('Plugin.' . $index . '.key');
+			$html .= $this->NetCommonsForm->hidden('Plugin.' . $index . '.key');
 		}
 
 		$defaults = Hash::extract($this->_View->viewVars['pluginsRoom'], '{n}.PluginsRoom[room_id=' . Current::read('Room.id') . ']');
 		$defaults = array_values(Hash::combine($defaults, '{n}.plugin_key', '{n}.plugin_key'));
 
 		$this->_View->request->data['PluginsRoom']['plugin_key'] = $defaults;
-		$html .= $this->Form->select('PluginsRoom.plugin_key', $options, Hash::merge($attributes, array(
+		$html .= $this->NetCommonsForm->select('PluginsRoom.plugin_key', $options, Hash::merge($attributes, array(
 			'multiple' => 'checkbox',
 		)));
 		return $html;
