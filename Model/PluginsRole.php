@@ -61,15 +61,20 @@ class PluginsRole extends AppModel {
 		//$roleId = (int)$roleId;
 
 		//plugins_languagesテーブルの取得
-		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = Current::read('Language.id');
 
 		//pluginsテーブルの取得
 		$plugins = $this->find('all', array(
+			'recursive' => 0,
 			'conditions' => array(
+				'Plugin.language_id' => Current::read('Language.id'),
+				'Role.language_id' => Current::read('Language.id'),
 				'Plugin.type' => $type,
 				'Role.key' => $roleKey
 			),
-			'order' => $this->name . '.id',
+			'order' => array(
+				$this->Plugin->alias . '.weight' => 'asc',
+				$this->Plugin->alias . '.id' => 'desc'
+			),
 		));
 
 		return $plugins;

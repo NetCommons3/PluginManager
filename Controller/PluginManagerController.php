@@ -52,12 +52,10 @@ class PluginManagerController extends PluginManagerAppController {
 		switch ($this->viewVars['active']) {
 			case $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
 				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL] = $this->Plugin->getPlugins(
-					$Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL
+					array(Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER, Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER)
 				);
 				$pluginsMap['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL] =
 						array_flip(array_keys(Hash::combine($plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL], '{n}.Plugin.key')));
-
-				$this->ControlPanelLayout->plugins = $plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL];
 				break;
 
 			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
@@ -93,7 +91,12 @@ class PluginManagerController extends PluginManagerAppController {
 	public function view($pluginType = null, $pluginKey = null) {
 		$Plugin = $this->Plugin;
 
-		if ($pluginType === $Plugin::PLUGIN_TYPE_FOR_FRAME || $pluginType === $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) {
+		if ($pluginType === $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) {
+			$plugins = $this->Plugin->getPlugins(
+				array(Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER, Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER),
+				$pluginKey
+			);
+		} elseif ($pluginType === $Plugin::PLUGIN_TYPE_FOR_FRAME) {
 			$plugins = $this->Plugin->getPlugins($pluginType, $pluginKey);
 		} else {
 			$plugins = $this->Plugin->getExternalPlugins($pluginKey);
