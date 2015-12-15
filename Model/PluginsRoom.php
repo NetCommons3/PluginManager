@@ -71,7 +71,7 @@ class PluginsRoom extends AppModel {
 				/* 'Plugin.language_id' => $langId, */
 				'Room.id' => $roomId
 			),
-			'order' => $this->name . '.id',
+			'order' => $this->alias . '.id',
 		));
 
 		return $plugins;
