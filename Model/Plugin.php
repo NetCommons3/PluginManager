@@ -20,34 +20,45 @@ App::uses('AppModel', 'Model');
 class Plugin extends AppModel {
 
 /**
- * constant value for not yet
+ * PackagistのURL
  */
 	const PACKAGIST_URL = 'https://packagist.org/packages/';
 
 /**
- * constant value for core plugins
+ * コアプラグイン
  */
 	const PLUGIN_TYPE_CORE = '0';
 
 /**
- * constant value for frame plugins
+ * フレームに設置するプラグイン
  */
 	const PLUGIN_TYPE_FOR_FRAME = '1';
 
 /**
- * constant value for control panel plugins
+ * コントロールパネルプラグイン
+ * ※プラグイン管理でのタブ識別で使用する
  */
 	const PLUGIN_TYPE_FOR_CONTROL_PANEL = '2';
 
 /**
- * constant value for not yet plugins
+ * サイト管理者が操作できる管理プラグイン
  */
-	const PLUGIN_TYPE_FOR_NOT_YET = '3';
+	const PLUGIN_TYPE_FOR_SITE_MANAGER = '2';
 
 /**
- * constant value for external plugins
+ * システム管理者が操作できる管理プラグイン
  */
-	const PLUGIN_TYPE_FOR_EXTERNAL = '4';
+	const PLUGIN_TYPE_FOR_SYSTEM_MANGER = '3';
+
+/**
+ * 未インストール
+ */
+	const PLUGIN_TYPE_FOR_NOT_YET = '4';
+
+/**
+ * 外部ライブラリ
+ */
+	const PLUGIN_TYPE_FOR_EXTERNAL = '5';
 
 /**
  * Behaviors

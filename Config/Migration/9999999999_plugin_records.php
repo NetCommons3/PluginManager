@@ -47,10 +47,10 @@ class PluginRecords extends NetCommonsMigration {
 				'key' => 'plugin_manager',
 				'namespace' => 'netcommons/plugin-manager',
 				'name' => 'プラグイン管理',
-				'type' => 2,
+				'type' => 3,
 				'default_action' => 'plugin_manager/index',
 				'default_setting_action' => '',
-				'weight' => 5,
+				'weight' => 7,
 			),
 			//英語
 			array(
@@ -58,10 +58,10 @@ class PluginRecords extends NetCommonsMigration {
 				'key' => 'plugin_manager',
 				'namespace' => 'netcommons/plugin-manager',
 				'name' => 'Plugin Manager',
-				'type' => 2,
+				'type' => 3,
 				'default_action' => 'plugin_manager/index',
 				'default_setting_action' => '',
-				'weight' => 5,
+				'weight' => 7,
 			),
 		),
 		'PluginsRole' => array(

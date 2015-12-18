@@ -46,30 +46,43 @@ class PluginsRole extends AppModel {
 	);
 
 /**
- * Get plugin data from type and roleId, $langId
+ * RoleKeyに対するプラグインデータ取得
  *
- * @param mixed $type array|int 1:for frame/2:for controll panel
- * @param int $roleKey roles.key
+ * @param mixed $pluginType array|int プラグインタイプ
+ * @param int $roleKey ロールKey
+ * @param string $joinType JOINタイプ(LEFT or INNER)
  * @return mixed array|bool
  */
-	public function getPlugins($type, $roleKey) {
+	public function getPlugins($pluginType, $roleKey, $joinType = 'LEFT') {
 		if (! $roleKey) {
 			return false;
 		}
 
-		//ロールIDのセット
-		//$roleId = (int)$roleId;
-
-		//plugins_languagesテーブルの取得
-		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = Current::read('Language.id');
-
-		//pluginsテーブルの取得
-		$plugins = $this->find('all', array(
-			'conditions' => array(
-				'Plugin.type' => $type,
-				'Role.key' => $roleKey
+		$plugins = $this->Plugin->find('all', array(
+			'recursive' => -1,
+			'fields' => array(
+				$this->alias . '.*',
+				$this->Plugin->alias . '.*',
 			),
-			'order' => $this->name . '.id',
+			'joins' => array(
+				array(
+					'table' => $this->table,
+					'alias' => $this->alias,
+					'type' => $joinType,
+					'conditions' => array(
+						$this->Plugin->alias . '.key' . ' = ' . $this->alias . ' .plugin_key',
+						$this->alias . '.role_key' => $roleKey,
+					),
+				),
+			),
+			'conditions' => array(
+				$this->Plugin->alias . '.type' => $pluginType,
+				$this->Plugin->alias . '.language_id' => Current::read('Language.id'),
+			),
+			'order' => array(
+				$this->Plugin->alias . '.weight' => 'asc',
+				$this->Plugin->alias . '.id' => 'desc'
+			),
 		));
 
 		return $plugins;
