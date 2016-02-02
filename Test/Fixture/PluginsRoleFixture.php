@@ -42,11 +42,10 @@ class PluginsRoleFixture extends CakeTestFixture {
  * @var array
  */
 	public $records = array(
-		//array(
-		//	'id' => 1,
-		//	'role_key' => 'system_administrator',
-		//	'plugin_key' => 'roles',
-		//),
+		array(
+			'role_key' => 'system_administrator',
+			'plugin_key' => 'test_plugin',
+		),
 	);
 
 }

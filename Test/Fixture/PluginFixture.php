@@ -47,6 +47,7 @@ class PluginFixture extends CakeTestFixture {
  * @var array
  */
 	public $records = array(
+		//一般プラグイン
 		array(
 			'id' => 1,
 			'language_id' => 1,
@@ -57,10 +58,6 @@ class PluginFixture extends CakeTestFixture {
 			'type' => 1,
 			'default_action' => '',
 			'default_setting_action' => '',
-			'created_user' => 1,
-			'created' => '2015-05-25 09:16:05',
-			'modified_user' => 1,
-			'modified' => '2015-05-25 09:16:05'
 		),
 		array(
 			'id' => 2,
@@ -72,52 +69,31 @@ class PluginFixture extends CakeTestFixture {
 			'type' => 1,
 			'default_action' => '',
 			'default_setting_action' => '',
-			'created_user' => 1,
-			'created' => '2015-05-25 09:16:05',
-			'modified_user' => 1,
-			'modified' => '2015-05-25 09:16:05'
 		),
-		//array(
-		//	'id' => 3,
-		//	'language_id' => 1,
-		//	'key' => 'model_with_after_frame_save_test_plugin',
-		//	'name' => 'Lorem ipsum dolor sit amet',
-		//	'namespace' => 'Lorem ipsum dolor sit amet',
-		//	'weight' => 1,
-		//	'type' => 1,
-		//	'default_action' => null,
-		//	'default_setting_action' => null,
-		//	'created_user' => 1,
-		//	'created' => '2015-05-25 09:16:05',
-		//	'modified_user' => 1,
-		//	'modified' => '2015-05-25 09:16:05'
-		//),
-		//array(
-		//	'id' => 4,
-		//	'language_id' => 2,
-		//	'key' => 'model_with_after_frame_save_test_plugin',
-		//	'name' => 'Lorem ipsum dolor sit amet',
-		//	'namespace' => 'Lorem ipsum dolor sit amet',
-		//	'weight' => 1,
-		//	'type' => 1,
-		//	'default_action' => null,
-		//	'default_setting_action' => null,
-		//	'created_user' => 1,
-		//	'created' => '2015-05-25 09:16:05',
-		//	'modified_user' => 1,
-		//	'modified' => '2015-05-25 09:16:05'
-		//),
-
-		////For PluginsRole
-		//array(
-		//	'id' => 5,
-		//	'language_id' => 2,
-		//	'key' => 'roles',
-		//	'name' => 'Lorem ipsum dolor sit amet',
-		//	'namespace' => 'Lorem ipsum dolor sit amet',
-		//	'type' => '2'
-		//),
-
+		//サイト管理プラグイン
+		array(
+			'id' => 3,
+			'language_id' => 2,
+			'key' => 'test_plugin',
+			'name' => 'Lorem ipsum dolor sit amet',
+			'namespace' => 'Lorem ipsum dolor sit amet',
+			'weight' => 1,
+			'type' => 2,
+			'default_action' => '',
+			'default_setting_action' => '',
+		),
+		//システム管理プラグイン
+		array(
+			'id' => 4,
+			'language_id' => 2,
+			'key' => 'test_plugin',
+			'name' => 'Lorem ipsum dolor sit amet',
+			'namespace' => 'Lorem ipsum dolor sit amet',
+			'weight' => 1,
+			'type' => 3,
+			'default_action' => '',
+			'default_setting_action' => '',
+		),
 	);
 
 /**
