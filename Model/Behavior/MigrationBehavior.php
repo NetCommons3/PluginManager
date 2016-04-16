@@ -52,7 +52,9 @@ class MigrationBehavior extends ModelBehavior {
 				}
 			}
 
-			CakeLog::info(sprintf('[migration] Successfully migrated %s for %s connection', $plugin, $connection));
+			CakeLog::info(
+				sprintf('[migration] Successfully migrated %s for %s connection', $plugin, $connection)
+			);
 		}
 
 		return true;
