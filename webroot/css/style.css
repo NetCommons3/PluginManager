@@ -21,7 +21,12 @@ ul.plugin-manager-autors-ul > li {
 	margin-bottom: 25px;
 }
 
-.plugin-checkbox-separator {
-	width: 15em;
-	margin: 0.4em 0;
+.plugin-checkbox-outer > .checkbox {
+	width: 16em;
+	margin: 0.5em;
+	float: left;
+}
+
+.plugin-checkbox-outer.plugin-outer-sm > .checkbox {
+	width: 11em;
 }
