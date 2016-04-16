@@ -20,8 +20,9 @@ App::uses('PluginManagerAppController', 'PluginManager.Controller');
 class PluginManagerController extends PluginManagerAppController {
 
 /**
- * Called before the controller action. You can use this method to configure and customize components
- * or perform logic that needs to happen before each controller action.
+ * Called before the controller action.
+ * You can use this method to configure and customize components
+ *  or perform logic that needs to happen before each controller action.
  *
  * @return void
  * @link http://book.cakephp.org/2.0/en/controllers.html#request-life-cycle-callbacks
@@ -49,28 +50,29 @@ class PluginManagerController extends PluginManagerAppController {
 		$plugins = array();
 		$pluginsMap = array();
 
+		$typeKey = 'type' . $this->viewVars['active'];
 		switch ($this->viewVars['active']) {
 			case $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
-				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL] = $this->Plugin->getPlugins(
+				$plugins[$typeKey] = $this->Plugin->getPlugins(
 					array(Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER, Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER)
 				);
-				$pluginsMap['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL] =
-						array_flip(array_keys(Hash::combine($plugins['type' . $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL], '{n}.Plugin.key')));
+				$pluginsMap[$typeKey] =
+						array_flip(array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key')));
 				break;
 
 			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
 				break;
 
 			case $Plugin::PLUGIN_TYPE_FOR_EXTERNAL:
-				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_EXTERNAL] = $this->Plugin->getExternalPlugins();
+				$plugins[$typeKey] = $this->Plugin->getExternalPlugins();
 				break;
 
 			default:
-				$plugins['type' . $Plugin::PLUGIN_TYPE_FOR_FRAME] = $this->Plugin->getPlugins(
+				$plugins[$typeKey] = $this->Plugin->getPlugins(
 					$Plugin::PLUGIN_TYPE_FOR_FRAME
 				);
-				$pluginsMap['type' . $Plugin::PLUGIN_TYPE_FOR_FRAME] =
-						array_flip(array_keys(Hash::combine($plugins['type' . $Plugin::PLUGIN_TYPE_FOR_FRAME], '{n}.Plugin.key')));
+				$pluginsMap[$typeKey] =
+					array_flip(array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key')));
 		}
 
 		$this->request->data['Plugins'] = Hash::extract($plugins, '{s}.{n}');
@@ -125,7 +127,9 @@ class PluginManagerController extends PluginManagerAppController {
 		//			$this->Session->setFlash(__('The plugin manager has been saved.'));
 		//			return $this->redirect(array('action' => 'index'));
 		//		} else {
-		//			$this->Session->setFlash(__('The plugin manager could not be saved. Please, try again.'));
+		//			$this->Session->setFlash(
+		//				__('The plugin manager could not be saved. Please, try again.')
+		//			);
 		//		}
 		//	}
 		//	$languages = $this->PluginManager->Language->find('list');
@@ -155,16 +159,17 @@ class PluginManagerController extends PluginManagerAppController {
 		$error = false;
 
 		if (! $this->Plugin->updateComposer($plugins[0]['composer']['name'])) {
-			$this->NetCommons->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'composer'), array(
-				'class' => 'danger',
-				'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
-			));
+			$this->NetCommons->setFlashNotification(
+				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'composer'),
+				array('class' => 'danger', 'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL)
+			);
 			$error = true;
 			return;
 		}
 
 		if (! $this->Plugin->runMigration($plugins[0]['Plugin']['key'])) {
-			$this->NetCommons->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'migration'), array(
+			$this->NetCommons->setFlashNotification(
+				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'migration'), array(
 				'class' => 'danger',
 				'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
 			));
@@ -173,16 +178,18 @@ class PluginManagerController extends PluginManagerAppController {
 		}
 
 		if (! $this->Plugin->updateBower($plugins[0]['Plugin']['key'])) {
-			$this->NetCommons->setFlashNotification(sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'bower'), array(
-				'class' => 'danger',
-				'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
-			));
+			$this->NetCommons->setFlashNotification(
+				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'bower'),
+				array('class' => 'danger', 'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL)
+			);
 			$error = true;
 			return;
 		}
 
 		if (! $error) {
-			$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
+			$this->NetCommons->setFlashNotification(
+				__d('net_commons', 'Successfully saved.'), array('class' => 'success')
+			);
 		}
 
 		$redirectUrl = NetCommonsUrl::actionUrl(array(
@@ -215,7 +222,9 @@ class PluginManagerController extends PluginManagerAppController {
 			return;
 		}
 
-		$this->NetCommons->setFlashNotification(__d('net_commons', 'Successfully saved.'), array('class' => 'success'));
+		$this->NetCommons->setFlashNotification(
+			__d('net_commons', 'Successfully saved.'), array('class' => 'success')
+		);
 		$redirectUrl = NetCommonsUrl::actionUrl(array(
 			'plugin' => $this->params['plugin'],
 			'controller' => $this->params['controller'],
@@ -241,7 +250,9 @@ class PluginManagerController extends PluginManagerAppController {
 		//	if ($this->PluginManager->delete()) {
 		//		$this->Session->setFlash(__('The plugin manager has been deleted.'));
 		//	} else {
-		//		$this->Session->setFlash(__('The plugin manager could not be deleted. Please, try again.'));
+		//		$this->Session->setFlash(
+		//			__('The plugin manager could not be deleted. Please, try again.')
+		//		);
 		//	}
 		//	return $this->redirect(array('action' => 'index'));
 	}

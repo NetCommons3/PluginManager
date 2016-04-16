@@ -50,11 +50,13 @@ class PluginBehavior extends ModelBehavior {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			//PluginsRoomの削除
-			if (! $model->PluginsRoom->deleteAll(array($model->PluginsRoom->alias . '.plugin_key' => $key), false)) {
+			$conditions = array($model->PluginsRoom->alias . '.plugin_key' => $key);
+			if (! $model->PluginsRoom->deleteAll($conditions, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 			//PluginsRoleの削除
-			if (! $model->PluginsRole->deleteAll(array($model->PluginsRole->alias . '.plugin_key' => $key), false)) {
+			$conditions = array($model->PluginsRole->alias . '.plugin_key' => $key);
+			if (! $model->PluginsRole->deleteAll($conditions, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 

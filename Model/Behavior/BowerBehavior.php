@@ -59,7 +59,9 @@ class BowerBehavior extends ModelBehavior {
 				}
 			}
 
-			CakeLog::info(sprintf('[bower] Successfully bower install %s#%s for %s', $package, $version, $plugin));
+			CakeLog::info(
+				sprintf('[bower] Successfully bower install %s#%s for %s', $package, $version, $plugin)
+			);
 		}
 
 		return true;
