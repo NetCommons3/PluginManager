@@ -4,9 +4,17 @@ php:
   - 5.4
   - 5.5
   - 5.6
+  - 7.0
 
 env:
-  - NETCOMMONS_VERSION=master DB=mysql
+  matrix:
+    - NETCOMMONS_VERSION=master DB=mysql
+  global:
+    - secure: "FhZx+mu1fwG7ghoF5jKKwW672cRbAhiSG9IY3q0og1FaNfUjMVMzryAhoM9/76BgRFom9hLKBuM/5pKvhSHZCV9u4EdDoMB38TeJwCv0Fh7L/C7ubfcTrT2cbMFOD9JxkIgt8lOM5vHnnDWi0UFjaFrv3cBCZgVrLW4ejUoUD4RFi+hps5WoG6GcAwHw0nkyM01WZQjZ43YAciiD5/vC1cnaaXwXCzOugIUdjDISN9q/KeVjRp2bhD852GkvBT+qhGRph5+0msCG7ch+ve1xAfPO4QNcgl/+01Op8djj5T+c3TPpFDpOapE4vQ4dD0DWasSRdftlzCyiwyCBLAhYa/8AXJG6rVK2IKyoGyHUZcn8YGDANSLyB4UTdp/7QJKKX5PUrh3ejywr35kJvnCVVQ3o4oyQk5TOJ96i9tYkoOs0d2KZ4dF+bdCfKeyO1zmJp7ILtWBJJrPzE3Rw+OyDI7oqbVpvjHJDt7gKv7cUU/Gpn3vnPtqzTWKqEiTck/K6MEFlWv5T4LY5YtHuPNH2Pmko5Zg1ljnmkuBqHZLg6HCCRoYkYq9TVUL/4N4Q+rEDstrCocVytGecryh+RgNaCvtHxvrPNp3A306s1DrtzXcWZVQ1L3MS1Nj0gdodEAxugRM92Jy/0ouMxmu/0Juv1sXWOOi6GVzfa04BbJmLf9A="
+    - GIT_COMMITTER_NAME=s-nakajima
+    - GIT_COMMITTER_EMAIL=nakajimashouhei@gmail.com
+    - GIT_AUTHOR_NAME=s-nakajima
+    - GIT_AUTHOR_EMAIL=nakajimashouhei@gmail.com
 
 sudo: required
 
