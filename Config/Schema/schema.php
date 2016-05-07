@@ -60,6 +60,8 @@ class PluginManagerSchema extends CakeSchema {
 		'type' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => '1:for frame,2:for control panel'),
 		'default_action' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Default action for content rendering', 'charset' => 'utf8'),
 		'default_setting_action' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Default action for frame settings', 'charset' => 'utf8'),
+		'display_topics' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => '新着に表示するか 0:表示しない 1:表示する'),
+		'display_search' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => '検索に表示するか 0:表示しない 1:表示する'),
 		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
