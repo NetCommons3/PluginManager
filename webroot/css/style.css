@@ -22,9 +22,15 @@ ul.plugin-manager-autors-ul > li {
 }
 
 .plugin-checkbox-outer > .checkbox {
-	width: 16em;
-	margin: 0.5em;
+	width: 12em;
+	margin-top: 0px;
+	margin-bottom: 1em;
 	float: left;
+	white-space: nowrap;
+}
+
+.plugin-checkbox-outer > .checkbox input[type="checkbox"] {
+	margin-left: 0px;
 }
 
 .plugin-checkbox-outer.plugin-outer-sm > .checkbox {

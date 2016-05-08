@@ -25,15 +25,30 @@ class PluginsFormHelper extends AppHelper {
  */
 	public $helpers = array(
 		'NetCommons.NetCommonsForm',
+		'NetCommons.NetCommonsHtml',
 	);
+
+/**
+ * Before render callback. beforeRender is called before the view file is rendered.
+ *
+ * Overridden in subclasses.
+ *
+ * @param string $viewFile The view file that is going to be rendered
+ * @return void
+ */
+	public function beforeRender($viewFile) {
+		$this->NetCommonsHtml->css('/plugin_manager/css/style.css');
+		parent::beforeRender($viewFile);
+	}
 
 /**
  * Roomに対するプラグインチェックボックスリスト
  *
- * @param array $attributes The HTML attributes of the select element.
- * @return string Formatted CHECKBOX element
+ * @param string $fieldName フィールド名
+ * @param array $attributes HTMLの属性オプション
+ * @return string HTML
  */
-	public function checkboxPluginsRoom($attributes = array()) {
+	public function checkboxPluginsRoom($fieldName = 'PluginsRoom.plugin_key', $attributes = array()) {
 		$html = '';
 
 		//チェックボックスの設定
@@ -47,15 +62,14 @@ class PluginsFormHelper extends AppHelper {
 			));
 		}
 
-		$defaults = Hash::extract(
-			$this->_View->viewVars['pluginsRoom'],
-			'{n}.PluginsRoom[room_id=' . Current::read('Room.id') . ']'
-		);
-		$defaults = array_values(Hash::combine($defaults, '{n}.plugin_key', '{n}.plugin_key'));
+		$defaults = Hash::get($attributes, 'default', array());
+		$attributes = Hash::remove($attributes, 'default');
 
-		$this->_View->request->data['PluginsRoom']['plugin_key'] = $defaults;
+		$this->_View->request->data = Hash::insert(
+			$this->_View->request->data, $fieldName, $defaults
+		);
 		$html .= $this->NetCommonsForm->select(
-			'PluginsRoom.plugin_key', $options, Hash::merge($attributes, array('multiple' => 'checkbox'))
+			$fieldName, $options, Hash::merge($attributes, array('multiple' => 'checkbox'))
 		);
 		return $html;
 	}
