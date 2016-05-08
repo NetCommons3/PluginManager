@@ -29,9 +29,16 @@ class PluginsFormComponent extends Component {
 	public $roomId = null;
 
 /**
+ * findのオプション
+ *
+ * @var array
+ */
+	public $findOptions = array();
+
+/**
  * Called after the Controller::beforeFilter() and before the controller action
  *
- * @param Controller $controller Controller with components to startup
+ * @param Controller $controller 呼び出し元Controller
  * @return void
  * @link http://book.cakephp.org/2.0/en/controllers/components.html#Component::startup
  */
@@ -44,7 +51,7 @@ class PluginsFormComponent extends Component {
 /**
  * beforeRender
  *
- * @param Controller $controller Controller
+ * @param Controller $controller 呼び出し元Controller
  * @return void
  * @throws NotFoundException
  */
@@ -54,27 +61,40 @@ class PluginsFormComponent extends Component {
 			return;
 		}
 
-		$this->setPluginsRoomForCheckbox($controller);
+		$this->setPluginsRoomForCheckbox($controller, $this->findOptions);
 	}
 
 /**
  * PluginsFormHelper::checkboxPluginsRoom()のためデータをセット
  *
- * @param Controller $controller Controller with components to startup
+ * @param Controller $controller 呼び出し元Controller
+ * @param array $findOptions findの
  * @return void
  */
-	public function setPluginsRoomForCheckbox(Controller $controller) {
+	public function setPluginsRoomForCheckbox(Controller $controller, $findOptions = array()) {
 		//Modelの呼び出し
 		$Plugin = ClassRegistry::init('PluginManager.Plugin');
 		$PluginsRoom = ClassRegistry::init('PluginManager.PluginsRoom');
 
-		//findのoptionsセット
-		$findOptions = array(
+		//optionsセット
+		$defaultOptions = array(
+			'recursive' => -1,
 			'fields' => array(
 				$Plugin->alias . '.key',
 				$Plugin->alias . '.name',
 				$PluginsRoom->alias . '.room_id',
 				$PluginsRoom->alias . '.plugin_key'
+			),
+			'joins' => array(
+				array(
+					'table' => $PluginsRoom->table,
+					'alias' => $PluginsRoom->alias,
+					'type' => 'LEFT',
+					'conditions' => array(
+						$Plugin->alias . '.key' . ' = ' . $PluginsRoom->alias . ' .plugin_key',
+						$PluginsRoom->alias . '.room_id' => $this->roomId,
+					),
+				)
 			),
 			'conditions' => array(
 				$Plugin->alias . '.type' => Plugin::PLUGIN_TYPE_FOR_FRAME,
@@ -87,20 +107,7 @@ class PluginsFormComponent extends Component {
 		);
 
 		//データ取得
-		$pluginsRoom = $Plugin->find('all', Hash::merge($findOptions, array(
-			'recursive' => -1,
-			'joins' => array(
-				array(
-					'table' => $PluginsRoom->table,
-					'alias' => $PluginsRoom->alias,
-					'type' => 'LEFT',
-					'conditions' => array(
-						$Plugin->alias . '.key' . ' = ' . $PluginsRoom->alias . ' .plugin_key',
-						$PluginsRoom->alias . '.room_id' => $this->roomId,
-					),
-				)
-			),
-		)));
+		$pluginsRoom = $Plugin->find('all', Hash::merge($defaultOptions, $findOptions));
 
 		$controller->set('pluginsRoom', $pluginsRoom);
 		$controller->helpers[] = 'PluginManager.PluginsForm';
