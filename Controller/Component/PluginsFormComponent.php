@@ -68,7 +68,7 @@ class PluginsFormComponent extends Component {
  * PluginsFormHelper::checkboxPluginsRoom()のためデータをセット
  *
  * @param Controller $controller 呼び出し元Controller
- * @param array $findOptions findの
+ * @param array $findOptions findのオプション
  * @return void
  */
 	public function setPluginsRoomForCheckbox(Controller $controller, $findOptions = array()) {
