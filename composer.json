@@ -18,7 +18,7 @@
     },
     "require": {
         "cakedc/migrations":            "~2.2",
-        "netcommons/control_panel":     "dev-master",
+        "netcommons/control-panel":     "dev-master",
         "netcommons/net-commons":       "dev-master",
         "netcommons/rooms":             "dev-master"
     },
