@@ -28,11 +28,3 @@ ul.plugin-manager-autors-ul > li {
 	float: left;
 	white-space: nowrap;
 }
-
-.plugin-checkbox-outer > .checkbox input[type="checkbox"] {
-	margin-left: 0px;
-}
-
-.plugin-checkbox-outer.plugin-outer-sm > .checkbox {
-	width: 11em;
-}
