@@ -72,6 +72,10 @@ class PluginsFormComponent extends Component {
  * @return void
  */
 	public function setPluginsRoomForCheckbox(Controller $controller, $findOptions = array()) {
+		if (Hash::get($controller->viewVars, 'pluginsRoom')) {
+			return;
+		}
+
 		//Modelの呼び出し
 		$Plugin = ClassRegistry::init('PluginManager.Plugin');
 		$PluginsRoom = ClassRegistry::init('PluginManager.PluginsRoom');
