@@ -74,4 +74,32 @@ class PluginsFormHelper extends AppHelper {
 		return $html;
 	}
 
+/**
+ * Roomに対するプラグインのセレクトボックス表示
+ *
+ * @param string $fieldName フィールド名
+ * @param array $attributes HTMLの属性オプション
+ * @return string HTML
+ */
+	public function selectPluginsRoom($fieldName, $attributes = array()) {
+		$html = '';
+
+		//チェックボックスの設定
+		$options = Hash::combine(
+			$this->_View->viewVars['pluginsRoom'], '{n}.Plugin.key', '{n}.Plugin.name'
+		);
+
+		$attributes = Hash::merge(
+			array(
+				'type' => 'select',
+				'options' => $options,
+				'label' => __d('plugin_manager', 'Select plugin'),
+			),
+			$attributes
+		);
+
+		$html .= $this->NetCommonsForm->input($fieldName, $attributes);
+		return $html;
+	}
+
 }
