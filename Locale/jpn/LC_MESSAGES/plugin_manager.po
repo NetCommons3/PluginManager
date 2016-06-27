@@ -77,3 +77,6 @@ msgstr "ライセンス"
 msgid "Home page"
 msgstr "ホームページ"
 
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:36
+msgid "Select plugin"
+msgstr "プラグインの選択"
