@@ -85,8 +85,10 @@ class PluginsFormHelper extends AppHelper {
 		$html = '';
 
 		//チェックボックスの設定
-		$options = Hash::combine(
-			$this->_View->viewVars['pluginsRoom'], '{n}.Plugin.key', '{n}.Plugin.name'
+		$options = Hash::get(
+			$attributes,
+			'options',
+			Hash::combine($this->_View->viewVars['pluginsRoom'], '{n}.Plugin.key', '{n}.Plugin.name')
 		);
 
 		$attributes = Hash::merge(
