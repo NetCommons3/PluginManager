@@ -10,7 +10,7 @@
  * @param {string} Controller name
  * @param {function($scope)} Controller
  */
-NetCommonsApp.controller('PluginManager', function($scope) {
+NetCommonsApp.controller('PluginManager', ['$scope', function($scope) {
 
   /**
    * Plugins data
@@ -62,4 +62,4 @@ NetCommonsApp.controller('PluginManager', function($scope) {
     return $scope.pluginsMap[type][key];
   };
 
-});
+}]);
