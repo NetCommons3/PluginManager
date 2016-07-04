@@ -145,7 +145,7 @@ class PluginManagerController extends PluginManagerAppController {
  * @return void
  */
 	public function edit($pluginType = null) {
-		if (! $this->request->isPut()) {
+		if (! $this->request->is('put')) {
 			$this->throwBadRequest();
 			return;
 		}
@@ -210,7 +210,7 @@ class PluginManagerController extends PluginManagerAppController {
  * @return void
  */
 	public function order($pluginType = null) {
-		if (! $this->request->isPost()) {
+		if (! $this->request->is('post')) {
 			$this->throwBadRequest();
 			return;
 		}
