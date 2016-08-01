@@ -193,7 +193,7 @@ class Plugin extends AppModel {
 		} else {
 			$order = array(
 				$this->alias . '.weight' => 'asc',
-				$this->alias . '.id' => 'desc'
+				$this->alias . '.id' => 'asc'
 			);
 		}
 

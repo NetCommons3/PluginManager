@@ -19,12 +19,6 @@
 		</a>
 	</li>
 
-	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_FOR_NOT_YET ? 'active' : ''); ?>">
-		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_FOR_NOT_YET)); ?>">
-			<?php echo __d('plugin_manager', 'Plugins not yet installed'); ?>
-		</a>
-	</li>
-
 	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL ? 'active' : ''); ?>">
 		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL)); ?>">
 			<?php echo __d('plugin_manager', 'System plugins'); ?>

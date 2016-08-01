@@ -22,14 +22,10 @@
 
 			<?php echo $this->NetCommonsForm->hidden('Plugin.key'); ?>
 
-			<?php echo $this->Button->cancelAndSave(
-					__d('net_commons', 'Cancel'),
-					__d('plugin_manager', 'Update'),
+			<?php echo $this->Button->cancel(
+					__d('net_commons', 'Close'),
 					$this->NetCommonsHtml->url(array('action' => 'index', $pluginType)),
-					array(),
-					array(
-						'onclick' => 'return confirm(\'' . __d('plugin_manager', 'Do you want to update the plugin?') . '\')'
-					)
+					array()
 				); ?>
 
 		<?php echo $this->NetCommonsForm->end(); ?>
