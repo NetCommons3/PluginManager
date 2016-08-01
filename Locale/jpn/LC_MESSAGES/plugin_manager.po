@@ -47,7 +47,7 @@ msgstr "バージョン"
 
 #: PluginManager/View/Elements/PluginManager/tabs.ctp:18
 msgid "Installed plugins"
-msgstr "インストール済みプラグイン"
+msgstr "インストール済み一般プラグイン"
 
 #: PluginManager/View/Elements/PluginManager/tabs.ctp:24
 msgid "Plugins not yet installed"
@@ -55,7 +55,7 @@ msgstr "未インストールプラグイン"
 
 #: PluginManager/View/Elements/PluginManager/tabs.ctp:30
 msgid "System plugins"
-msgstr "管理系プラグイン"
+msgstr "管理プラグイン"
 
 #: PluginManager/View/Elements/PluginManager/tabs.ctp:36
 msgid "External libraries"
