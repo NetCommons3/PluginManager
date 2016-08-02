@@ -55,11 +55,14 @@ class PluginsFormHelper extends AppHelper {
 		$options = Hash::combine(
 			$this->_View->viewVars['pluginsRoom'], '{n}.Plugin.key', '{n}.Plugin.name'
 		);
-		$this->_View->request->data['Plugin']['key'] = array_keys($options);
-		foreach (array_keys($this->_View->request->data['Plugin']['key']) as $index) {
-			$html .= $this->NetCommonsForm->hidden('Plugin.' . $index . '.key', array(
-				'value' => $this->_View->request->data['Plugin']['key'][$index],
-			));
+
+		if (Hash::get($attributes, 'hiddenField', true)) {
+			$this->_View->request->data['Plugin']['key'] = array_keys($options);
+			foreach (array_keys($this->_View->request->data['Plugin']['key']) as $index) {
+				$html .= $this->NetCommonsForm->hidden('Plugin.' . $index . '.key', array(
+					'value' => $this->_View->request->data['Plugin']['key'][$index],
+				));
+			}
 		}
 
 		$defaults = Hash::get($attributes, 'default', array());
