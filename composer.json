@@ -7,8 +7,12 @@
     "license":     "NetCommons License",
     "authors": [
         {
-            "name":     "NetCommons Community",
-            "homepage": "https://github.com/NetCommons3/PluginManager/graphs/contributors"
+            "name": "NetCommons Community",
+            "homepage": "http://www.netcommons.org"
+        },
+        {
+            "name": "NaKaZii Co., Ltd.",
+            "homepage": "https://github.com/s-nakajima"
         }
     ],
     "extra": {
