@@ -88,7 +88,7 @@
 		<?php echo $this->Button->cancelAndSave(
 				__d('net_commons', 'Cancel'),
 				__d('net_commons', 'OK'),
-				$this->NetCommonsHtml->url(array('action' => 'index', $pluginType))
+				NetCommonsUrl::actionUrlAsArray(array('action' => 'index', $pluginType))
 			); ?>
 	</div>
 
