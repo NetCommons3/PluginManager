@@ -17,14 +17,14 @@
 
 		<?php echo $this->NetCommonsForm->create('Plugin', array(
 				'class' => 'form-inline',
-				'url' => $this->NetCommonsHtml->url(array('action' => 'edit', $pluginType))
+				'url' => NetCommonsUrl::actionUrlAsArray(array('action' => 'edit', $pluginType))
 			)); ?>
 
 			<?php echo $this->NetCommonsForm->hidden('Plugin.key'); ?>
 
 			<?php echo $this->Button->cancel(
 					__d('net_commons', 'Close'),
-					$this->NetCommonsHtml->url(array('action' => 'index', $pluginType)),
+					NetCommonsUrl::actionUrlAsArray(array('action' => 'index', $pluginType)),
 					array()
 				); ?>
 
@@ -33,8 +33,8 @@
 	<?php else : ?>
 
 		<?php echo $this->Button->cancel(
-				__d('net_commons', 'Cancel'),
-				$this->NetCommonsHtml->url(array('action' => 'index', $pluginType))
+				__d('net_commons', 'Close'),
+				NetCommonsUrl::actionUrlAsArray(array('action' => 'index', $pluginType))
 			); ?>
 
 	<?php endif; ?>
