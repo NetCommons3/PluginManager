@@ -13,7 +13,7 @@
 
 <?php if ($hasFormTag) : ?>
 	<?php echo $this->NetCommonsForm->create('Plugins', array(
-			'url' => $this->NetCommonsHtml->url(array('action' => 'order', $pluginType))
+			'url' => NetCommonsUrl::actionUrlAsArray(array('action' => 'order', $pluginType))
 		)); ?>
 
 		<div ng-hide="plugins.type<?php echo $pluginType; ?>.length">
@@ -88,7 +88,8 @@
 		<?php echo $this->Button->cancelAndSave(
 				__d('net_commons', 'Cancel'),
 				__d('net_commons', 'OK'),
-				$this->NetCommonsHtml->url(array('action' => 'index', $pluginType))
+				'#',
+				array('ng-click' => 'cancel(\'' . NetCommonsUrl::actionUrl(array('action' => 'index', $pluginType), true) . '\')')
 			); ?>
 	</div>
 
