@@ -50,7 +50,7 @@ class PluginRecords extends NetCommonsMigration {
 				'type' => 3,
 				'default_action' => 'plugin_manager/index',
 				'default_setting_action' => '',
-				'weight' => 7,
+				'weight' => 8,
 			),
 			//英語
 			array(
@@ -61,7 +61,7 @@ class PluginRecords extends NetCommonsMigration {
 				'type' => 3,
 				'default_action' => 'plugin_manager/index',
 				'default_setting_action' => '',
-				'weight' => 7,
+				'weight' => 8,
 			),
 		),
 		'PluginsRole' => array(
