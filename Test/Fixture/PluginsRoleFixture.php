@@ -18,25 +18,6 @@
 class PluginsRoleFixture extends CakeTestFixture {
 
 /**
- * Fields
- *
- * @var array
- */
-	public $fields = array(
-		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'role_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'plugin_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
-		'created_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
-		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'modified_user' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false),
-		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
-		'indexes' => array(
-			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-		),
-		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB'),
-	);
-
-/**
  * Records
  *
  * @var array
@@ -47,5 +28,16 @@ class PluginsRoleFixture extends CakeTestFixture {
 			'plugin_key' => 'test_plugin',
 		),
 	);
+
+/**
+ * Initialize the fixture.
+ *
+ * @return void
+ */
+	public function init() {
+		require_once App::pluginPath('PluginManager') . 'Config' . DS . 'Schema' . DS . 'schema.php';
+		$this->fields = (new PluginManagerSchema())->tables[Inflector::tableize($this->name)];
+		parent::init();
+	}
 
 }
