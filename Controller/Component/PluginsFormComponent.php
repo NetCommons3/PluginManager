@@ -46,6 +46,7 @@ class PluginsFormComponent extends Component {
 		if (! $this->roomId) {
 			$this->roomId = Current::read('Room.id');
 		}
+		$controller->helpers[] = 'PluginManager.PluginsForm';
 	}
 
 /**
@@ -95,7 +96,7 @@ class PluginsFormComponent extends Component {
 					'alias' => $PluginsRoom->alias,
 					'type' => 'LEFT',
 					'conditions' => array(
-						$Plugin->alias . '.key' . ' = ' . $PluginsRoom->alias . ' .plugin_key',
+						$Plugin->alias . '.key' . ' = ' . $PluginsRoom->alias . '.plugin_key',
 						$PluginsRoom->alias . '.room_id' => $this->roomId,
 					),
 				)
@@ -114,7 +115,6 @@ class PluginsFormComponent extends Component {
 		$pluginsRoom = $Plugin->find('all', Hash::merge($defaultOptions, $findOptions));
 
 		$controller->set('pluginsRoom', $pluginsRoom);
-		$controller->helpers[] = 'PluginManager.PluginsForm';
 	}
 
 }
