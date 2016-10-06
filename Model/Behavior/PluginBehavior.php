@@ -85,7 +85,7 @@ class PluginBehavior extends ModelBehavior {
 		if (! $plugins) {
 			$composers = $model->getComposer();
 			$index = 0;
-			$packageKeys = array('packages', 'packages-dev');
+			$packageKeys = array('packages');
 			foreach ($packageKeys as $key) {
 				foreach ($composers[$key] as $package) {
 					if (preg_match('#^netcommons/#', $package['name'])) {
