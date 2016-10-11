@@ -158,30 +158,12 @@ class PluginManagerController extends PluginManagerAppController {
 
 		$error = false;
 
-		if (! $this->Plugin->updateComposer($plugins[0]['composer']['name'])) {
-			$this->NetCommons->setFlashNotification(
-				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'composer'),
-				array('class' => 'danger', 'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL)
-			);
-			$error = true;
-			return;
-		}
-
 		if (! $this->Plugin->runMigration($plugins[0]['Plugin']['key'])) {
 			$this->NetCommons->setFlashNotification(
 				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'migration'), array(
 				'class' => 'danger',
 				'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
 			));
-			$error = true;
-			return;
-		}
-
-		if (! $this->Plugin->updateBower($plugins[0]['Plugin']['key'])) {
-			$this->NetCommons->setFlashNotification(
-				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'bower'),
-				array('class' => 'danger', 'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL)
-			);
 			$error = true;
 			return;
 		}
