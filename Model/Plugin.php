@@ -71,9 +71,6 @@ class Plugin extends AppModel {
  * @var array
  */
 	public $actsAs = array(
-		'PluginManager.Bower',
-		'PluginManager.Composer',
-		'PluginManager.Migration',
 		'PluginManager.Plugin',
 	);
 
