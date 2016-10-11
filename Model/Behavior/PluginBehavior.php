@@ -72,6 +72,80 @@ class PluginBehavior extends ModelBehavior {
 	}
 
 /**
+ * Plugin migration
+ *
+ * @param Model $model Model using this behavior
+ * @param string $plugin Plugin key
+ * @return bool True on success
+ */
+	public function runMigration(Model $model, $plugin = null) {
+		if (! $plugin) {
+			return false;
+		}
+
+		$connections = array('master');
+
+		$plugin = Inflector::camelize($plugin);
+
+		foreach ($connections as $connection) {
+			CakeLog::info(sprintf('[migration] Start migrating %s for %s connection', $plugin, $connection));
+
+			$messages = array();
+			$ret = null;
+			exec(sprintf(
+				'cd %s && app/Console/cake Migrations.migration run all -p %s -c %s -i %s',
+				ROOT, $plugin, $connection, $connection
+			), $messages, $ret);
+
+			// Write logs
+			if (Configure::read('debug')) {
+				foreach ($messages as $message) {
+					CakeLog::info(sprintf('[migration]   %s', $message));
+				}
+			}
+
+			CakeLog::info(
+				sprintf('[migration] Successfully migrated %s for %s connection', $plugin, $connection)
+			);
+		}
+
+		return true;
+	}
+
+/**
+ * Get plugin information data from composer.lock
+ *
+ * @param Model $model Model using this behavior
+ * @param string $namespace Plugin namespace
+ * @return mixed array|bool
+ */
+	public function getComposer(Model $model, $namespace = null) {
+		static $composers = null;
+
+		if (! $composers) {
+			$filePath = ROOT . DS . 'composer.lock';
+			$file = new File($filePath);
+			$contents = $file->read();
+			$file->close();
+
+			$composers = json_decode($contents, true);
+		}
+		if (! $namespace) {
+			return $composers;
+		}
+
+		$ret = Hash::extract($composers['packages'], '{n}[name=' . $namespace . ']');
+		if ($ret) {
+			return $ret[0];
+		}
+		$ret = Hash::extract($composers['packages-dev'], '{n}[name=' . $namespace . ']');
+		if ($ret) {
+			return $ret[0];
+		}
+		return null;
+	}
+
+/**
  * Get external plugin
  *
  * @param Model $model Model using this behavior
