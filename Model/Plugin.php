@@ -61,9 +61,9 @@ class Plugin extends AppModel {
 	const PLUGIN_TYPE_FOR_NOT_YET = '4';
 
 /**
- * 外部ライブラリ
+ * 外部ライブラリ composer
  */
-	const PLUGIN_TYPE_FOR_EXTERNAL = '5';
+	const PLUGIN_TYPE_FOR_EXT_COMPOSER = '5';
 
 /**
  * Behaviors

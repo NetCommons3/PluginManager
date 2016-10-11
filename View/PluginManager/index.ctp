@@ -42,10 +42,10 @@ echo $this->NetCommonsHtml->script('/plugin_manager/js/plugin_manager.js');
 			</div>
 		<?php endif; ?>
 
-		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_EXTERNAL) : ?>
+		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER) : ?>
 			<div class="tab-pane active">
 				<?php echo $this->element('PluginManager/plugins',
-						array('pluginType' => Plugin::PLUGIN_TYPE_FOR_EXTERNAL, 'hasFormTag' => false)); ?>
+						array('pluginType' => Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER, 'hasFormTag' => false)); ?>
 			</div>
 		<?php endif; ?>
 	</div>

@@ -63,7 +63,7 @@ class PluginManagerController extends PluginManagerAppController {
 			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
 				break;
 
-			case $Plugin::PLUGIN_TYPE_FOR_EXTERNAL:
+			case $Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER:
 				$plugins[$typeKey] = $this->Plugin->getExternalPlugins();
 				break;
 
