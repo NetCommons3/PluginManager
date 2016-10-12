@@ -10,6 +10,7 @@
  */
 
 echo $this->NetCommonsHtml->script('/plugin_manager/js/plugin_manager.js');
+echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 ?>
 
 <?php echo $this->element('PluginManager/title'); ?>
@@ -29,12 +30,6 @@ echo $this->NetCommonsHtml->script('/plugin_manager/js/plugin_manager.js');
 			</div>
 		<?php endif; ?>
 
-		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_NOT_YET) : ?>
-			<div class="tab-pane active">
-
-			</div>
-		<?php endif; ?>
-
 		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) : ?>
 			<div class="tab-pane active">
 				<?php echo $this->element('PluginManager/plugins',
@@ -42,10 +37,30 @@ echo $this->NetCommonsHtml->script('/plugin_manager/js/plugin_manager.js');
 			</div>
 		<?php endif; ?>
 
+		<?php if ($active === Plugin::PLUGIN_TYPE_CORE) : ?>
+			<div class="tab-pane active">
+				<?php echo $this->element('PluginManager/plugins',
+						array('pluginType' => Plugin::PLUGIN_TYPE_CORE, 'hasFormTag' => false)); ?>
+			</div>
+		<?php endif; ?>
+
+		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_NOT_YET) : ?>
+			<div class="tab-pane active">
+
+			</div>
+		<?php endif; ?>
+
 		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER) : ?>
 			<div class="tab-pane active">
 				<?php echo $this->element('PluginManager/plugins',
 						array('pluginType' => Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER, 'hasFormTag' => false)); ?>
+			</div>
+		<?php endif; ?>
+
+		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_EXT_BOWER) : ?>
+			<div class="tab-pane active">
+				<?php echo $this->element('PluginManager/plugins',
+						array('pluginType' => Plugin::PLUGIN_TYPE_FOR_EXT_BOWER, 'hasFormTag' => false)); ?>
 			</div>
 		<?php endif; ?>
 	</div>

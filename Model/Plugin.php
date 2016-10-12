@@ -30,6 +30,11 @@ class Plugin extends AppModel {
 	const PACKAGIST_URL = 'https://packagist.org/packages/';
 
 /**
+ * GithubのURL
+ */
+	const GITHUB_URL = 'https://github.com/';
+
+/**
  * コアプラグイン
  */
 	const PLUGIN_TYPE_CORE = '0';
@@ -64,6 +69,11 @@ class Plugin extends AppModel {
  * 外部ライブラリ composer
  */
 	const PLUGIN_TYPE_FOR_EXT_COMPOSER = '5';
+
+/**
+ * 外部ライブラリ bower
+ */
+	const PLUGIN_TYPE_FOR_EXT_BOWER = '6';
 
 /**
  * Behaviors
@@ -173,16 +183,25 @@ class Plugin extends AppModel {
 	}
 
 /**
- * Get plugin data from type and roleId, $langId
+ * プラグインデータの取得
  *
- * @param int $type array|int 1:for frame/2:for controll panel
- * @param string $key plugins.key
- * @return mixed array|bool
+ * @param int $type プラグインタイプ
+ * @param string $key プラグインキー
+ * @return array
  */
 	public function getPlugins($type, $key = null) {
+		$notLangTypes = array(
+			self::PLUGIN_TYPE_CORE, self::PLUGIN_TYPE_FOR_EXT_COMPOSER, self::PLUGIN_TYPE_FOR_EXT_BOWER
+		);
+		if (! is_array($type) && in_array($type, $notLangTypes)) {
+			$langId = '0';
+		} else {
+			$langId = Current::read('Language.id');
+		}
+
 		$conditions = array(
 			'Plugin.type' => $type,
-			'Plugin.language_id' => Current::read('Language.id')
+			'Plugin.language_id' => $langId
 		);
 		if (isset($key)) {
 			$conditions['Plugin.key'] = $key;
@@ -195,23 +214,93 @@ class Plugin extends AppModel {
 		}
 
 		//pluginsテーブルの取得
-		if (! $plugins = $this->find('all', array(
+		$plugins = $this->find('all', array(
 			'recursive' => -1,
 			'conditions' => $conditions,
 			'order' => $order,
-		))) {
-			return null;
+		));
+		if (! $plugins) {
+			return array();
 		}
-
 		foreach ($plugins as $i => $plugin) {
-			$plugins[$i]['composer'] = $this->getComposer($plugin['Plugin']['namespace']);
+			$plugin['Plugin']['serialize_data'] = unserialize($plugin['Plugin']['serialize_data']);
+			if ($plugin['Plugin']['type'] === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+				$plugin['Plugin']['package_url'] = Hash::get($plugin, 'Plugin.serialize_data.source');
+				$plugin['latest'] = $this->getBower($plugin['Plugin']['namespace']);
+			} else {
+				$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
+				$plugin['latest'] = $this->getComposer($plugin['Plugin']['namespace']);
+			}
+			$plugins[$i] = $plugin;
 		}
 
-		return $plugins;
+		if ($key) {
+			return Hash::get($plugins, '0', array());
+		} else {
+			return $plugins;
+		}
 	}
 
 /**
- * Save plugin
+ * 未インストールのプラグイン取得
+ *
+ * @param int $type プラグインタイプ
+ * @param string $key プラグインキー
+ * @return array
+ */
+	public function getNewPlugins($type, $key = null) {
+		if ($type === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+			$packages = $this->getBower();
+		} elseif ($type === self::PLUGIN_TYPE_FOR_EXT_COMPOSER) {
+			$packages = $this->getComposer();
+			//$notPackages = preg_grep('/^netcommons/', array_keys($packages));
+			$notPackages = Hash::extract($packages, '{s}[namespace=/^netcommons/]');
+			var_dump($notPackages);
+			$latests = array_diff(Hash::extract($packages, '{s}.key'), $notPackages);
+		} else {
+			$packages = $this->getComposer();
+			$packages = Hash::extract($packages, '{s}[key=netcommons]');
+		}
+
+		$currents = $this->find('list', array(
+			'recursive' => -1,
+			'fields' => array('key', 'commit_version'),
+			'conditions' => array(
+				'language_id' => array(Current::read('Language.id'), '0'),
+			),
+		));
+		$currents = array_keys($currents);
+
+		$inserts = array_diff($latests, $currents);
+		$plugins = array();
+		if ($key) {
+			if (in_array($key, $inserts, true)) {
+				$plugins[] = $packages[$key];
+			}
+		} else {
+			foreach ($inserts as $i => $pluginKey) {
+				$plugin['Plugin'] = $packages[$pluginKey];
+				$plugins['latest'] = $packages[$pluginKey];
+				//$plugin['Plugin']['serialize_data'] = $packages[$pluginKey];
+				if ($plugin['Plugin']['type'] === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+					$plugin['Plugin']['package_url'] = Hash::get($packages[$pluginKey], 'source');
+				} else {
+					$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
+				}
+
+				$plugins[$i] = $plugin;
+			}
+		}
+
+		if ($key) {
+			return Hash::get($plugins, '0');
+		} else {
+			return $plugins;
+		}
+	}
+
+/**
+ * プラグインの表示順序更新
  *
  * @param array $data Request data
  * @return bool True on success

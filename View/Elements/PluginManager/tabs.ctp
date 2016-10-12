@@ -25,9 +25,21 @@
 		</a>
 	</li>
 
+	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_CORE ? 'active' : ''); ?>">
+		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_CORE)); ?>">
+			<?php echo __d('plugin_manager', 'Core plugins'); ?>
+		</a>
+	</li>
+
 	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER ? 'active' : ''); ?>">
 		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER)); ?>">
 			<?php echo __d('plugin_manager', 'External libraries'); ?>
+		</a>
+	</li>
+
+	<li class="<?php echo ($active === Plugin::PLUGIN_TYPE_FOR_EXT_BOWER ? 'active' : ''); ?>">
+		<a href="<?php echo $this->NetCommonsHtml->url(array('action' => 'index', Plugin::PLUGIN_TYPE_FOR_EXT_BOWER)); ?>">
+			<?php echo __d('plugin_manager', 'Js libraries'); ?>
 		</a>
 	</li>
 </ul>

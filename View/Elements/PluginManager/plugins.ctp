@@ -57,27 +57,42 @@
 						</button>
 
 						<input type="hidden" ng-value="{{$index + 1}}"
-							   name="data[Plugins][{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][weight]">
-
-					<?php else : ?>
-						{{$index + 1}}
+							   name="data[Plugins][{{getIndex('type<?php echo $pluginType; ?>', plugin.key)}}][Plugin][weight]">
 					<?php endif; ?>
 				</td>
 				<td>
-					<a ng-href="<?php echo $this->NetCommonsHtml->url(array('action' => 'view', $pluginType)) . '/'; ?>{{plugin.plugin.key}}/">
+					<a href="" ng-click="showView('<?php echo $pluginType; ?>', plugin.plugin.key)">
 						{{plugin.plugin.name}}
 					</a>
 				</td>
 				<td>
-					<a target="_blank" ng-href="<?php echo Plugin::PACKAGIST_URL; ?>{{plugin.plugin.namespace}}">
+					<a target="_blank" ng-href="{{plugin.plugin.packageUrl}}">
 						{{plugin.plugin.namespace}}
 					</a>
 				</td>
 				<td>
-					<a target="_blank" ng-href="{{plugin.composer.source.url}}" ng-if="plugin.composer">
-						{{plugin.composer.version}}
-						<span class="text-muted">({{plugin.composer.source.reference|limitTo:10}})</span>
-					</a>
+					<span>
+						<a target="_blank" ng-href="{{plugin.plugin.serializeData.commitUrl}}" ng-if="plugin.plugin.serializeData.commitUrl">
+							{{plugin.plugin.version}}
+							<span class="text-muted">({{plugin.plugin.commitVersion|limitTo:10}})</span>
+						</a>
+						<span ng-if="!plugin.plugin.serializeData.commitUrl">
+							{{plugin.plugin.version}}
+							<span class="text-muted">({{plugin.plugin.commitVersion|limitTo:10}})</span>
+						</span>
+					</span>
+
+					<span class="text-danger" ng-if="plugin.latest && plugin.plugin.commitVersion !== plugin.latest.commitVersion">
+						<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
+						<a target="_blank" ng-href="{{plugin.latest.commitUrl}}" ng-if="plugin.latest.commitUrl">
+							{{plugin.latest.version}}
+							<span class="text-danger">({{plugin.latest.commitVersion|limitTo:10}})</span>
+						</a>
+						<span class="text-danger" ng-if="!plugin.latest.commitUrl">
+							{{plugin.latest.version}}
+							({{plugin.latest.commitVersion|limitTo:10}})
+						</span>
+					</span>
 				</td>
 			</tr>
 		</tbody>
