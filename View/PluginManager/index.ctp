@@ -14,6 +14,35 @@ echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 ?>
 
 <?php echo $this->element('PluginManager/title'); ?>
+
+<?php if ($hasUpdate) : ?>
+<?php
+	$message = '<div class="clearfix">';
+
+	$message .= '<div class="pull-left">';
+	$message .= __d('plugin_manager',
+		'There is a version-up plugins and libraries. If you want to all update, please press the "Update all".'
+	);
+	$message .= '</div>';
+
+	$message .= '<div class="pull-right">';
+	$message .= $this->NetCommonsForm->create(false, array(
+		'url' => NetCommonsUrl::actionUrlAsArray(array('action' => 'update_all', 'key' => $active))
+	));
+	$message .= $this->Button->save(
+		__d('plugin_manager', 'Update all'),
+		array(
+			'onclick' => 'return confirm(\'' . __d('plugin_manager', 'There is a version-up plugins and libraries. If you want to all update, please press the "Update all".') . '\');'
+		)
+	);
+	$message .= $this->NetCommonsForm->end();
+	$message .= '</div>';
+	$message .= '</div>';
+
+	echo $this->MessageFlash->description($message);
+?>
+<?php endif; ?>
+
 <?php echo $this->element('PluginManager/tabs'); ?>
 
 <div ng-controller="PluginManager"

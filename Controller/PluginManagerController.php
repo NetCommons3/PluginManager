@@ -197,6 +197,37 @@ class PluginManagerController extends PluginManagerAppController {
  * @throws NotFoundException
  * @return void
  */
+	public function update_all($pluginType = null) {
+		if (! $this->request->is('post')) {
+			return $this->throwBadRequest();
+		}
+
+//		$data = $this->data;
+//		unset($data['save']);
+//		if (! $this->Plugin->saveWeight($data)) {
+//			$this->throwBadRequest();
+//			return;
+//		}
+
+		$this->NetCommons->setFlashNotification(
+			__d('net_commons', 'Successfully saved.'), array('class' => 'success')
+		);
+		$redirectUrl = NetCommonsUrl::actionUrl(array(
+			'plugin' => $this->params['plugin'],
+			'controller' => $this->params['controller'],
+			'action' => 'index',
+			$pluginType,
+		));
+		$this->redirect($redirectUrl);
+	}
+
+/**
+ * edit method
+ *
+ * @param int $pluginType Plugin type
+ * @throws NotFoundException
+ * @return void
+ */
 	public function order($pluginType = null) {
 		if (! $this->request->is('post')) {
 			$this->throwBadRequest();
