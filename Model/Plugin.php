@@ -249,25 +249,39 @@ class Plugin extends AppModel {
  * @return array
  */
 	public function getNewPlugins($type, $key = null) {
+		$conditions = array(
+			'language_id' => array(Current::read('Language.id'), '0'),
+		);
+
 		if ($type === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
 			$packages = $this->getBower();
+			$latests = Hash::extract($packages, '{s}.key', array());
+			$conditions['type'] = self::PLUGIN_TYPE_FOR_EXT_BOWER;
 		} elseif ($type === self::PLUGIN_TYPE_FOR_EXT_COMPOSER) {
 			$packages = $this->getComposer();
-			//$notPackages = preg_grep('/^netcommons/', array_keys($packages));
-			$notPackages = Hash::extract($packages, '{s}[namespace=/^netcommons/]');
-			var_dump($notPackages);
-			$latests = array_diff(Hash::extract($packages, '{s}.key'), $notPackages);
+			$notPackages = preg_replace('/-/', '_',
+				preg_replace('/^netcommons\//', '', preg_grep('/^netcommons/', array_keys($packages)))
+			);
+			$latests = array_diff(Hash::extract($packages, '{s}.key', array()), $notPackages);
+			$conditions['type'] = self::PLUGIN_TYPE_FOR_EXT_COMPOSER;
 		} else {
 			$packages = $this->getComposer();
-			$packages = Hash::extract($packages, '{s}[key=netcommons]');
+			$packages = preg_replace('/-/', '_',
+				preg_replace('/^netcommons\//', '', preg_grep('/^netcommons/', array_keys($packages)))
+			);
+			$latests = Hash::extract($packages, '{s}.key', array());
+			$conditions['type'] = array(
+				self::PLUGIN_TYPE_CORE,
+				self::PLUGIN_TYPE_FOR_FRAME,
+				self::PLUGIN_TYPE_FOR_SITE_MANAGER,
+				self::PLUGIN_TYPE_FOR_SYSTEM_MANGER,
+			);
 		}
 
 		$currents = $this->find('list', array(
 			'recursive' => -1,
 			'fields' => array('key', 'commit_version'),
-			'conditions' => array(
-				'language_id' => array(Current::read('Language.id'), '0'),
-			),
+			'conditions' => $conditions,
 		));
 		$currents = array_keys($currents);
 

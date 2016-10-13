@@ -93,6 +93,13 @@
 							({{plugin.latest.commitVersion|limitTo:10}})
 						</span>
 					</span>
+
+					<span class="text-danger" ng-if="!plugin.latest">
+						<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
+						<span ng-if="!plugin.latest">
+							<?php echo __d('net_commons', 'Delete'); ?>
+						</span>
+					</span>
 				</td>
 			</tr>
 		</tbody>

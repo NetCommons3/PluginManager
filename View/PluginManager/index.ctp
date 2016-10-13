@@ -22,7 +22,7 @@ echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 			'pluginsMap' => $pluginsMap
 		), true)); ?>)">
 
-	<div class="tab-content">
+	<div class="tab-content" ng-cloak>
 		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_FRAME) : ?>
 			<div class="tab-pane active">
 				<?php echo $this->element('PluginManager/plugins',
@@ -44,9 +44,10 @@ echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 			</div>
 		<?php endif; ?>
 
-		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_NOT_YET) : ?>
+		<?php if ($hasNewPlugin && $active === Plugin::PLUGIN_TYPE_FOR_NOT_YET) : ?>
 			<div class="tab-pane active">
-
+				<?php echo $this->element('PluginManager/plugins',
+						array('pluginType' => Plugin::PLUGIN_TYPE_FOR_NOT_YET, 'hasFormTag' => false)); ?>
 			</div>
 		<?php endif; ?>
 

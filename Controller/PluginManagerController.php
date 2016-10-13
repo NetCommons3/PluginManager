@@ -72,9 +72,11 @@ class PluginManagerController extends PluginManagerAppController {
 				break;
 
 			case Plugin::PLUGIN_TYPE_FOR_NOT_YET:
+				$plugins[$typeKey] = $this->Plugin->getNewPlugins($this->viewVars['active']);
 				break;
 
 			case Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER:
+			case Plugin::PLUGIN_TYPE_FOR_EXT_BOWER:
 				$plugins[$typeKey] = array_merge(
 					$this->Plugin->getPlugins($this->viewVars['active']),
 					$this->Plugin->getNewPlugins($this->viewVars['active'])
@@ -83,9 +85,6 @@ class PluginManagerController extends PluginManagerAppController {
 				$pluginsMap[$typeKey] = array_flip(
 					array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key'))
 				);
-				break;
-
-			case Plugin::PLUGIN_TYPE_FOR_EXT_BOWER:
 				break;
 
 			default:
@@ -107,6 +106,7 @@ class PluginManagerController extends PluginManagerAppController {
 		);
 		$this->set('nc3plugin', $nc3plugin);
 
+		$this->set('hasNewPlugin', (bool)$this->Plugin->getNewPlugins(Plugin::PLUGIN_TYPE_FOR_NOT_YET));
 		$this->set('hasUpdate', $this->Plugin->hasUpdate());
 	}
 
