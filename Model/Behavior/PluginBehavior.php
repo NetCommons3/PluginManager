@@ -23,25 +23,99 @@ App::uses('Plugin', 'PluginManager.Model');
 class PluginBehavior extends ModelBehavior {
 
 /**
- * Composersのファイル取得
+ * バージョンアップを実行
  *
- * @var array
+ * @param Model $model 呼び出し元Model
+ * @param string $plugin Plugin key
+ * @return bool True on success
+ * @throws InternalErrorException
  */
-	public $composers = array();
+	public function runVersionUp(Model $model, $plugin) {
+		try {
+			//トランザクションBegin
+			$model->begin();
+
+			if (! Hash::get($plugin, 'latest') && Hash::get($plugin, 'Plugin.id')) {
+				if (! $model->uninstallPlugin(Hash::get($plugin, 'Plugin.key'))) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+				$model->deletePackageDir($plugin);
+			} else {
+				if (Hash::get($plugin, 'latest.packageType') === 'cakephp-plugin') {
+					if (! $model->runMigration(Hash::get($plugin, 'latest.key'))) {
+						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+					}
+				}
+				if (! $model->updateVersion(array(Hash::get($plugin, 'latest')))) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+				if (Hash::get($plugin, 'latest.originalSource') !==
+						Hash::get($plugin, 'Plugin.serialize_data.originalSource')) {
+					$model->deletePackageDir($plugin);
+				}
+			}
+
+			//トランザクションCommit
+			$model->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$model->rollback($ex);
+		}
+
+		return true;
+	}
 
 /**
- * Bowersのファイル取得
+ * Pluginのアンインストール
  *
- * @var array
+ * @param Model $model 呼び出し元Model
+ * @param array $data Pluginデータ
+ * @return bool True on success
+ * @throws InternalErrorException
  */
-	public $bowers = array();
+	public function uninstallPlugin(Model $model, $data) {
+		$model->loadModels([
+			'Plugin' => 'PluginManager.Plugin',
+			'PluginsRole' => 'PluginManager.PluginsRole',
+			'PluginsRoom' => 'PluginManager.PluginsRoom',
+		]);
 
-/**
- * Themesのファイル取得
- *
- * @var array
- */
-	public $themes = array();
+		//トランザクションBegin
+		$model->begin();
+
+		if (is_string($data)) {
+			$key = $data;
+		} else {
+			$key = $data[$model->Plugin->alias]['key'];
+		}
+
+		try {
+			//Pluginの削除
+			if (! $model->Plugin->deleteAll(array($model->Plugin->alias . '.key' => $key), false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			//PluginsRoomの削除
+			$conditions = array($model->PluginsRoom->alias . '.plugin_key' => $key);
+			if (! $model->PluginsRoom->deleteAll($conditions, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			//PluginsRoleの削除
+			$conditions = array($model->PluginsRole->alias . '.plugin_key' => $key);
+			if (! $model->PluginsRole->deleteAll($conditions, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			//トランザクションCommit
+			$model->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$model->rollback($ex);
+		}
+
+		return true;
+	}
 
 /**
  * バージョンアップを実行
@@ -112,314 +186,6 @@ class PluginBehavior extends ModelBehavior {
 			$Folder->delete();
 		}
 
-		return true;
-	}
-
-/**
- * composer.lockから情報取得
- *
- * @param Model $model 呼び出し元Model
- * @param string $namespace Pluginのnamespace
- * @param string|array $filePath ファイルパスもしくはcomposer.lockファイルデータ
- * @return mixed array|bool
- */
-	public function getComposer(Model $model, $namespace = null, $filePath = null) {
-		if ($this->composers && ! $filePath) {
-			$composers = $this->composers;
-		} else {
-			if ($filePath) {
-				$file = new File($filePath);
-			} else {
-				$file = new File(ROOT . DS . 'composer.lock');
-			}
-			$contents = $file->read();
-			$file->close();
-
-			$packages = json_decode($contents, true);
-
-			$composers = array();
-			foreach ($packages['packages'] as $package) {
-				$index = Hash::get($package, 'name');
-				$composers[$index] = $this->_parseComposer($package);
-			}
-
-			if (! $filePath) {
-				$this->composers = $composers;
-			}
-		}
-
-		if (! $namespace) {
-			return $composers;
-		}
-
-		return Hash::get($composers, array($namespace));
-	}
-
-/**
- * bowerの情報をパースする
- *
- * @param array $package jsonファイルの情報
- * @return mixed array
- */
-	protected function _parseComposer($package) {
-		if (preg_match('#^netcommons/#', $package['name'])) {
-			$key = strtr(preg_replace('#^netcommons/#', '', $package['name']), '-', '_');
-			$name = Inflector::humanize($key);
-			$originalSource = Inflector::camelize($key);
-		} elseif (Hash::get($package, 'type') === 'cakephp-plugin') {
-			$key = strtr(substr($package['name'], strrpos($package['name'], '/') + 1), '-', '_');
-			$name = Inflector::humanize(strtr($package['name'], '/', ' '));
-			$originalSource = Inflector::camelize($key);
-		} else {
-			$key = $package['name'];
-			$name = $package['name'];
-			$originalSource = $package['name'];
-		}
-
-		$result = array(
-			'key' => $key,
-			'namespace' => Hash::get($package, 'name'),
-			'description' => Hash::get($package, 'description'),
-			'homepage' => Hash::get($package, 'homepage'),
-			'version' => Hash::get($package, 'version'),
-			'commit_version' => Hash::get($package, 'source.reference'),
-			'source' => Hash::get($package, 'source.url', ''),
-			'authors' => Hash::get($package, 'authors'),
-			'license' => Hash::get($package, 'license'),
-			'commited' => Hash::get($package, 'time'),
-			'packageType' => Hash::get($package, 'type'),
-			'originalSource' => $originalSource
-		);
-		if (isset($package['extra']['installer-name'])) {
-			$result['key'] = Inflector::underscore($package['extra']['installer-name']);
-			$result['name'] = $package['extra']['installer-name'];
-			$result['originalSource'] = $package['extra']['installer-name'];
-		} else {
-			$result['name'] = $name;
-		}
-		if (isset($package['plugin-type'])) {
-			$result['type'] = $package['plugin-type'];
-		} elseif (! preg_match('#^netcommons/#', $package['name'])) {
-			$result['type'] = Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER;
-		}
-
-		if (Hash::get($package, 'source.type') === 'git' &&
-				$result['source'] && $result['commit_version']) {
-			$result['commit_url'] = preg_replace('/\.git$/', '', $result['source']);
-			$result['commit_url'] .= '/tree/' . $result['commit_version'];
-		} else {
-			$result['commit_url'] = null;
-		}
-
-		return $result;
-	}
-
-/**
- * bowerの情報取得
- *
- * @param Model $model 呼び出し元Model
- * @param string $namespace Pluginのnamespace
- * @param string $dirPath bowerのディレクトリ
- * @return mixed array|bool
- */
-	public function getBower(Model $model, $namespace = null, $dirPath = null) {
-		if ($this->bowers && ! $dirPath) {
-			$bowers = $this->bowers;
-		} elseif (is_array($dirPath)) {
-			$bowers = array();
-			foreach ($dirPath as $package) {
-				$bower = $this->_parseBower($package, null);
-				$bowers[$bower['namespace']] = $bower;
-			}
-		} else {
-			if ($dirPath) {
-				$Folder = new Folder($dirPath);
-			} else {
-				$Folder = new Folder(WWW_ROOT . 'components');
-			}
-			$dirs = $Folder->read(Folder::SORT_NAME, false, true)[0];
-
-			$bowers = array();
-			foreach ($dirs as $dir) {
-				$file = new File($dir . DS . '.bower.json');
-				$contents = $file->read();
-				$file->close();
-				$package = json_decode($contents, true);
-
-				$bower = $this->_parseBower($package, $dir);
-				$bowers[$bower['namespace']] = $bower;
-			}
-
-			if (! $dirPath) {
-				$this->bowers = $bowers;
-			}
-		}
-
-		if (! $namespace) {
-			return $bowers;
-		}
-
-		return Hash::get($bowers, array($namespace));
-	}
-
-/**
- * bowerの情報をパースする
- *
- * @param array $package jsonファイルの情報
- * @param string $dir ディレクトリパス
- * @return mixed array
- */
-	protected function _parseBower($package, $dir) {
-		$result = array(
-			'name' => Hash::get($package, 'name'),
-			'key' => strtr(Hash::get($package, 'name'), '.', '-'),
-			'type' => Plugin::PLUGIN_TYPE_FOR_EXT_BOWER,
-			'description' => Hash::get($package, 'description'),
-			'homepage' => Hash::get($package, 'homepage'),
-			'version' => Hash::get($package, 'version'),
-			'commit_version' => Hash::get($package, '_resolution.commit'),
-			'source' => Hash::get($package, '_source', ''),
-			'authors' => Hash::get($package, 'authors'),
-			'license' => Hash::get($package, 'license'),
-			'packageType' => 'bower',
-			'originalSource' => Hash::get($package, '_originalSource', Hash::get($package, 'name')),
-		);
-
-		if (! $result['version']) {
-			$result['version'] = Hash::get($package, '_release');
-		}
-		$pattern = '/^' . preg_quote('https://github.com/', '/') . '|\.git$/';
-		$result['namespace'] = preg_replace($pattern, '', $result['source']);
-
-		if ($dir && file_exists($dir . DS . 'bower.json')) {
-			$result['commited'] = date('Y-m-d H:i:s', filemtime($dir . DS . 'bower.json'));
-		} else {
-			$result['commited'] = null;
-		}
-
-		if (preg_match('/^' . preg_quote(Plugin::GITHUB_URL, '/') . '/', $result['source']) &&
-				Hash::get($result, 'commit_version')) {
-			$result['commit_url'] = preg_replace('/\.git$/', '', $result['source']);
-			$result['commit_url'] .= '/tree/' . Hash::get($result, 'commit_version');
-		} else {
-			$result['commit_url'] = null;
-		}
-		return $result;
-	}
-
-/**
- * themeの情報取得
- *
- * @param Model $model 呼び出し元Model
- * @param string $namespace Pluginのnamespace
- * @param string $dirPath themeのディレクトリ
- * @return mixed array|bool
- */
-	public function getTheme(Model $model, $namespace = null, $dirPath = null) {
-		if ($this->themes && ! $dirPath) {
-			$themes = $this->themes;
-		} else {
-			if ($dirPath) {
-				$Folder = new Folder($dirPath);
-			} else {
-				$Folder = new Folder(APP . 'View' . DS . 'Themed');
-			}
-			$dirs = $Folder->read(Folder::SORT_NAME, false, true)[0];
-
-			$themes = array();
-			foreach ($dirs as $dir) {
-				$file = new File($dir . DS . 'theme.json');
-				$contents = $file->read();
-				$file->close();
-				$package = json_decode($contents, true);
-
-				$theme = $this->_parseTheme($package, $dir);
-				$themes[$theme['namespace']] = $theme;
-			}
-
-			if (! $dirPath) {
-				$this->themes = $themes;
-			}
-		}
-
-		if (! $namespace) {
-			return $themes;
-		}
-
-		return Hash::get($themes, array($namespace));
-	}
-
-/**
- * bowerの情報をパースする
- *
- * @param array $package jsonファイルの情報
- * @param string $dir ディレクトリパス
- * @return mixed array
- */
-	protected function _parseTheme($package, $dir) {
-		$result = array(
-			'name' => Hash::get($package, 'name'),
-			'key' => Inflector::underscore(basename($dir)),
-			'namespace' => basename($dir),
-			'type' => Plugin::PLUGIN_TYPE_FOR_THEME,
-			'description' => Hash::get($package, 'description'),
-			'homepage' => Hash::get($package, 'homepage'),
-			'version' => Hash::get($package, 'version'),
-			'commit_version' => Hash::get($package, 'source.reference', Hash::get($package, 'version')),
-			'source' => Hash::get($package, 'source.url', ''),
-			'authors' => Hash::get($package, 'authors'),
-			'license' => Hash::get($package, 'license'),
-			'commited' => Hash::get($package, 'time'),
-			'packageType' => Hash::get($package, 'type'),
-			'originalSource' => basename($dir)
-		);
-
-		if (Hash::get($package, 'source.type') === 'git' &&
-				$result['source'] && $result['commit_version']) {
-			$result['commit_url'] = preg_replace('/\.git$/', '', $result['source']);
-			$result['commit_url'] .= '/tree/' . $result['commit_version'];
-		} else {
-			$result['commit_url'] = null;
-		}
-		return $result;
-	}
-
-/**
- * composer.lockファイルからバージョン情報をDBに更新する
- *
- * @param Model $model 呼び出し元Model
- * @param string|array $filePath ファイルパスもしくはcomposer.lockファイルデータ
- * @return bool
- */
-	public function updateVersionByComposer(Model $model, $filePath = null) {
-		$composers = $model->getComposer(null, $filePath);
-		$this->updateVersion($model, $composers);
-		return true;
-	}
-
-/**
- * composer.lockファイルからバージョン情報をDBに更新する
- *
- * @param Model $model Model using this behavior
- * @param string $dirPath bowerのディレクトリ
- * @return bool
- */
-	public function updateVersionByBower(Model $model, $dirPath = null) {
-		$bowers = $model->getBower(null, $dirPath);
-		$this->updateVersion($model, $bowers);
-		return true;
-	}
-
-/**
- * composer.lockファイルからバージョン情報をDBに更新する
- *
- * @param Model $model Model using this behavior
- * @param string $dirPath themeのディレクトリ
- * @return bool
- */
-	public function updateVersionByTheme(Model $model, $dirPath = null) {
-		$themes = $model->getTheme(null, $dirPath);
-		$this->updateVersion($model, $themes);
 		return true;
 	}
 

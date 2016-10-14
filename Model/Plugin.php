@@ -87,6 +87,9 @@ class Plugin extends AppModel {
  */
 	public $actsAs = array(
 		'PluginManager.Plugin',
+		'PluginManager.PluginBower',
+		'PluginManager.PluginComposer',
+		'PluginManager.PluginTheme',
 	);
 
 /**
@@ -376,98 +379,6 @@ class Plugin extends AppModel {
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}
 				}
-			}
-
-			//トランザクションCommit
-			$this->commit();
-
-		} catch (Exception $ex) {
-			//トランザクションRollback
-			$this->rollback($ex);
-		}
-
-		return true;
-	}
-
-/**
- * バージョンアップを実行
- *
- * @param string $plugin Plugin key
- * @return bool True on success
- * @throws InternalErrorException
- */
-	public function runVersionUp($plugin) {
-		try {
-			//トランザクションBegin
-			$this->begin();
-
-			if (! Hash::get($plugin, 'latest') && Hash::get($plugin, 'Plugin.id')) {
-				if (! $this->uninstallPlugin(Hash::get($plugin, 'Plugin.key'))) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-				$this->deletePackageDir($plugin);
-			} else {
-				if (Hash::get($plugin, 'latest.packageType') === 'cakephp-plugin') {
-					if (! $this->runMigration(Hash::get($plugin, 'latest.key'))) {
-						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-					}
-				}
-				if (! $this->updateVersion(array(Hash::get($plugin, 'latest')))) {
-					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-				}
-				if (Hash::get($plugin, 'latest.originalSource') !==
-						Hash::get($plugin, 'Plugin.serialize_data.originalSource')) {
-					$this->deletePackageDir($plugin);
-				}
-			}
-
-			//トランザクションCommit
-			$this->commit();
-
-		} catch (Exception $ex) {
-			//トランザクションRollback
-			$this->rollback($ex);
-		}
-
-		return true;
-	}
-
-/**
- * Pluginのアンインストール
- *
- * @param array $data Pluginデータ
- * @return bool True on success
- * @throws InternalErrorException
- */
-	public function uninstallPlugin($data) {
-		$this->loadModels([
-			'PluginsRole' => 'PluginManager.PluginsRole',
-			'PluginsRoom' => 'PluginManager.PluginsRoom',
-		]);
-
-		//トランザクションBegin
-		$this->begin();
-
-		if (is_string($data)) {
-			$key = $data;
-		} else {
-			$key = $data[$this->alias]['key'];
-		}
-
-		try {
-			//Pluginの削除
-			if (! $this->deleteAll(array($this->alias . '.key' => $key), false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			//PluginsRoomの削除
-			$conditions = array($this->PluginsRoom->alias . '.plugin_key' => $key);
-			if (! $this->PluginsRoom->deleteAll($conditions, false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			//PluginsRoleの削除
-			$conditions = array($this->PluginsRole->alias . '.plugin_key' => $key);
-			if (! $this->PluginsRole->deleteAll($conditions, false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
 			//トランザクションCommit
