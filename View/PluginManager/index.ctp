@@ -80,6 +80,13 @@ echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 			</div>
 		<?php endif; ?>
 
+		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_THEME) : ?>
+			<div class="tab-pane active">
+				<?php echo $this->element('PluginManager/plugins',
+						array('pluginType' => Plugin::PLUGIN_TYPE_FOR_THEME, 'hasFormTag' => false)); ?>
+			</div>
+		<?php endif; ?>
+
 		<?php if ($active === Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER) : ?>
 			<div class="tab-pane active">
 				<?php echo $this->element('PluginManager/plugins',

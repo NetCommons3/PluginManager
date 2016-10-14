@@ -9,6 +9,8 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
+
+App::uses('Plugin', 'PluginManager.Model');
 ?>
 
 <?php if ($hasFormTag) : ?>
@@ -37,7 +39,11 @@
 				<tr>
 					<th></th>
 					<th>
-						<?php echo __d('plugin_manager', 'Plugin name'); ?>
+						<?php if ($pluginType === Plugin::PLUGIN_TYPE_FOR_THEME) : ?>
+							<?php echo __d('plugin_manager', 'Theme name'); ?>
+						<?php else: ?>
+							<?php echo __d('plugin_manager', 'Plugin name'); ?>
+						<?php endif; ?>
 					</th>
 					<th>
 						<?php echo __d('plugin_manager', 'Package'); ?>
@@ -71,9 +77,12 @@
 						</a>
 					</td>
 					<td>
-						<a target="_blank" ng-href="{{plugin.plugin.packageUrl}}">
+						<a target="_blank" ng-href="{{plugin.plugin.packageUrl}}" ng-if="plugin.plugin.packageUrl">
 							{{plugin.plugin.namespace}}
 						</a>
+						<span ng-if="!plugin.plugin.packageUrl">
+							{{plugin.plugin.namespace}}
+						</span>
 					</td>
 					<td class="text-nowrap">
 						<span ng-if="plugin.plugin.id">

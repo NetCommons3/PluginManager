@@ -66,14 +66,19 @@ class Plugin extends AppModel {
 	const PLUGIN_TYPE_FOR_NOT_YET = '4';
 
 /**
+ * テーマ
+ */
+	const PLUGIN_TYPE_FOR_THEME = '5';
+
+/**
  * 外部ライブラリ composer
  */
-	const PLUGIN_TYPE_FOR_EXT_COMPOSER = '5';
+	const PLUGIN_TYPE_FOR_EXT_COMPOSER = '6';
 
 /**
  * 外部ライブラリ bower
  */
-	const PLUGIN_TYPE_FOR_EXT_BOWER = '6';
+	const PLUGIN_TYPE_FOR_EXT_BOWER = '7';
 
 /**
  * Behaviors
@@ -191,7 +196,10 @@ class Plugin extends AppModel {
  */
 	public function getPlugins($type, $key = null) {
 		$notLangTypes = array(
-			self::PLUGIN_TYPE_CORE, self::PLUGIN_TYPE_FOR_EXT_COMPOSER, self::PLUGIN_TYPE_FOR_EXT_BOWER
+			self::PLUGIN_TYPE_CORE,
+			self::PLUGIN_TYPE_FOR_THEME,
+			self::PLUGIN_TYPE_FOR_EXT_COMPOSER,
+			self::PLUGIN_TYPE_FOR_EXT_BOWER
 		);
 		if (! is_array($type) && in_array($type, $notLangTypes)) {
 			$langId = '0';
@@ -227,6 +235,9 @@ class Plugin extends AppModel {
 			if ($plugin['Plugin']['type'] === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
 				$plugin['Plugin']['package_url'] = Hash::get($plugin, 'Plugin.serialize_data.source');
 				$plugin['latest'] = $this->getBower($plugin['Plugin']['namespace']);
+			} elseif ($plugin['Plugin']['type'] === self::PLUGIN_TYPE_FOR_THEME) {
+				$plugin['Plugin']['package_url'] = null;
+				$plugin['latest'] = $this->getTheme($plugin['Plugin']['namespace']);
 			} else {
 				$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
 				$plugin['latest'] = $this->getComposer($plugin['Plugin']['namespace']);
@@ -264,6 +275,10 @@ class Plugin extends AppModel {
 			);
 			$latests = array_diff(Hash::extract($packages, '{s}.key', array()), $notPackages);
 			$conditions['type'] = self::PLUGIN_TYPE_FOR_EXT_COMPOSER;
+		} elseif ($type === self::PLUGIN_TYPE_FOR_THEME) {
+			$packages = $this->getTheme();
+			$latests = Hash::extract($packages, '{s}.key', array());
+			$conditions['type'] = self::PLUGIN_TYPE_FOR_THEME;
 		} else {
 			$packages = $this->getComposer();
 			$latests = preg_replace('/-/', '_',
@@ -296,6 +311,8 @@ class Plugin extends AppModel {
 				//$plugin['Plugin']['serialize_data'] = $packages[$pluginKey];
 				if (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
 					$plugin['Plugin']['package_url'] = Hash::get($packages[$pluginKey], 'source');
+				} elseif (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_THEME) {
+					$plugin['Plugin']['package_url'] = null;
 				} else {
 					$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
 				}
@@ -309,6 +326,8 @@ class Plugin extends AppModel {
 				//$plugin['Plugin']['serialize_data'] = $packages[$pluginKey];
 				if (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
 					$plugin['Plugin']['package_url'] = Hash::get($packages[$pluginKey], 'source');
+				} elseif (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_THEME) {
+					$plugin['Plugin']['package_url'] = null;
 				} else {
 					$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
 				}

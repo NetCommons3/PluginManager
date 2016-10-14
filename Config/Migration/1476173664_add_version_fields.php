@@ -87,9 +87,14 @@ class AddVersionFields extends NetCommonsMigration {
 				if (! $this->Plugin->updateVersionByBower($packages)) {
 					return false;
 				}
+
+				if (! $this->Plugin->updateVersionByTheme()) {
+					return false;
+				}
 			} else {
 				$conditions = array('type' => array(
 					Plugin::PLUGIN_TYPE_CORE,
+					Plugin::PLUGIN_TYPE_FOR_THEME,
 					Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
 					Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
 				));

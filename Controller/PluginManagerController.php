@@ -78,6 +78,7 @@ class PluginManagerController extends PluginManagerAppController {
 				);
 				break;
 
+			case Plugin::PLUGIN_TYPE_FOR_THEME:
 			case Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER:
 			case Plugin::PLUGIN_TYPE_FOR_EXT_BOWER:
 				$plugins[$typeKey] = array_merge(
@@ -218,6 +219,7 @@ class PluginManagerController extends PluginManagerAppController {
 			Plugin::PLUGIN_TYPE_FOR_FRAME,
 			Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER,
 			Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER,
+			Plugin::PLUGIN_TYPE_FOR_THEME,
 			Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
 			Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
 		);
@@ -232,6 +234,7 @@ class PluginManagerController extends PluginManagerAppController {
 		if ($result) {
 			$types = array(
 				Plugin::PLUGIN_TYPE_FOR_NOT_YET,
+				Plugin::PLUGIN_TYPE_FOR_THEME,
 				Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
 				Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
 			);

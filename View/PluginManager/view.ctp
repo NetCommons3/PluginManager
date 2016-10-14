@@ -27,9 +27,13 @@
 				<?php echo __d('plugin_manager', 'Package'); ?>
 			</div>
 			<div class="col-md-10 col-sm-9 col-xs-12">
-				<a target="_blank" href="<?php echo h(Hash::get($plugin, 'Plugin.package_url')); ?>">
+				<?php if (Hash::get($plugin, 'Plugin.package_url')) : ?>
+					<a target="_blank" href="<?php echo h(Hash::get($plugin, 'Plugin.package_url')); ?>">
+						<?php echo h($plugin['Plugin']['namespace']); ?>
+					</a>
+				<?php else: ?>
 					<?php echo h($plugin['Plugin']['namespace']); ?>
-				</a>
+				<?php endif; ?>
 			</div>
 		</div>
 
