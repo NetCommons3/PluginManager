@@ -304,35 +304,12 @@ class Plugin extends AppModel {
 		$plugins = array();
 		if ($key) {
 			if (in_array($key, $inserts, true)) {
-				$plugin['Plugin'] = $packages[$key];
-				$plugin['Plugin']['serialize_data'] = $packages[$key];
-				$plugin['latest'] = $packages[$key];
-
-				//$plugin['Plugin']['serialize_data'] = $packages[$pluginKey];
-				if (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
-					$plugin['Plugin']['package_url'] = Hash::get($packages[$pluginKey], 'source');
-				} elseif (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_THEME) {
-					$plugin['Plugin']['package_url'] = null;
-				} else {
-					$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
-				}
-				$plugins[] = $plugin;
+				$plugins[] = $this->__parseNewPlugins($packages[$key]);
 			}
 		} else {
 			$index = 0;
 			foreach ($inserts as $pluginKey) {
-				$plugin['Plugin'] = $packages[$pluginKey];
-				$plugin['latest'] = $packages[$pluginKey];
-				//$plugin['Plugin']['serialize_data'] = $packages[$pluginKey];
-				if (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
-					$plugin['Plugin']['package_url'] = Hash::get($packages[$pluginKey], 'source');
-				} elseif (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_THEME) {
-					$plugin['Plugin']['package_url'] = null;
-				} else {
-					$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
-				}
-
-				$plugins[$index] = $plugin;
+				$plugins[$index] = $this->__parseNewPlugins($packages[$pluginKey]);
 				$index++;
 			}
 		}
@@ -342,6 +319,27 @@ class Plugin extends AppModel {
 		} else {
 			return $plugins;
 		}
+	}
+
+/**
+ * 未インストールのプラグインのパース処理
+ *
+ * @param array $package パッケージ
+ * @return array
+ */
+	private function __parseNewPlugins($package) {
+		$plugin = array();
+		$plugin['Plugin'] = $package;
+		$plugin['Plugin']['serialize_data'] = $package;
+		$plugin['latest'] = $package;
+		if (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+			$plugin['Plugin']['package_url'] = Hash::get($package, 'source');
+		} elseif (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_THEME) {
+			$plugin['Plugin']['package_url'] = null;
+		} else {
+			$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
+		}
+		return $plugin;
 	}
 
 /**

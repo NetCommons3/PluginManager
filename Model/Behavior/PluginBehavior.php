@@ -227,7 +227,7 @@ class PluginBehavior extends ModelBehavior {
 			$bowers = $this->bowers;
 		} elseif (is_array($dirPath)) {
 			$bowers = array();
-			foreach ($dirPath as $i => $package) {
+			foreach ($dirPath as $package) {
 				$bower = $this->_parseBower($package, null);
 				$bowers[$bower['namespace']] = $bower;
 			}
@@ -240,7 +240,7 @@ class PluginBehavior extends ModelBehavior {
 			$dirs = $Folder->read(Folder::SORT_NAME, false, true)[0];
 
 			$bowers = array();
-			foreach ($dirs as $i => $dir) {
+			foreach ($dirs as $dir) {
 				$file = new File($dir . DS . '.bower.json');
 				$contents = $file->read();
 				$file->close();
@@ -322,12 +322,12 @@ class PluginBehavior extends ModelBehavior {
 			if ($dirPath) {
 				$Folder = new Folder($dirPath);
 			} else {
-				$Folder = new Folder(APP . 'View' .DS . 'Themed');
+				$Folder = new Folder(APP . 'View' . DS . 'Themed');
 			}
 			$dirs = $Folder->read(Folder::SORT_NAME, false, true)[0];
 
 			$themes = array();
-			foreach ($dirs as $i => $dir) {
+			foreach ($dirs as $dir) {
 				$file = new File($dir . DS . 'theme.json');
 				$contents = $file->read();
 				$file->close();
