@@ -94,3 +94,12 @@ msgstr "一括アップデート"
 
 msgid "There is a version-up plugins and libraries. If you want to all update, please press the \"Update all\"."
 msgstr "バージョンアップされたプラグイン及びライブラリがあります。一括で更新する場合は、「一括アップデート」を押してください。"
+
+msgid "Updating the all plugins. Are you sure to proceed?"
+msgstr "一括アップデートを行います。よろしいですか。"
+
+msgid "Can change the display order of the plug-ins. If you want to change, please press \"OK\"."
+msgstr "プラグインの表示順序を変更することができます。変更する場合は、「決定」を押してください。"
+
+msgid "Failure updated of all plugins."
+msgstr "一括アップデートが失敗しました。"

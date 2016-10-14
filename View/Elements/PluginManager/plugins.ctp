@@ -12,6 +12,10 @@
 ?>
 
 <?php if ($hasFormTag) : ?>
+	<?php echo $this->MessageFlash->description(__d('plugin_manager',
+			'Can change the display order of the plug-ins. If you want to change, please press "OK".'
+		)); ?>
+
 	<?php echo $this->NetCommonsForm->create('Plugins', array(
 			'url' => NetCommonsUrl::actionUrlAsArray(array('action' => 'order', $pluginType))
 		)); ?>
@@ -27,83 +31,85 @@
 		<?php endforeach; ?>
 <?php endif; ?>
 
-	<table class="table table-condensed" ng-show="plugins.type<?php echo $pluginType; ?>.length">
-		<thead>
-			<tr>
-				<th></th>
-				<th>
-					<?php echo __d('plugin_manager', 'Plugin name'); ?>
-				</th>
-				<th>
-					<?php echo __d('plugin_manager', 'Package'); ?>
-				</th>
-				<th>
-					<?php echo __d('plugin_manager', 'Version'); ?>
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="plugin in plugins.type<?php echo $pluginType; ?> track by $index">
-				<td>
-					<?php if ($hasFormTag) : ?>
-						<button type="button" class="btn btn-default btn-sm"
-								ng-click="move('type<?php echo $pluginType; ?>', 'up', $index)" ng-disabled="($first || sending)">
-							<span class="glyphicon glyphicon-arrow-up"></span>
-						</button>
+	<div class="table-responsive">
+		<table class="table table-condensed" ng-show="plugins.type<?php echo $pluginType; ?>.length">
+			<thead>
+				<tr>
+					<th></th>
+					<th>
+						<?php echo __d('plugin_manager', 'Plugin name'); ?>
+					</th>
+					<th>
+						<?php echo __d('plugin_manager', 'Package'); ?>
+					</th>
+					<th>
+						<?php echo __d('plugin_manager', 'Version'); ?>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="plugin in plugins.type<?php echo $pluginType; ?> track by $index">
+					<td class="text-nowrap">
+						<?php if ($hasFormTag) : ?>
+							<button type="button" class="btn btn-default btn-sm"
+									ng-click="move('type<?php echo $pluginType; ?>', 'up', $index)" ng-disabled="($first || sending)">
+								<span class="glyphicon glyphicon-arrow-up"></span>
+							</button>
 
-						<button type="button" class="btn btn-default btn-sm"
-								ng-click="move('type<?php echo $pluginType; ?>', 'down', $index)" ng-disabled="($last || sending)">
-							<span class="glyphicon glyphicon-arrow-down"></span>
-						</button>
+							<button type="button" class="btn btn-default btn-sm"
+									ng-click="move('type<?php echo $pluginType; ?>', 'down', $index)" ng-disabled="($last || sending)">
+								<span class="glyphicon glyphicon-arrow-down"></span>
+							</button>
 
-						<input type="hidden" ng-value="{{$index + 1}}"
-							   name="data[Plugins][{{getIndex('type<?php echo $pluginType; ?>', plugin.key)}}][Plugin][weight]">
-					<?php endif; ?>
-				</td>
-				<td>
-					<a href="" ng-click="showView('<?php echo $pluginType; ?>', plugin.plugin.key)">
-						{{plugin.plugin.name}}
-					</a>
-				</td>
-				<td>
-					<a target="_blank" ng-href="{{plugin.plugin.packageUrl}}">
-						{{plugin.plugin.namespace}}
-					</a>
-				</td>
-				<td>
-					<span>
-						<a target="_blank" ng-href="{{plugin.plugin.serializeData.commitUrl}}" ng-if="plugin.plugin.serializeData.commitUrl">
-							{{plugin.plugin.version}}
-							<span class="text-muted">({{plugin.plugin.commitVersion|limitTo:10}})</span>
+							<input type="hidden" ng-value="{{$index + 1}}"
+								   name="data[Plugins][{{getIndex('type<?php echo $pluginType; ?>', plugin.key)}}][Plugin][weight]">
+						<?php endif; ?>
+					</td>
+					<td>
+						<a href="" ng-click="showView('<?php echo $pluginType; ?>', plugin.plugin.key)">
+							{{plugin.plugin.name}}
 						</a>
-						<span ng-if="!plugin.plugin.serializeData.commitUrl">
-							{{plugin.plugin.version}}
-							<span class="text-muted">({{plugin.plugin.commitVersion|limitTo:10}})</span>
-						</span>
-					</span>
-
-					<span class="text-danger" ng-if="plugin.latest && plugin.plugin.commitVersion !== plugin.latest.commitVersion">
-						<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
-						<a target="_blank" ng-href="{{plugin.latest.commitUrl}}" ng-if="plugin.latest.commitUrl">
-							{{plugin.latest.version}}
-							<span class="text-danger">({{plugin.latest.commitVersion|limitTo:10}})</span>
+					</td>
+					<td>
+						<a target="_blank" ng-href="{{plugin.plugin.packageUrl}}">
+							{{plugin.plugin.namespace}}
 						</a>
-						<span class="text-danger" ng-if="!plugin.latest.commitUrl">
-							{{plugin.latest.version}}
-							({{plugin.latest.commitVersion|limitTo:10}})
+					</td>
+					<td class="text-nowrap">
+						<span ng-if="plugin.plugin.id">
+							<a target="_blank" ng-href="{{plugin.plugin.serializeData.commitUrl}}" ng-if="plugin.plugin.serializeData.commitUrl">
+								{{plugin.plugin.version}}
+								<span class="text-muted">({{plugin.plugin.commitVersion|limitTo:10}})</span>
+							</a>
+							<span ng-if="!plugin.plugin.serializeData.commitUrl">
+								{{plugin.plugin.version}}
+								<span class="text-muted">({{plugin.plugin.commitVersion|limitTo:10}})</span>
+							</span>
 						</span>
-					</span>
 
-					<span class="text-danger" ng-if="!plugin.latest">
-						<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
-						<span ng-if="!plugin.latest">
-							<?php echo __d('net_commons', 'Delete'); ?>
+						<span class="text-danger" ng-if="(!plugin.plugin.id || plugin.latest && plugin.plugin.commitVersion !== plugin.latest.commitVersion)">
+							<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
+							<a target="_blank" ng-href="{{plugin.latest.commitUrl}}" ng-if="plugin.latest.commitUrl">
+								{{plugin.latest.version}}
+								<span class="text-danger">({{plugin.latest.commitVersion|limitTo:10}})</span>
+							</a>
+							<span class="text-danger" ng-if="!plugin.latest.commitUrl">
+								{{plugin.latest.version}}
+								({{plugin.latest.commitVersion|limitTo:10}})
+							</span>
 						</span>
-					</span>
-				</td>
-			</tr>
-		</tbody>
-	</table>
+
+						<span class="text-danger" ng-if="!plugin.latest">
+							<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
+							<span ng-if="!plugin.latest">
+								<?php echo __d('net_commons', 'Delete'); ?>
+							</span>
+						</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
 <?php if ($hasFormTag) : ?>
 	<div class="text-center">

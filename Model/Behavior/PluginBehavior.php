@@ -11,6 +11,7 @@
 
 App::uses('ModelBehavior', 'Model');
 App::uses('File', 'Utility');
+App::uses('Folder', 'Utility');
 App::uses('Plugin', 'PluginManager.Model');
 
 /**
@@ -36,70 +37,14 @@ class PluginBehavior extends ModelBehavior {
 	public $bowers = array();
 
 /**
- * Pluginのアンインストール
- *
- * @param Model $model 呼び出し元Model
- * @param array $data Pluginデータ
- * @return bool True on success
- * @throws InternalErrorException
- */
-	public function uninstallPlugin(Model $model, $data) {
-		$model->loadModels([
-			'Plugin' => 'PluginManager.Plugin',
-			'PluginsRole' => 'PluginManager.PluginsRole',
-			'PluginsRoom' => 'PluginManager.PluginsRoom',
-		]);
-
-		//トランザクションBegin
-		$model->begin();
-
-		if (is_string($data)) {
-			$key = $data;
-		} else {
-			$key = $data[$model->alias]['key'];
-		}
-
-		try {
-			//Pluginの削除
-			if (! $model->deleteAll(array($model->alias . '.key' => $key), false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			//PluginsRoomの削除
-			$conditions = array($model->PluginsRoom->alias . '.plugin_key' => $key);
-			if (! $model->PluginsRoom->deleteAll($conditions, false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-			//PluginsRoleの削除
-			$conditions = array($model->PluginsRole->alias . '.plugin_key' => $key);
-			if (! $model->PluginsRole->deleteAll($conditions, false)) {
-				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
-			}
-
-			//トランザクションCommit
-			$model->commit();
-
-		} catch (Exception $ex) {
-			//トランザクションRollback
-			$model->rollback($ex);
-		}
-
-		return true;
-	}
-
-/**
- * Migrationの実行
+ * バージョンアップを実行
  *
  * @param Model $model 呼び出し元Model
  * @param string $plugin Plugin key
  * @return bool True on success
  */
-	public function runMigration(Model $model, $plugin = null) {
-		if (! $plugin) {
-			return false;
-		}
-
+	public function runMigration(Model $model, $plugin) {
 		$connection = 'master';
-
 		$plugin = Inflector::camelize($plugin);
 
 		CakeLog::info(sprintf('[migration] Start migrating %s for %s connection', $plugin, $connection));
@@ -111,16 +56,54 @@ class PluginBehavior extends ModelBehavior {
 			ROOT, $plugin, $connection, $connection
 		), $messages, $ret);
 
-		// Write logs
-		if (Configure::read('debug')) {
-			foreach ($messages as $message) {
-				CakeLog::info(sprintf('[migration]   %s', $message));
+		$result = true;
+		if ($ret) {
+			$matches = preg_grep('/No migrations/', $messages);
+			if (count($matches) === 0) {
+				CakeLog::info(
+					sprintf('[migration] Failure migrated %s for %s connection', $plugin, $connection)
+				);
+				$result = false;
+			} else {
+				CakeLog::info(
+					sprintf('[migration] Successfully migrated %s for %s connection', $plugin, $connection)
+				);
 			}
+		} else {
+			CakeLog::info(
+				sprintf('[migration] Successfully migrated %s for %s connection', $plugin, $connection)
+			);
 		}
 
-		CakeLog::info(
-			sprintf('[migration] Successfully migrated %s for %s connection', $plugin, $connection)
-		);
+		// Write logs
+		foreach ($messages as $message) {
+			CakeLog::info(sprintf('[migration]   %s', $message));
+		}
+
+		return $result;
+	}
+
+/**
+ * パッケージのディレクトリ削除
+ *
+ * @param Model $model 呼び出し元Model
+ * @param string $plugin Plugin key
+ * @return bool True on success
+ */
+	public function deletePackageDir(Model $model, $plugin) {
+		if (Hash::get($plugin, 'Plugin.serialize_data.packageType') === 'bower') {
+			$dirPath = WWW_ROOT . 'components' . DS;
+			$dirPath .= Hash::get($plugin, 'Plugin.serialize_data.originalSource');
+		} elseif (Hash::get($plugin, 'Plugin.serialize_data.packageType') === 'cakephp-plugin') {
+			$dirPath = App::pluginPath(Inflector::camelize(Hash::get($plugin, 'Plugin.key')));
+		} else {
+			$dirPath = VENDORS;
+			$dirPath .= strtr(Hash::get($plugin, 'Plugin.serialize_data.originalSource'), '/', DS);
+		}
+		if (file_exists($dirPath)) {
+			$Folder = new Folder($dirPath);
+			$Folder->delete();
+		}
 
 		return true;
 	}
@@ -149,45 +132,8 @@ class PluginBehavior extends ModelBehavior {
 
 			$composers = array();
 			foreach ($packages['packages'] as $package) {
-				if (preg_match('#^netcommons/#', $package['name'])) {
-					$key = strtr(preg_replace('#^netcommons/#', '', $package['name']), '-', '_');
-					$name = Inflector::humanize($key);
-				} else {
-					$key = $package['name'];
-					$name = $package['name'];
-				}
-
 				$index = Hash::get($package, 'name');
-				$composers[$index] = array(
-					'key' => $key,
-					'namespace' => Hash::get($package, 'name'),
-					'description' => Hash::get($package, 'description'),
-					'homepage' => Hash::get($package, 'homepage'),
-					'version' => Hash::get($package, 'version'),
-					'commit_version' => Hash::get($package, 'source.reference'),
-					'source' => Hash::get($package, 'source.url', ''),
-					'authors' => Hash::get($package, 'authors'),
-					'license' => Hash::get($package, 'license'),
-					'commited' => Hash::get($package, 'time'),
-				);
-				if (isset($package['extra']['installer-name'])) {
-					$composers[$index]['name'] = $package['extra']['installer-name'];
-				} else {
-					$composers[$index]['name'] = $name;
-				}
-				if (isset($package['plugin-type'])) {
-					$composers[$index]['type'] = $package['plugin-type'];
-				} elseif (! preg_match('#^netcommons/#', $package['name'])) {
-					$composers[$index]['type'] = Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER;
-				}
-
-				if (Hash::get($package, 'source.type') === 'git' &&
-						$composers[$index]['source'] && $composers[$index]['commit_version']) {
-					$composers[$index]['commit_url'] = preg_replace('/\.git$/', '', $composers[$index]['source']);
-					$composers[$index]['commit_url'] .= '/tree/' . $composers[$index]['commit_version'];
-				} else {
-					$composers[$index]['commit_url'] = null;
-				}
+				$composers[$index] = $this->_parseComposer($package);
 			}
 
 			if (! $filePath) {
@@ -200,6 +146,65 @@ class PluginBehavior extends ModelBehavior {
 		}
 
 		return Hash::get($composers, array($namespace));
+	}
+
+/**
+ * bowerの情報をパースする
+ *
+ * @param array $package jsonファイルの情報
+ * @return mixed array
+ */
+	protected function _parseComposer($package) {
+		if (preg_match('#^netcommons/#', $package['name'])) {
+			$key = strtr(preg_replace('#^netcommons/#', '', $package['name']), '-', '_');
+			$name = Inflector::humanize($key);
+			$originalSource = Inflector::camelize($key);
+		} elseif (Hash::get($package, 'type') === 'cakephp-plugin') {
+			$key = strtr(substr($package['name'], strrpos($package['name'], '/') + 1), '-', '_');
+			$name = Inflector::humanize(strtr($package['name'], '/', ' '));
+			$originalSource = Inflector::camelize($key);
+		} else {
+			$key = $package['name'];
+			$name = $package['name'];
+			$originalSource = $package['name'];
+		}
+
+		$result = array(
+			'key' => $key,
+			'namespace' => Hash::get($package, 'name'),
+			'description' => Hash::get($package, 'description'),
+			'homepage' => Hash::get($package, 'homepage'),
+			'version' => Hash::get($package, 'version'),
+			'commit_version' => Hash::get($package, 'source.reference'),
+			'source' => Hash::get($package, 'source.url', ''),
+			'authors' => Hash::get($package, 'authors'),
+			'license' => Hash::get($package, 'license'),
+			'commited' => Hash::get($package, 'time'),
+			'packageType' => Hash::get($package, 'type'),
+			'originalSource' => $originalSource
+		);
+		if (isset($package['extra']['installer-name'])) {
+			$result['key'] = Inflector::underscore($package['extra']['installer-name']);
+			$result['name'] = $package['extra']['installer-name'];
+			$result['originalSource'] = $package['extra']['installer-name'];
+		} else {
+			$result['name'] = $name;
+		}
+		if (isset($package['plugin-type'])) {
+			$result['type'] = $package['plugin-type'];
+		} elseif (! preg_match('#^netcommons/#', $package['name'])) {
+			$result['type'] = Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER;
+		}
+
+		if (Hash::get($package, 'source.type') === 'git' &&
+				$result['source'] && $result['commit_version']) {
+			$result['commit_url'] = preg_replace('/\.git$/', '', $result['source']);
+			$result['commit_url'] .= '/tree/' . $result['commit_version'];
+		} else {
+			$result['commit_url'] = null;
+		}
+
+		return $result;
 	}
 
 /**
@@ -254,6 +259,7 @@ class PluginBehavior extends ModelBehavior {
  * bowerの情報をパースする
  *
  * @param array $package jsonファイルの情報
+ * @param string $dir ディレクトリパス
  * @return mixed array
  */
 	protected function _parseBower($package, $dir) {
@@ -268,6 +274,8 @@ class PluginBehavior extends ModelBehavior {
 			'source' => Hash::get($package, '_source', ''),
 			'authors' => Hash::get($package, 'authors'),
 			'license' => Hash::get($package, 'license'),
+			'packageType' => 'bower',
+			'originalSource' => Hash::get($package, '_originalSource', Hash::get($package, 'name')),
 		);
 
 		if (! $result['version']) {
@@ -301,7 +309,7 @@ class PluginBehavior extends ModelBehavior {
  */
 	public function updateVersionByComposer(Model $model, $filePath = null) {
 		$composers = $model->getComposer(null, $filePath);
-		$this->_updateVersion($model, $composers);
+		$this->updateVersion($model, $composers);
 		return true;
 	}
 
@@ -314,7 +322,7 @@ class PluginBehavior extends ModelBehavior {
  */
 	public function updateVersionByBower(Model $model, $dirPath = null) {
 		$bowers = $model->getBower(null, $dirPath);
-		$this->_updateVersion($model, $bowers);
+		$this->updateVersion($model, $bowers);
 		return true;
 	}
 
@@ -324,8 +332,9 @@ class PluginBehavior extends ModelBehavior {
  * @param Model $model 呼び出し元Model
  * @param array $packages パッケージリスト
  * @return bool
+ * @throws InternalErrorException
  */
-	protected function _updateVersion(Model $model, $packages) {
+	public function updateVersion(Model $model, $packages) {
 		$model->loadModels([
 			'Plugin' => 'PluginManager.Plugin',
 		]);
@@ -389,37 +398,6 @@ class PluginBehavior extends ModelBehavior {
 			$model->rollback($ex);
 		}
 		return true;
-	}
-
-/**
- * 更新があるかどうか
- *
- * @param Model $model Model using this behavior
- * @param string $dirPath bowerのディレクトリ
- * @return bool
- */
-	public function hasUpdate(Model $model) {
-		$model->loadModels([
-			'Plugin' => 'PluginManager.Plugin',
-		]);
-
-		$composers = $model->getComposer();
-		$bowers = $model->getBower();
-
-		$latests = array_merge(
-			Hash::combine($bowers, '{s}.key', '{s}.commit_version'),
-			Hash::combine($composers, '{s}.key', '{s}.commit_version')
-		);
-
-		$currents = $model->Plugin->find('list', array(
-			'recursive' => -1,
-			'fields' => array('key', 'commit_version'),
-			'conditions' => array(
-				'language_id' => array(Current::read('Language.id'), '0'),
-			),
-		));
-
-		return !empty(array_diff($latests, $currents));
 	}
 
 }

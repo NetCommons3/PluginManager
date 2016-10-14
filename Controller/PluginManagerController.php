@@ -56,7 +56,7 @@ class PluginManagerController extends PluginManagerAppController {
 
 		//versionフィールドがない場合、Migrationを実行する
 		if (! $this->Plugin->hasField('version')) {
-			$this->Plugin->runMigration('PluginManager');
+			$this->Plugin->runVersionUp('plugin_manager');
 			return $this->redirect('/plugin_manager/plugin_manager/index/');
 		}
 
@@ -73,6 +73,9 @@ class PluginManagerController extends PluginManagerAppController {
 
 			case Plugin::PLUGIN_TYPE_FOR_NOT_YET:
 				$plugins[$typeKey] = $this->Plugin->getNewPlugins($this->viewVars['active']);
+				$pluginsMap[$typeKey] = array_flip(
+					array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key'))
+				);
 				break;
 
 			case Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER:
@@ -113,8 +116,6 @@ class PluginManagerController extends PluginManagerAppController {
 /**
  * view method
  *
- * @param int $pluginType Plugin type
- * @param string $pluginKey Plugin key
  * @return void
  */
 	public function view() {
@@ -128,6 +129,8 @@ class PluginManagerController extends PluginManagerAppController {
 				array(Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER, Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER),
 				$pluginKey
 			);
+		} elseif ($pluginType === Plugin::PLUGIN_TYPE_FOR_NOT_YET) {
+			$plugins = $this->Plugin->getNewPlugins($pluginType, $pluginKey);
 		} else {
 			$plugins = $this->Plugin->getPlugins($pluginType, $pluginKey);
 		}
@@ -156,16 +159,19 @@ class PluginManagerController extends PluginManagerAppController {
  * @return void
  */
 	public function edit($pluginType = null) {
-		if (! $this->request->is('put')) {
+		if (! $this->request->is(array('post', 'put'))) {
 			return $this->throwBadRequest();
 		}
 
-		$plugins = $this->Plugin->getPlugins($pluginType, $this->data['Plugin']['key']);
-		if (! $plugins) {
+		$plugin = $this->Plugin->getPlugins($pluginType, $this->data['Plugin']['key']);
+		if (! $plugin) {
+			$plugin = $this->Plugin->getNewPlugins($pluginType, $this->data['Plugin']['key']);
+		}
+		if (! $plugin) {
 			return $this->throwBadRequest();
 		}
 
-		if ($this->Plugin->runMigration($plugins['Plugin']['key'])) {
+		if ($this->Plugin->runVersionUp($plugin)) {
 			$this->NetCommons->setFlashNotification(
 				__d('net_commons', 'Successfully saved.'), array('class' => 'success')
 			);
@@ -177,24 +183,28 @@ class PluginManagerController extends PluginManagerAppController {
 			));
 		}
 
-		$this->NetCommons->setAppendHtml(
-			'<div class="hidden" ng-controller="PluginManager" ' .
-				'ng-init="showView(\'' . h($pluginType) . '\', \'' . h($this->data['Plugin']['key']) . '\')"></div>'
-		);
-		$redirectUrl = NetCommonsUrl::actionUrl(array(
-			'plugin' => $this->params['plugin'],
-			'controller' => $this->params['controller'],
-			'action' => 'index',
-			$pluginType,
-		));
+		if ($pluginType === Plugin::PLUGIN_TYPE_FOR_NOT_YET &&
+				!(bool)$this->Plugin->getNewPlugins(Plugin::PLUGIN_TYPE_FOR_NOT_YET)) {
+			$redirectUrl = NetCommonsUrl::actionUrl(array(
+				'plugin' => $this->params['plugin'],
+				'controller' => $this->params['controller'],
+				'action' => 'index'
+			));
+		} else {
+			$redirectUrl = NetCommonsUrl::actionUrl(array(
+				'plugin' => $this->params['plugin'],
+				'controller' => $this->params['controller'],
+				'action' => 'index',
+				$pluginType,
+			));
+		}
 		return $this->redirect($redirectUrl);
 	}
 
 /**
- * edit method
+ * 一括アップデート
  *
  * @param int $pluginType Plugin type
- * @throws NotFoundException
  * @return void
  */
 	public function update_all($pluginType = null) {
@@ -202,23 +212,78 @@ class PluginManagerController extends PluginManagerAppController {
 			return $this->throwBadRequest();
 		}
 
-//		$data = $this->data;
-//		unset($data['save']);
-//		if (! $this->Plugin->saveWeight($data)) {
-//			$this->throwBadRequest();
-//			return;
-//		}
-
-		$this->NetCommons->setFlashNotification(
-			__d('net_commons', 'Successfully saved.'), array('class' => 'success')
+		$result = true;
+		$types = array(
+			Plugin::PLUGIN_TYPE_CORE,
+			Plugin::PLUGIN_TYPE_FOR_FRAME,
+			Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER,
+			Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER,
+			Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
+			Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
 		);
+		foreach ($types as $type) {
+			$plugins = $this->Plugin->getPlugins($type);
+			if (! $this->__updatePackages($plugins)) {
+				$result = false;
+				break;
+			}
+		}
+
+		if ($result) {
+			$types = array(
+				Plugin::PLUGIN_TYPE_FOR_NOT_YET,
+				Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
+				Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
+			);
+			foreach ($types as $type) {
+				$plugins = $this->Plugin->getNewPlugins($type);
+				if (! $this->__updatePackages($plugins)) {
+					$result = false;
+					break;
+				}
+			}
+		}
+
+		if ($result) {
+			$this->NetCommons->setFlashNotification(
+				__d('net_commons', 'Successfully saved.'), array('class' => 'success')
+			);
+		} else {
+			$this->NetCommons->setFlashNotification(
+				__d('plugin_manager', 'Failure updated of all plugins.'),
+				array(
+					'class' => 'danger',
+					'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
+				)
+			);
+		}
+
 		$redirectUrl = NetCommonsUrl::actionUrl(array(
 			'plugin' => $this->params['plugin'],
 			'controller' => $this->params['controller'],
-			'action' => 'index',
-			$pluginType,
+			'action' => 'index'
 		));
 		$this->redirect($redirectUrl);
+	}
+
+/**
+ * パッケージのバージョンアップ(一括アップデートから呼ばれる)
+ *
+ * @param array $plugins Pluginリスト
+ * @return bool
+ */
+	private function __updatePackages($plugins) {
+		if (! $plugins) {
+			return true;
+		}
+
+		foreach ($plugins as $plugin) {
+			if (! $this->Plugin->runVersionUp($plugin)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 /**

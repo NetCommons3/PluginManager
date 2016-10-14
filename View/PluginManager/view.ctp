@@ -37,7 +37,7 @@
 			<div class="col-md-2 col-sm-3 col-xs-12">
 				<?php echo __d('plugin_manager', 'Version'); ?>
 			</div>
-			<div class="col-md-10 col-sm-9 col-xs-12">
+			<div class="col-md-10 col-sm-9 col-xs-12 plugin-version">
 				<div>
 					<?php if (Hash::get($plugin, 'Plugin.serialize_data.commit_url')) : ?>
 						<a href="<?php echo Hash::get($plugin, 'Plugin.serialize_data.commit_url'); ?>">
@@ -70,6 +70,11 @@
 							(<?php echo h($plugin['Plugin']['commit_version']); ?>)
 						<?php endif; ?>
 					</div>
+				<?php elseif (! Hash::get($plugin, 'latest')) : ?>
+					<div class="text-danger">
+						<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
+						<?php echo __d('net_commons', 'Delete'); ?>
+					</div>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -80,7 +85,7 @@
 					<?php echo __d('plugin_manager', 'Author(s)'); ?>
 				</div>
 				<div class="col-md-10 col-sm-9 col-xs-12">
-					<ul class="plugin-manager-autors-ul list-inline">
+					<ul class="plugin-manager-autors-ul">
 						<?php foreach ((array)Hash::get($plugin, 'Plugin.serialize_data.authors') as $author) : ?>
 							<?php
 								$name = '';
@@ -120,7 +125,7 @@
 
 		<?php if (Hash::get($plugin, 'Plugin.serialize_data.homepage')) : ?>
 			<div class="row plugin-manager-list">
-				<div class="col-md-2 col-sm-3 col-xs-12">
+				<div class="col-md-2 col-sm-3 col-xs-12 text-nowrap">
 					<?php echo __d('plugin_manager', 'Home page'); ?>
 				</div>
 				<div class="col-md-10 col-sm-9 col-xs-12">

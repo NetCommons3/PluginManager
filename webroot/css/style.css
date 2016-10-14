@@ -8,6 +8,8 @@
 
 ul.plugin-manager-autors-ul {
 	margin-bottom: 0px;
+	list-style-type: disc;
+	padding-left: 16px;
 }
 ul.plugin-manager-autors-ul > li {
 	padding-right: 16px;
@@ -33,4 +35,8 @@ ul.plugin-manager-autors-ul > li {
 	margin-bottom: 1em;
 	float: left;
 	white-space: nowrap;
+}
+
+.plugin-version {
+	overflow-wrap : break-word;
 }

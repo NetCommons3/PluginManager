@@ -266,10 +266,9 @@ class Plugin extends AppModel {
 			$conditions['type'] = self::PLUGIN_TYPE_FOR_EXT_COMPOSER;
 		} else {
 			$packages = $this->getComposer();
-			$packages = preg_replace('/-/', '_',
+			$latests = preg_replace('/-/', '_',
 				preg_replace('/^netcommons\//', '', preg_grep('/^netcommons/', array_keys($packages)))
 			);
-			$latests = Hash::extract($packages, '{s}.key', array());
 			$conditions['type'] = array(
 				self::PLUGIN_TYPE_CORE,
 				self::PLUGIN_TYPE_FOR_FRAME,
@@ -277,6 +276,7 @@ class Plugin extends AppModel {
 				self::PLUGIN_TYPE_FOR_SYSTEM_MANGER,
 			);
 		}
+		$packages = Hash::combine($packages, '{s}.key', '{s}');
 
 		$currents = $this->find('list', array(
 			'recursive' => -1,
@@ -289,20 +289,32 @@ class Plugin extends AppModel {
 		$plugins = array();
 		if ($key) {
 			if (in_array($key, $inserts, true)) {
-				$plugins[] = $packages[$key];
+				$plugin['Plugin'] = $packages[$key];
+				$plugin['Plugin']['serialize_data'] = $packages[$key];
+				$plugin['latest'] = $packages[$key];
+
+				//$plugin['Plugin']['serialize_data'] = $packages[$pluginKey];
+				if (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+					$plugin['Plugin']['package_url'] = Hash::get($packages[$pluginKey], 'source');
+				} else {
+					$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
+				}
+				$plugins[] = $plugin;
 			}
 		} else {
-			foreach ($inserts as $i => $pluginKey) {
+			$index = 0;
+			foreach ($inserts as $pluginKey) {
 				$plugin['Plugin'] = $packages[$pluginKey];
-				$plugins['latest'] = $packages[$pluginKey];
+				$plugin['latest'] = $packages[$pluginKey];
 				//$plugin['Plugin']['serialize_data'] = $packages[$pluginKey];
-				if ($plugin['Plugin']['type'] === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+				if (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
 					$plugin['Plugin']['package_url'] = Hash::get($packages[$pluginKey], 'source');
 				} else {
 					$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
 				}
 
-				$plugins[$i] = $plugin;
+				$plugins[$index] = $plugin;
+				$index++;
 			}
 		}
 
@@ -358,6 +370,123 @@ class Plugin extends AppModel {
 		}
 
 		return true;
+	}
+
+/**
+ * バージョンアップを実行
+ *
+ * @param string $plugin Plugin key
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	public function runVersionUp($plugin) {
+		try {
+			//トランザクションBegin
+			$this->begin();
+
+			if (! Hash::get($plugin, 'latest') && Hash::get($plugin, 'Plugin.id')) {
+				if (! $this->uninstallPlugin(Hash::get($plugin, 'Plugin.key'))) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+				$this->deletePackageDir($plugin);
+			} else {
+				if (Hash::get($plugin, 'latest.packageType') === 'cakephp-plugin') {
+					if (! $this->runMigration(Hash::get($plugin, 'latest.key'))) {
+						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+					}
+				}
+				if (! $this->updateVersion(array(Hash::get($plugin, 'latest')))) {
+					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+				}
+				if (Hash::get($plugin, 'latest.originalSource') !==
+						Hash::get($plugin, 'Plugin.serialize_data.originalSource')) {
+					$this->deletePackageDir($plugin);
+				}
+			}
+
+			//トランザクションCommit
+			$this->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$this->rollback($ex);
+		}
+
+		return true;
+	}
+
+/**
+ * Pluginのアンインストール
+ *
+ * @param array $data Pluginデータ
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	public function uninstallPlugin($data) {
+		$this->loadModels([
+			'PluginsRole' => 'PluginManager.PluginsRole',
+			'PluginsRoom' => 'PluginManager.PluginsRoom',
+		]);
+
+		//トランザクションBegin
+		$this->begin();
+
+		if (is_string($data)) {
+			$key = $data;
+		} else {
+			$key = $data[$this->alias]['key'];
+		}
+
+		try {
+			//Pluginの削除
+			if (! $this->deleteAll(array($this->alias . '.key' => $key), false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			//PluginsRoomの削除
+			$conditions = array($this->PluginsRoom->alias . '.plugin_key' => $key);
+			if (! $this->PluginsRoom->deleteAll($conditions, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+			//PluginsRoleの削除
+			$conditions = array($this->PluginsRole->alias . '.plugin_key' => $key);
+			if (! $this->PluginsRole->deleteAll($conditions, false)) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+			}
+
+			//トランザクションCommit
+			$this->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$this->rollback($ex);
+		}
+
+		return true;
+	}
+
+/**
+ * 更新があるかどうか
+ *
+ * @return bool
+ */
+	public function hasUpdate() {
+		$composers = $this->getComposer();
+		$bowers = $this->getBower();
+
+		$latests = array_merge(
+			Hash::combine($bowers, '{s}.key', '{s}.commit_version'),
+			Hash::combine($composers, '{s}.key', '{s}.commit_version')
+		);
+
+		$currents = $this->find('list', array(
+			'recursive' => -1,
+			'fields' => array('key', 'commit_version'),
+			'conditions' => array(
+				'language_id' => array(Current::read('Language.id'), '0'),
+			),
+		));
+
+		return !empty(array_diff($latests, $currents));
 	}
 
 }
