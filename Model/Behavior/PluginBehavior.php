@@ -138,10 +138,10 @@ class PluginBehavior extends ModelBehavior {
  *
  * @param Model $model 呼び出し元Model
  * @param string $plugin Plugin key
+ * @param string $connection 接続先（基本masterだが、テスト用に変更できるようにする）
  * @return bool True on success
  */
-	public function runMigration(Model $model, $plugin) {
-		$connection = 'master';
+	public function runMigration(Model $model, $plugin, $connection = 'master') {
 		$plugin = Inflector::camelize($plugin);
 
 		CakeLog::info(
@@ -210,8 +210,7 @@ class PluginBehavior extends ModelBehavior {
 			$newPath = $dirPath . strtr(Hash::get($plugin, 'latest.originalSource'), '/', DS);
 		}
 
-		$doDelete = $force || $oldPath !== $newPath && file_exists($oldPath) && file_exists($newPath);
-		if ($doDelete) {
+		if ($force || $oldPath !== $newPath && file_exists($oldPath) && file_exists($newPath)) {
 			CakeLog::info(sprintf('[delete package files] Start delete package files "%s"', $oldPath));
 			CakeLog::info(var_export(Hash::get($plugin, 'latest.originalSource'), true));
 			CakeLog::info(var_export(Hash::get($plugin, 'Plugin.serialize_data.originalSource'), true));
