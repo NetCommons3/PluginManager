@@ -23,6 +23,19 @@ App::uses('Plugin', 'PluginManager.Model');
 class PluginBehavior extends ModelBehavior {
 
 /**
+ * Setup this behavior with the specified configuration settings.
+ *
+ * @param Model $model 呼び出し元のモデル
+ * @param array $config Configuration settings for $model
+ * @return void
+ */
+	public function setup(Model $model, $config = array()) {
+		parent::setup($model, $config);
+
+		$this->connection = Hash::get($config, 'connection', 'master');
+	}
+
+/**
  * バージョンアップを実行
  *
  * @param Model $model 呼び出し元Model
@@ -138,21 +151,20 @@ class PluginBehavior extends ModelBehavior {
  *
  * @param Model $model 呼び出し元Model
  * @param string $plugin Plugin key
- * @param string $connection 接続先（基本masterだが、テスト用に変更できるようにする）
  * @return bool True on success
  */
-	public function runMigration(Model $model, $plugin, $connection = 'master') {
+	public function runMigration(Model $model, $plugin) {
 		$plugin = Inflector::camelize($plugin);
 
 		CakeLog::info(
-			sprintf('[migration] Start migrating "%s" for %s connection', $plugin, $connection)
+			sprintf('[migration] Start migrating "%s" for %s connection', $plugin, $this->connection)
 		);
 
 		$messages = array();
 		$ret = null;
 		exec(sprintf(
 			'cd %s && app/Console/cake Migrations.migration run all -p %s -c %s -i %s',
-			ROOT, $plugin, $connection, $connection
+			ROOT, $plugin, $this->connection, $this->connection
 		), $messages, $ret);
 
 		// Write logs
@@ -165,17 +177,20 @@ class PluginBehavior extends ModelBehavior {
 			$matches = preg_grep('/No migrations/', $messages);
 			if (count($matches) === 0) {
 				CakeLog::info(
-					sprintf('[migration] Failure migrated "%s" for %s connection', $plugin, $connection)
+					sprintf('[migration] Failure migrated "%s" for %s connection', $plugin, $this->connection)
 				);
 				$result = false;
 			} else {
+				//@codeCoverageIgnoreStart
+				//Migrationの戻り値が0になって処理が通らなくなったが、念のため処理として残しておく
 				CakeLog::info(
-					sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $connection)
+					sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $this->connection)
 				);
+				//@codeCoverageIgnoreEnd
 			}
 		} else {
 			CakeLog::info(
-				sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $connection)
+				sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $this->connection)
 			);
 		}
 
