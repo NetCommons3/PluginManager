@@ -12,6 +12,7 @@
 App::uses('PluginManagerAppController', 'PluginManager.Controller');
 App::uses('Plugin', 'PluginManager.Model');
 App::uses('NetCommonsComponent', 'NetCommons.Controller/Component');
+App::uses('PluginUpdateUtil', 'PluginManager.Utility');
 
 /**
  * PluginManager Controller
@@ -215,41 +216,11 @@ class PluginManagerController extends PluginManagerAppController {
 			return $this->throwBadRequest();
 		}
 
-		$result = true;
-		$types = array(
-			Plugin::PLUGIN_TYPE_CORE,
-			Plugin::PLUGIN_TYPE_FOR_FRAME,
-			Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER,
-			Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER,
-			Plugin::PLUGIN_TYPE_FOR_THEME,
-			Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
-			Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
-		);
-		foreach ($types as $type) {
-			$plugins = $this->Plugin->getPlugins($type);
-			if (! $this->__updatePackages($plugins)) {
-				$result = false;
-				break;
-			}
+		if (! isset($this->PluginUpdateUtil)) {
+			$this->PluginUpdateUtil = new PluginUpdateUtil();
 		}
 
-		if ($result) {
-			$types = array(
-				Plugin::PLUGIN_TYPE_FOR_NOT_YET,
-				Plugin::PLUGIN_TYPE_FOR_THEME,
-				Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
-				Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
-			);
-			foreach ($types as $type) {
-				$plugins = $this->Plugin->getNewPlugins($type);
-				if (! $this->__updatePackages($plugins)) {
-					$result = false;
-					break;
-				}
-			}
-		}
-
-		if ($result) {
+		if ($this->PluginUpdateUtil->updateAll()) {
 			$this->NetCommons->setFlashNotification(
 				__d('net_commons', 'Successfully saved.'), array('class' => 'success')
 			);
@@ -269,26 +240,6 @@ class PluginManagerController extends PluginManagerAppController {
 			'action' => 'index'
 		));
 		$this->redirect($redirectUrl);
-	}
-
-/**
- * パッケージのバージョンアップ(一括アップデートから呼ばれる)
- *
- * @param array $plugins Pluginリスト
- * @return bool
- */
-	private function __updatePackages($plugins) {
-		if (! $plugins) {
-			return true;
-		}
-
-		foreach ($plugins as $plugin) {
-			if (! $this->Plugin->runVersionUp($plugin)) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 /**

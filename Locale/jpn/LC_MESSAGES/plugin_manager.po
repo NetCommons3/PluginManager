@@ -100,6 +100,9 @@ msgstr "プラグインの選択"
 msgid "Update all"
 msgstr "一括アップデート"
 
+msgid "Update of all plugins"
+msgstr "一括アップデート"
+
 msgid "There is a version-up plugins and libraries. If you want to all update, please press the \"Update all\"."
 msgstr "バージョンアップされたプラグイン及びライブラリがあります。一括で更新する場合は、「一括アップデート」を押してください。"
 
