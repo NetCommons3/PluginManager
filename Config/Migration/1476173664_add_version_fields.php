@@ -72,6 +72,16 @@ class AddVersionFields extends NetCommonsMigration {
 
 		if (Configure::read('NetCommons.installed')) {
 			if ($direction === 'up') {
+				$conditions = array(
+					'Plugin.key' => 'photo_albums'
+				);
+				$update = array(
+					'Plugin.namespace' => '\'netcommons/photo-albums\''
+				);
+				if (! $this->Plugin->updateAll($update, $conditions)) {
+					return false;
+				}
+
 				$filePath = App::pluginPath('PluginManager');
 				$filePath .= 'Config' . DS . 'Migration' . DS . '1476173664_composer.lock';
 				if (! $this->Plugin->updateVersionByComposer($filePath)) {

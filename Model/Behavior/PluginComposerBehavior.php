@@ -53,8 +53,8 @@ class PluginComposerBehavior extends ModelBehavior {
 
 			$composers = array();
 			foreach ($packages['packages'] as $package) {
-				$index = Hash::get($package, 'name');
-				$composers[$index] = $this->_parseComposer($package);
+				$composer = $this->_parseComposer($package);
+				$composers[$composer['namespace']] = $composer;
 			}
 
 			if (! $filePath) {

@@ -56,7 +56,9 @@ class PluginManagerController extends PluginManagerAppController {
 
 		//versionフィールドがない場合、Migrationを実行する
 		if (! $this->Plugin->hasField('version')) {
-			$this->Plugin->runVersionUp('plugin_manager');
+			$this->Plugin->runMigration('plugin_manager');
+			$this->Plugin->runMigration('site_manager');
+
 			return $this->redirect('/plugin_manager/plugin_manager/index/');
 		}
 

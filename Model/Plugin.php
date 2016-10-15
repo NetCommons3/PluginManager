@@ -400,10 +400,12 @@ class Plugin extends AppModel {
 	public function hasUpdate() {
 		$composers = $this->getComposer();
 		$bowers = $this->getBower();
+		$themes = $this->getTheme();
 
 		$latests = array_merge(
 			Hash::combine($bowers, '{s}.key', '{s}.commit_version'),
-			Hash::combine($composers, '{s}.key', '{s}.commit_version')
+			Hash::combine($composers, '{s}.key', '{s}.commit_version'),
+			Hash::combine($themes, '{s}.key', '{s}.commit_version')
 		);
 
 		$currents = $this->find('list', array(
@@ -414,7 +416,7 @@ class Plugin extends AppModel {
 			),
 		));
 
-		return !empty(array_diff($latests, $currents));
+		return !empty(array_diff($latests, $currents)) || !empty(array_diff($currents, $latests));
 	}
 
 }

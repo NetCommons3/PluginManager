@@ -13,6 +13,7 @@ App::uses('ModelBehavior', 'Model');
 App::uses('File', 'Utility');
 App::uses('Folder', 'Utility');
 App::uses('Plugin', 'PluginManager.Model');
+App::uses('Security', 'Utility');
 
 /**
  * Plugin Behavior
@@ -87,7 +88,7 @@ class PluginThemeBehavior extends ModelBehavior {
 			'description' => Hash::get($package, 'description'),
 			'homepage' => Hash::get($package, 'homepage'),
 			'version' => Hash::get($package, 'version'),
-			'commit_version' => Hash::get($package, 'source.reference', Hash::get($package, 'version')),
+			'commit_version' => Hash::get($package, 'source.reference'),
 			'source' => Hash::get($package, 'source.url', ''),
 			'authors' => Hash::get($package, 'authors'),
 			'license' => Hash::get($package, 'license'),
@@ -95,6 +96,10 @@ class PluginThemeBehavior extends ModelBehavior {
 			'packageType' => Hash::get($package, 'type'),
 			'originalSource' => basename($dir)
 		);
+
+		if (! $result['commit_version']) {
+			$result['commit_version'] = Security::hash($result['namespace'] . $result['version'], 'md5');
+		}
 
 		if (Hash::get($package, 'source.type') === 'git' &&
 				$result['source'] && $result['commit_version']) {

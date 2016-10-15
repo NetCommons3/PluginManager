@@ -62,7 +62,13 @@ class PluginBowerBehavior extends ModelBehavior {
 				$package = json_decode($contents, true);
 
 				$bower = $this->_parseBower($package, $dir);
-				$bowers[$bower['namespace']] = $bower;
+				if (isset($bowers[$bower['namespace']])) {
+					if (version_compare($bower['version'], $bowers[$bower['namespace']]['version']) > 0) {
+						$bowers[$bower['namespace']] = $bower;
+					}
+				} else {
+					$bowers[$bower['namespace']] = $bower;
+				}
 			}
 
 			if (! $dirPath) {
