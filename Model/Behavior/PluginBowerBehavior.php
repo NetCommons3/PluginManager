@@ -47,33 +47,7 @@ class PluginBowerBehavior extends ModelBehavior {
 				$bowers[$bower['namespace']] = $bower;
 			}
 		} else {
-			if ($dirPath) {
-				$Folder = new Folder($dirPath);
-			} else {
-				$Folder = new Folder(WWW_ROOT . 'components');
-			}
-			$dirs = $Folder->read(Folder::SORT_NAME, false, true)[0];
-
-			$bowers = array();
-			foreach ($dirs as $dir) {
-				$file = new File($dir . DS . '.bower.json');
-				$contents = $file->read();
-				$file->close();
-				$package = json_decode($contents, true);
-
-				$bower = $this->_parseBower($package, $dir);
-				if (isset($bowers[$bower['namespace']])) {
-					if (version_compare($bower['version'], $bowers[$bower['namespace']]['version']) > 0) {
-						$bowers[$bower['namespace']] = $bower;
-					}
-				} else {
-					$bowers[$bower['namespace']] = $bower;
-				}
-			}
-
-			if (! $dirPath) {
-				$this->bowers = $bowers;
-			}
+			$bowers = $this->__getBowerByFolder($dirPath);
 		}
 
 		if (! $namespace) {
@@ -81,6 +55,41 @@ class PluginBowerBehavior extends ModelBehavior {
 		}
 
 		return Hash::get($bowers, array($namespace));
+	}
+
+/**
+ * bowerの情報取得
+ *
+ * @param string $dirPath bowerのディレクトリ
+ * @return mixed array|bool
+ */
+	private function __getBowerByFolder($dirPath = null) {
+		if ($dirPath) {
+			$Folder = new Folder($dirPath);
+		} else {
+			$Folder = new Folder(WWW_ROOT . 'components');
+		}
+		$dirs = $Folder->read(Folder::SORT_NAME, false, true)[0];
+
+		$bowers = array();
+		foreach ($dirs as $dir) {
+			$file = new File($dir . DS . '.bower.json');
+			$contents = $file->read();
+			$file->close();
+			$package = json_decode($contents, true);
+
+			$bower = $this->_parseBower($package, $dir);
+			if (! Hash::get($bowers, array($bower['namespace'])) ||
+					version_compare($bower['version'], $bowers[$bower['namespace']]['version']) > 0) {
+				$bowers[$bower['namespace']] = $bower;
+			}
+		}
+
+		if (! $dirPath) {
+			$this->bowers = $bowers;
+		}
+
+		return $bowers;
 	}
 
 /**

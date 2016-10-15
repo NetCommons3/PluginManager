@@ -63,7 +63,9 @@ class PluginBehavior extends ModelBehavior {
 			$model->commit();
 
 		} catch (Exception $ex) {
-			CakeLog::info(sprintf('[version up] Failure version up "%s"', Hash::get($plugin, 'Plugin.name')));
+			CakeLog::info(
+				sprintf('[version up] Failure version up "%s"', Hash::get($plugin, 'Plugin.name'))
+			);
 
 			//トランザクションRollback
 			$model->rollback($ex);
@@ -142,7 +144,9 @@ class PluginBehavior extends ModelBehavior {
 		$connection = 'master';
 		$plugin = Inflector::camelize($plugin);
 
-		CakeLog::info(sprintf('[migration] Start migrating "%s" for %s connection', $plugin, $connection));
+		CakeLog::info(
+			sprintf('[migration] Start migrating "%s" for %s connection', $plugin, $connection)
+		);
 
 		$messages = array();
 		$ret = null;
@@ -183,6 +187,8 @@ class PluginBehavior extends ModelBehavior {
  *
  * @param Model $model 呼び出し元Model
  * @param string $plugin Plugin key
+ * @param bool $force 強制的に実行するかどうか
+ * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
  * @return bool True on success
  */
 	public function deleteOldPackageDir(Model $model, $plugin, $force = false) {
@@ -195,17 +201,16 @@ class PluginBehavior extends ModelBehavior {
 			$dirPath = WWW_ROOT . 'components' . DS;
 			$oldPath = $dirPath . Hash::get($plugin, 'Plugin.serialize_data.originalSource');
 			$newPath = $dirPath . Hash::get($plugin, 'latest.originalSource');
-			$doDelete = $force || $oldPath !== $newPath && file_exists($oldPath) && file_exists($newPath);
 		} elseif (Hash::get($plugin, 'latest.packageType') === 'cakephp-plugin') {
 			$oldPath = App::pluginPath(Inflector::camelize(Hash::get($plugin, 'Plugin.key')));
-			$doDelete = $force || file_exists($oldPath);
+			$newPath = '';
 		} else {
 			$dirPath = VENDORS;
 			$oldPath = $dirPath . strtr(Hash::get($plugin, 'Plugin.serialize_data.originalSource'), '/', DS);
 			$newPath = $dirPath . strtr(Hash::get($plugin, 'latest.originalSource'), '/', DS);
-			$doDelete = $force || $oldPath !== $newPath && file_exists($oldPath) && file_exists($newPath);
 		}
 
+		$doDelete = $force || $oldPath !== $newPath && file_exists($oldPath) && file_exists($newPath);
 		if ($doDelete) {
 			CakeLog::info(sprintf('[delete package files] Start delete package files "%s"', $oldPath));
 			CakeLog::info(var_export(Hash::get($plugin, 'latest.originalSource'), true));
@@ -214,7 +219,9 @@ class PluginBehavior extends ModelBehavior {
 			$Folder = new Folder($oldPath);
 			$Folder->delete();
 
-			CakeLog::info(sprintf('[delete package files] Successfully delete package files "%s"', $oldPath));
+			CakeLog::info(
+				sprintf('[delete package files] Successfully delete package files "%s"', $oldPath)
+			);
 		}
 
 		return true;
@@ -259,11 +266,6 @@ class PluginBehavior extends ModelBehavior {
 				} else {
 					$conditions = array('namespace' => $package['namespace']);
 				}
-
-				$plugin = $model->Plugin->find('first', array(
-					'recursive' => -1,
-					'conditions' => $conditions,
-				));
 
 				$count = $model->Plugin->find('count', array(
 					'recursive' => -1,

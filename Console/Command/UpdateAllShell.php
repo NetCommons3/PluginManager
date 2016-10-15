@@ -49,7 +49,9 @@ class UpdateAllShell extends AppShell {
 					$this->PluginUpdateUtil = new PluginUpdateUtil();
 				}
 				if ($this->PluginUpdateUtil->updateAll()) {
-					$this->out('<success>' . __d('plugin_manager', 'Successfully updated of all plugins.') . '</success>');
+					$this->out(
+						'<success>' . __d('plugin_manager', 'Successfully updated of all plugins.') . '</success>'
+					);
 				} else {
 					$this->out('<error>' . __d('plugin_manager', 'Failure updated of all plugins.') . '</error>');
 				}
