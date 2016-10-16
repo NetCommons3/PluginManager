@@ -82,8 +82,8 @@ class PluginThemeBehavior extends ModelBehavior {
 	protected function _parseTheme($package, $dir) {
 		$result = array(
 			'name' => Hash::get($package, 'name'),
-			'key' => Inflector::underscore(basename($dir)),
-			'namespace' => basename($dir),
+			'key' => 'themed_' . Inflector::underscore(basename($dir)),
+			'namespace' => 'Themed/' . basename($dir),
 			'type' => Plugin::PLUGIN_TYPE_FOR_THEME,
 			'description' => Hash::get($package, 'description'),
 			'homepage' => Hash::get($package, 'homepage'),
