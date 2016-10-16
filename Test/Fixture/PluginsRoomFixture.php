@@ -23,11 +23,11 @@ class PluginsRoomFixture extends CakeTestFixture {
  * @var array
  */
 	public $records = array(
-		//array(
-		//	'id' => '1',
-		//	'room_id' => '1',
-		//	'plugin_key' => 'rooms'
-		//),
+		array(
+			'id' => '1',
+			'room_id' => '1',
+			'plugin_key' => 'plugin_manager'
+		),
 	);
 
 /**

@@ -10,6 +10,9 @@
  */
 
 App::uses('PluginManagerAppController', 'PluginManager.Controller');
+App::uses('Plugin', 'PluginManager.Model');
+App::uses('NetCommonsComponent', 'NetCommons.Controller/Component');
+App::uses('PluginUpdateUtil', 'PluginManager.Utility');
 
 /**
  * PluginManager Controller
@@ -30,13 +33,17 @@ class PluginManagerController extends PluginManagerAppController {
 	public function beforeFilter() {
 		parent::beforeFilter();
 
-		$Plugin = $this->Plugin;
 		if (isset($this->params['pass'][0])) {
 			$pluginType = $this->params['pass'][0];
 		} else {
-			$pluginType = $Plugin::PLUGIN_TYPE_FOR_FRAME;
+			$pluginType = Plugin::PLUGIN_TYPE_FOR_FRAME;
 		}
 		$this->set('active', $pluginType);
+
+		if ($this->params['action'] === 'view' && isset($this->params['ext'])) {
+			$this->request->params['pass'][] = $this->params['ext'];
+			unset($this->params['ext']);
+		}
 	}
 
 /**
@@ -45,97 +52,108 @@ class PluginManagerController extends PluginManagerAppController {
  * @return void
  */
 	public function index() {
-		$Plugin = $this->Plugin;
-
 		$plugins = array();
 		$pluginsMap = array();
 
+		//versionフィールドがない場合、Migrationを実行する
+		if (! $this->Plugin->hasField('version')) {
+			$this->Plugin->runMigration('plugin_manager');
+			$this->Plugin->runMigration('site_manager');
+
+			return $this->redirect('/plugin_manager/plugin_manager/index/');
+		}
+
 		$typeKey = 'type' . $this->viewVars['active'];
 		switch ($this->viewVars['active']) {
-			case $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
+			case Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL:
 				$plugins[$typeKey] = $this->Plugin->getPlugins(
 					array(Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER, Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER)
 				);
-				$pluginsMap[$typeKey] =
-						array_flip(array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key')));
+				$pluginsMap[$typeKey] = array_flip(
+					array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key'))
+				);
 				break;
 
-			case $Plugin::PLUGIN_TYPE_FOR_NOT_YET:
+			case Plugin::PLUGIN_TYPE_FOR_NOT_YET:
+				$plugins[$typeKey] = $this->Plugin->getNewPlugins($this->viewVars['active']);
+				$pluginsMap[$typeKey] = array_flip(
+					array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key'))
+				);
 				break;
 
-			case $Plugin::PLUGIN_TYPE_FOR_EXTERNAL:
-				$plugins[$typeKey] = $this->Plugin->getExternalPlugins();
+			case Plugin::PLUGIN_TYPE_FOR_THEME:
+			case Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER:
+			case Plugin::PLUGIN_TYPE_FOR_EXT_BOWER:
+				$plugins[$typeKey] = array_merge(
+					$this->Plugin->getPlugins($this->viewVars['active']),
+					$this->Plugin->getNewPlugins($this->viewVars['active'])
+				);
+
+				$pluginsMap[$typeKey] = array_flip(
+					array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key'))
+				);
 				break;
 
 			default:
 				$plugins[$typeKey] = $this->Plugin->getPlugins(
-					$Plugin::PLUGIN_TYPE_FOR_FRAME
+					$this->viewVars['active']
 				);
-				$pluginsMap[$typeKey] =
-					array_flip(array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key')));
+				$pluginsMap[$typeKey] = array_flip(
+					array_keys(Hash::combine($plugins[$typeKey], '{n}.Plugin.key'))
+				);
 		}
 
 		$this->request->data['Plugins'] = Hash::extract($plugins, '{s}.{n}');
+
 		$this->set('plugins', $plugins);
 		$this->set('pluginsMap', $pluginsMap);
 
-		$nc3plugin = $this->Plugin->getComposer('netcommons/net-commons');
+		$nc3plugin = $this->Plugin->getPlugins(
+			Plugin::PLUGIN_TYPE_CORE, 'net_commons'
+		);
 		$this->set('nc3plugin', $nc3plugin);
+
+		$this->set('hasNewPlugin', (bool)$this->Plugin->getNewPlugins(Plugin::PLUGIN_TYPE_FOR_NOT_YET));
+		$this->set('hasUpdate', $this->Plugin->hasUpdate());
 	}
 
 /**
  * view method
  *
- * @param int $pluginType Plugin type
- * @param string $pluginKey Plugin key
  * @return void
  */
-	public function view($pluginType = null, $pluginKey = null) {
-		$Plugin = $this->Plugin;
-
-		if ($pluginType === $Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) {
+	public function view() {
+		$pluginType = array_shift($this->request->params['pass']);
+		$pluginKey = implode('/', $this->params['pass']);
+		if (isset($this->params['ext'])) {
+			$pluginKey .= '.' . $this->params['ext'];
+		}
+		if ($pluginType === Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL) {
 			$plugins = $this->Plugin->getPlugins(
 				array(Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER, Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER),
 				$pluginKey
 			);
-		} elseif ($pluginType === $Plugin::PLUGIN_TYPE_FOR_FRAME) {
-			$plugins = $this->Plugin->getPlugins($pluginType, $pluginKey);
+		} elseif ($pluginType === Plugin::PLUGIN_TYPE_FOR_NOT_YET) {
+			$plugins = $this->Plugin->getNewPlugins($pluginType, $pluginKey);
 		} else {
-			$plugins = $this->Plugin->getExternalPlugins($pluginKey);
+			$plugins = $this->Plugin->getPlugins($pluginType, $pluginKey);
 		}
 
 		if ($plugins) {
-			$this->request->data['Plugin'] = $plugins[0]['Plugin'];
-			$this->set('plugin', $plugins[0]);
+			$this->request->data['Plugin'] = $plugins['Plugin'];
+			$this->set('plugin', $plugins);
 		}
 
-		$nc3plugin = $this->Plugin->getComposer('netcommons/net-commons');
+		$nc3plugin = $this->Plugin->getPlugins(
+			Plugin::PLUGIN_TYPE_CORE, 'net_commons'
+		);
 		$this->set('nc3plugin', $nc3plugin);
 
 		$this->set('pluginType', $pluginType);
-	}
 
-/**
- * add method
- *
- * @return void
- */
-	public function add() {
-		//	if ($this->request->is('post')) {
-		//		$this->PluginManager->create();
-		//		if ($this->PluginManager->save($this->request->data)) {
-		//			$this->Session->setFlash(__('The plugin manager has been saved.'));
-		//			return $this->redirect(array('action' => 'index'));
-		//		} else {
-		//			$this->Session->setFlash(
-		//				__('The plugin manager could not be saved. Please, try again.')
-		//			);
-		//		}
-		//	}
-		//	$languages = $this->PluginManager->Language->find('list');
-		//	$trackableCreators = $this->PluginManager->TrackableCreator->find('list');
-		//	$trackableUpdaters = $this->PluginManager->TrackableUpdater->find('list');
-		//	$this->set(compact('languages', 'trackableCreators', 'trackableUpdaters'));
+		//レイアウトの設定
+		$this->viewClass = 'View';
+		$this->layout = 'NetCommons.modal';
 	}
 
 /**
@@ -145,59 +163,81 @@ class PluginManagerController extends PluginManagerAppController {
  * @return void
  */
 	public function edit($pluginType = null) {
-		if (! $this->request->is('put')) {
-			$this->throwBadRequest();
-			return;
+		if (! $this->request->is(array('post', 'put'))) {
+			return $this->throwBadRequest();
 		}
 
-		$plugins = $this->Plugin->getPlugins($pluginType, $this->data['Plugin']['key']);
-		if (! $plugins) {
-			$this->throwBadRequest();
-			return;
+		$plugin = $this->Plugin->getPlugins($pluginType, $this->data['Plugin']['key']);
+		if (! $plugin) {
+			$plugin = $this->Plugin->getNewPlugins($pluginType, $this->data['Plugin']['key']);
+		}
+		if (! $plugin) {
+			return $this->throwBadRequest();
 		}
 
-		$error = false;
-
-		if (! $this->Plugin->updateComposer($plugins[0]['composer']['name'])) {
+		if ($this->Plugin->runVersionUp($plugin)) {
 			$this->NetCommons->setFlashNotification(
-				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'composer'),
-				array('class' => 'danger', 'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL)
+				__d('net_commons', 'Successfully saved.'), array('class' => 'success')
 			);
-			$error = true;
-			return;
-		}
-
-		if (! $this->Plugin->runMigration($plugins[0]['Plugin']['key'])) {
+		} else {
 			$this->NetCommons->setFlashNotification(
 				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'migration'), array(
 				'class' => 'danger',
 				'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
 			));
-			$error = true;
-			return;
 		}
 
-		if (! $this->Plugin->updateBower($plugins[0]['Plugin']['key'])) {
-			$this->NetCommons->setFlashNotification(
-				sprintf(__d('net_commons', 'Failed to proceed the %s.'), 'bower'),
-				array('class' => 'danger', 'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL)
-			);
-			$error = true;
-			return;
+		if ($pluginType === Plugin::PLUGIN_TYPE_FOR_NOT_YET &&
+				!(bool)$this->Plugin->getNewPlugins(Plugin::PLUGIN_TYPE_FOR_NOT_YET)) {
+			$redirectUrl = NetCommonsUrl::actionUrl(array(
+				'plugin' => $this->params['plugin'],
+				'controller' => $this->params['controller'],
+				'action' => 'index'
+			));
+		} else {
+			$redirectUrl = NetCommonsUrl::actionUrl(array(
+				'plugin' => $this->params['plugin'],
+				'controller' => $this->params['controller'],
+				'action' => 'index',
+				$pluginType,
+			));
+		}
+		return $this->redirect($redirectUrl);
+	}
+
+/**
+ * 一括アップデート
+ *
+ * @param int $pluginType Plugin type
+ * @return void
+ */
+	public function update_all($pluginType = null) {
+		if (! $this->request->is('post')) {
+			return $this->throwBadRequest();
 		}
 
-		if (! $error) {
+		if (! isset($this->PluginUpdateUtil)) {
+			$this->PluginUpdateUtil = new PluginUpdateUtil();
+		}
+
+		if ($this->PluginUpdateUtil->updateAll()) {
 			$this->NetCommons->setFlashNotification(
 				__d('net_commons', 'Successfully saved.'), array('class' => 'success')
+			);
+		} else {
+			$this->NetCommons->setFlashNotification(
+				__d('plugin_manager', 'Failure updated of all plugins.'),
+				array(
+					'class' => 'danger',
+					'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
+				)
 			);
 		}
 
 		$redirectUrl = NetCommonsUrl::actionUrl(array(
 			'plugin' => $this->params['plugin'],
 			'controller' => $this->params['controller'],
-			'action' => 'view',
-			$pluginType,
-			$this->data['Plugin']['key']
+			'action' => 'index'
 		));
 		$this->redirect($redirectUrl);
 	}
@@ -232,28 +272,5 @@ class PluginManagerController extends PluginManagerAppController {
 			$pluginType,
 		));
 		$this->redirect($redirectUrl);
-	}
-
-/**
- * delete method
- *
- * @param string $id id
- * @throws NotFoundException
- * @return void
- */
-	public function delete($id = null) {
-		//	$this->PluginManager->id = $id;
-		//	if (!$this->PluginManager->exists()) {
-		//		throw new NotFoundException(__('Invalid plugin manager'));
-		//	}
-		//	$this->request->onlyAllow('post', 'delete');
-		//	if ($this->PluginManager->delete()) {
-		//		$this->Session->setFlash(__('The plugin manager has been deleted.'));
-		//	} else {
-		//		$this->Session->setFlash(
-		//			__('The plugin manager could not be deleted. Please, try again.')
-		//		);
-		//	}
-		//	return $this->redirect(array('action' => 'index'));
 	}
 }

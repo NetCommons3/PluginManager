@@ -30,6 +30,11 @@ class Plugin extends AppModel {
 	const PACKAGIST_URL = 'https://packagist.org/packages/';
 
 /**
+ * GithubのURL
+ */
+	const GITHUB_URL = 'https://github.com/';
+
+/**
  * コアプラグイン
  */
 	const PLUGIN_TYPE_CORE = '0';
@@ -61,9 +66,19 @@ class Plugin extends AppModel {
 	const PLUGIN_TYPE_FOR_NOT_YET = '4';
 
 /**
- * 外部ライブラリ
+ * テーマ
  */
-	const PLUGIN_TYPE_FOR_EXTERNAL = '5';
+	const PLUGIN_TYPE_FOR_THEME = '5';
+
+/**
+ * 外部ライブラリ composer
+ */
+	const PLUGIN_TYPE_FOR_EXT_COMPOSER = '6';
+
+/**
+ * 外部ライブラリ bower
+ */
+	const PLUGIN_TYPE_FOR_EXT_BOWER = '7';
 
 /**
  * Behaviors
@@ -71,10 +86,10 @@ class Plugin extends AppModel {
  * @var array
  */
 	public $actsAs = array(
-		'PluginManager.Bower',
-		'PluginManager.Composer',
-		'PluginManager.Migration',
 		'PluginManager.Plugin',
+		'PluginManager.PluginBower',
+		'PluginManager.PluginComposer',
+		'PluginManager.PluginTheme',
 	);
 
 /**
@@ -176,16 +191,28 @@ class Plugin extends AppModel {
 	}
 
 /**
- * Get plugin data from type and roleId, $langId
+ * プラグインデータの取得
  *
- * @param int $type array|int 1:for frame/2:for controll panel
- * @param string $key plugins.key
- * @return mixed array|bool
+ * @param int $type プラグインタイプ
+ * @param string $key プラグインキー
+ * @return array
  */
 	public function getPlugins($type, $key = null) {
+		$notLangTypes = array(
+			self::PLUGIN_TYPE_CORE,
+			self::PLUGIN_TYPE_FOR_THEME,
+			self::PLUGIN_TYPE_FOR_EXT_COMPOSER,
+			self::PLUGIN_TYPE_FOR_EXT_BOWER
+		);
+		if (! is_array($type) && in_array($type, $notLangTypes)) {
+			$langId = '0';
+		} else {
+			$langId = Current::read('Language.id');
+		}
+
 		$conditions = array(
 			'Plugin.type' => $type,
-			'Plugin.language_id' => Current::read('Language.id')
+			'Plugin.language_id' => $langId
 		);
 		if (isset($key)) {
 			$conditions['Plugin.key'] = $key;
@@ -198,23 +225,128 @@ class Plugin extends AppModel {
 		}
 
 		//pluginsテーブルの取得
-		if (! $plugins = $this->find('all', array(
+		$plugins = $this->find('all', array(
 			'recursive' => -1,
 			'conditions' => $conditions,
 			'order' => $order,
-		))) {
-			return null;
+		));
+		if (! $plugins) {
+			return array();
 		}
-
 		foreach ($plugins as $i => $plugin) {
-			$plugins[$i]['composer'] = $this->getComposer($plugin['Plugin']['namespace']);
+			$plugin['Plugin']['serialize_data'] = unserialize($plugin['Plugin']['serialize_data']);
+			if ($plugin['Plugin']['type'] === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+				$plugin['Plugin']['package_url'] = Hash::get($plugin, 'Plugin.serialize_data.source');
+				$plugin['latest'] = $this->getBower($plugin['Plugin']['namespace']);
+			} elseif ($plugin['Plugin']['type'] === self::PLUGIN_TYPE_FOR_THEME) {
+				$plugin['Plugin']['package_url'] = null;
+				$plugin['latest'] = $this->getTheme($plugin['Plugin']['namespace']);
+			} else {
+				$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
+				$plugin['latest'] = $this->getComposer($plugin['Plugin']['namespace']);
+			}
+			$plugins[$i] = $plugin;
 		}
 
-		return $plugins;
+		if ($key) {
+			return Hash::get($plugins, '0', array());
+		} else {
+			return $plugins;
+		}
 	}
 
 /**
- * Save plugin
+ * 未インストールのプラグイン取得
+ *
+ * @param int $type プラグインタイプ
+ * @param string $key プラグインキー
+ * @return array
+ */
+	public function getNewPlugins($type, $key = null) {
+		$conditions = array(
+			'language_id' => array(Current::read('Language.id'), '0'),
+		);
+
+		if ($type === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+			$packages = $this->getBower();
+			$latests = Hash::extract($packages, '{s}.key', array());
+			$conditions['type'] = self::PLUGIN_TYPE_FOR_EXT_BOWER;
+		} elseif ($type === self::PLUGIN_TYPE_FOR_EXT_COMPOSER) {
+			$packages = $this->getComposer();
+			$notPackages = preg_replace('/-/', '_',
+				preg_replace('/^netcommons\//', '', preg_grep('/^netcommons/', array_keys($packages)))
+			);
+			$latests = array_diff(Hash::extract($packages, '{s}.key', array()), $notPackages);
+			$conditions['type'] = self::PLUGIN_TYPE_FOR_EXT_COMPOSER;
+		} elseif ($type === self::PLUGIN_TYPE_FOR_THEME) {
+			$packages = $this->getTheme();
+			$latests = Hash::extract($packages, '{s}.key', array());
+			$conditions['type'] = self::PLUGIN_TYPE_FOR_THEME;
+		} else {
+			$packages = $this->getComposer();
+			$latests = preg_replace('/-/', '_',
+				preg_replace('/^netcommons\//', '', preg_grep('/^netcommons/', array_keys($packages)))
+			);
+			$conditions['type'] = array(
+				self::PLUGIN_TYPE_CORE,
+				self::PLUGIN_TYPE_FOR_FRAME,
+				self::PLUGIN_TYPE_FOR_SITE_MANAGER,
+				self::PLUGIN_TYPE_FOR_SYSTEM_MANGER,
+			);
+		}
+		$packages = Hash::combine($packages, '{s}.key', '{s}');
+
+		$currents = $this->find('list', array(
+			'recursive' => -1,
+			'fields' => array('key', 'commit_version'),
+			'conditions' => $conditions,
+		));
+		$currents = array_keys($currents);
+
+		$inserts = array_diff($latests, $currents);
+		$plugins = array();
+		if ($key) {
+			if (in_array($key, $inserts, true)) {
+				$plugins[] = $this->__parseNewPlugins($packages[$key]);
+			}
+		} else {
+			$index = 0;
+			foreach ($inserts as $pluginKey) {
+				$plugins[$index] = $this->__parseNewPlugins($packages[$pluginKey]);
+				$index++;
+			}
+		}
+
+		if ($key) {
+			return Hash::get($plugins, '0');
+		} else {
+			return $plugins;
+		}
+	}
+
+/**
+ * 未インストールのプラグインのパース処理
+ *
+ * @param array $package パッケージ
+ * @return array
+ */
+	private function __parseNewPlugins($package) {
+		$plugin = array();
+		$plugin['Plugin'] = $package;
+		$plugin['Plugin']['serialize_data'] = $package;
+		$plugin['latest'] = $package;
+		if (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
+			$plugin['Plugin']['package_url'] = Hash::get($package, 'source');
+		} elseif (Hash::get($plugin['Plugin'], 'type') === self::PLUGIN_TYPE_FOR_THEME) {
+			$plugin['Plugin']['package_url'] = null;
+		} else {
+			$plugin['Plugin']['package_url'] = self::PACKAGIST_URL . $plugin['Plugin']['namespace'];
+		}
+		return $plugin;
+	}
+
+/**
+ * プラグインの表示順序更新
  *
  * @param array $data Request data
  * @return bool True on success
@@ -258,6 +390,36 @@ class Plugin extends AppModel {
 		}
 
 		return true;
+	}
+
+/**
+ * 更新があるかどうか
+ *
+ * @return bool
+ */
+	public function hasUpdate() {
+		$composers = $this->getComposer();
+		$bowers = $this->getBower();
+		$themes = $this->getTheme();
+
+		$latests = array_merge(
+			Hash::combine($bowers, '{s}.key', '{s}.commit_version'),
+			Hash::combine($composers, '{s}.key', '{s}.commit_version'),
+			Hash::combine($themes, '{s}.key', '{s}.commit_version')
+		);
+
+		$currents = $this->find('list', array(
+			'recursive' => -1,
+			'fields' => array('key', 'commit_version'),
+			'conditions' => array(
+				'language_id' => array(Current::read('Language.id'), '0'),
+			),
+		));
+
+		$diffLatest = array_diff($latests, $currents);
+		$diffCurrent = array_diff($currents, $latests);
+		$return = !empty($diffLatest) || !empty($diffCurrent);
+		return $return;
 	}
 
 }

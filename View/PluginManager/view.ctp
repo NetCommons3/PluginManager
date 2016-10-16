@@ -8,80 +8,103 @@
  * @license http://www.netcommons.org/license.txt NetCommons License
  * @copyright Copyright 2014, NetCommons Project
  */
-
-echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 ?>
 
-<?php echo $this->element('PluginManager/title'); ?>
-<?php echo $this->element('PluginManager/tabs'); ?>
+<?php $this->start('title_for_modal'); ?>
+<?php echo h($plugin['Plugin']['name']); ?>
+<?php $this->end(); ?>
 
 <div class="panel panel-default" >
 	<div class="panel-body">
-		<h2 class="nc-title-in-panel">
-			<strong><?php echo h($plugin['Plugin']['name']); ?></strong>
-		</h2>
-		<?php if ($plugin['composer']) : ?>
+		<?php if (Hash::get($plugin, 'Plugin.serialize_data.description')) : ?>
 			<div class="plugin-manager-description">
-				<?php echo __d(h($plugin['Plugin']['key']), h($plugin['composer']['description'])); ?>
+				<?php echo __d(h($plugin['Plugin']['key']), h(Hash::get($plugin, 'Plugin.serialize_data.description'))); ?>
 			</div>
 		<?php endif; ?>
 
-		<?php if ($plugin['composer']) : ?>
-			<div class="row plugin-manager-list">
-				<div class="col-md-2 col-sm-3 col-xs-12">
-					<?php echo __d('plugin_manager', 'Package'); ?>
-				</div>
-				<div class="col-md-10 col-sm-9 col-xs-12">
-					<a target="_blank" href="<?php echo Plugin::PACKAGIST_URL . h($plugin['composer']['name']); ?>">
-						<?php echo h($plugin['composer']['name']); ?>
+		<div class="row plugin-manager-list">
+			<div class="col-md-2 col-sm-3 col-xs-12">
+				<?php echo __d('plugin_manager', 'Package'); ?>
+			</div>
+			<div class="col-md-10 col-sm-9 col-xs-12">
+				<?php if (Hash::get($plugin, 'Plugin.package_url')) : ?>
+					<a target="_blank" href="<?php echo h(Hash::get($plugin, 'Plugin.package_url')); ?>">
+						<?php echo h($plugin['Plugin']['namespace']); ?>
 					</a>
-				</div>
+				<?php else: ?>
+					<?php echo h($plugin['Plugin']['namespace']); ?>
+				<?php endif; ?>
 			</div>
-		<?php endif; ?>
+		</div>
 
-		<?php if (isset($plugin['composer']['source'])) : ?>
-			<div class="row plugin-manager-list">
-				<div class="col-md-2 col-sm-3 col-xs-12">
-					<?php echo __d('plugin_manager', 'Version'); ?>
-				</div>
-				<div class="col-md-10 col-sm-9 col-xs-12">
-					<?php echo h($plugin['composer']['version']); ?>
-					<span class="text-muted">(<?php echo h($plugin['composer']['source']['reference']); ?>)</span>
-				</div>
+		<div class="row plugin-manager-list">
+			<div class="col-md-2 col-sm-3 col-xs-12">
+				<?php echo __d('plugin_manager', 'Version'); ?>
 			</div>
+			<div class="col-md-10 col-sm-9 col-xs-12 plugin-version">
+				<div>
+					<?php if (Hash::get($plugin, 'Plugin.serialize_data.commit_url')) : ?>
+						<a href="<?php echo Hash::get($plugin, 'Plugin.serialize_data.commit_url'); ?>">
+							<?php echo h($plugin['Plugin']['version']); ?>
+							<span class="text-muted">
+								(<?php echo h($plugin['Plugin']['commit_version']); ?>)
+							</span>
+						</a>
+					<?php else : ?>
+						<?php echo h($plugin['Plugin']['version']); ?>
+						<span class="text-muted">
+							(<?php echo h($plugin['Plugin']['commit_version']); ?>)
+						</span>
+					<?php endif; ?>
+				</div>
 
-			<div class="row plugin-manager-list">
-				<div class="col-md-2 col-sm-3 col-xs-12">
-					<?php echo __d('plugin_manager', 'Source'); ?>
-				</div>
-				<div class="col-md-10 col-sm-9 col-xs-12">
-					<a target="_blank" href="<?php echo h($plugin['composer']['source']['url']); ?>">
-						<?php echo h($plugin['composer']['source']['url']); ?>
-					</a>
-				</div>
+				<?php if (Hash::get($plugin, 'latest') &&
+							Hash::get($plugin, 'Plugin.commit_version') !== Hash::get($plugin, 'latest.commit_version')) : ?>
+					<div class="text-danger">
+						<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
+						<?php if (Hash::get($plugin, 'latest.commit_url')) : ?>
+							<a href="<?php echo Hash::get($plugin, 'latest.commit_url'); ?>">
+								<?php echo h($plugin['latest']['version']); ?>
+								<span class="text-danger">
+									(<?php echo h($plugin['latest']['commit_version']); ?>)
+								</span>
+							</a>
+						<?php else : ?>
+							<?php echo h($plugin['Plugin']['version']); ?>
+							(<?php echo h($plugin['Plugin']['commit_version']); ?>)
+						<?php endif; ?>
+					</div>
+				<?php elseif (! Hash::get($plugin, 'latest')) : ?>
+					<div class="text-danger">
+						<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span>
+						<?php echo __d('net_commons', 'Delete'); ?>
+					</div>
+				<?php endif; ?>
 			</div>
-		<?php endif; ?>
+		</div>
 
-		<?php if (isset($plugin['composer']['authors'])) : ?>
+		<?php if (Hash::get($plugin, 'Plugin.serialize_data.authors')) : ?>
 			<div class="row plugin-manager-list">
 				<div class="col-md-2 col-sm-3 col-xs-12">
 					<?php echo __d('plugin_manager', 'Author(s)'); ?>
 				</div>
 				<div class="col-md-10 col-sm-9 col-xs-12">
-					<ul class="plugin-manager-autors-ul list-inline">
-						<?php foreach ($plugin['composer']['authors'] as $author) : ?>
+					<ul class="plugin-manager-autors-ul">
+						<?php foreach ((array)Hash::get($plugin, 'Plugin.serialize_data.authors') as $author) : ?>
 							<?php
 								$name = '';
 								if (isset($author['role']) && strtolower($author['role']) === 'developer') {
 									$author['name'] = h($author['name']) .
-											' <span class="small"><span class="text-danger">' .
+											' <span class="small"><span class="text-success">' .
 												__d('plugin_manager', '[Developer]') .
 											'</span></span>';
 								}
 								if (isset($author['homepage'])) {
 									$name .= $this->Html->link($author['name'], $author['homepage'], array('target' => '_blank', 'escapeTitle' => false));
-								} else {
+								} elseif (isset($author['name'])) {
 									$name .= h($author['name']);
+								} else {
+									$name .= h($author);
 								}
 							?>
 							<li>
@@ -93,30 +116,39 @@ echo $this->NetCommonsHtml->css('/plugin_manager/css/style.css');
 			</div>
 		<?php endif; ?>
 
-		<?php if (isset($plugin['composer']['license'])) : ?>
+		<?php if (Hash::get($plugin, 'Plugin.serialize_data.license')) : ?>
 			<div class="row plugin-manager-list">
 				<div class="col-md-2 col-sm-3 col-xs-12">
 					<?php echo __d('plugin_manager', 'License'); ?>
 				</div>
 				<div class="col-md-10 col-sm-9 col-xs-12">
-					<?php echo implode(', ', $plugin['composer']['license']); ?>
+					<?php echo implode(', ', (array)Hash::get($plugin, 'Plugin.serialize_data.license')); ?>
 				</div>
 			</div>
 		<?php endif; ?>
 
-		<?php if (isset($plugin['composer']['homepage'])) : ?>
+		<?php if (Hash::get($plugin, 'Plugin.serialize_data.homepage')) : ?>
 			<div class="row plugin-manager-list">
-				<div class="col-md-2 col-sm-3 col-xs-12">
+				<div class="col-md-2 col-sm-3 col-xs-12 text-nowrap">
 					<?php echo __d('plugin_manager', 'Home page'); ?>
 				</div>
 				<div class="col-md-10 col-sm-9 col-xs-12">
-					<a target="_blank" href="<?php echo h($plugin['composer']['homepage']); ?>">
-						<?php echo h($plugin['composer']['homepage']); ?>
+					<a target="_blank" href="<?php echo h(Hash::get($plugin, 'Plugin.serialize_data.homepage')); ?>">
+						<?php echo h(Hash::get($plugin, 'Plugin.serialize_data.homepage')); ?>
 					</a>
 				</div>
 			</div>
 		<?php endif; ?>
 	</div>
 
-	<?php echo $this->element('PluginManager/edit_form'); ?>
+	<div class="panel-footer text-center">
+		<?php echo $this->NetCommonsForm->create('Plugin', array(
+				'url' => NetCommonsUrl::actionUrlAsArray(array('action' => 'edit', $pluginType))
+			)); ?>
+
+			<?php echo $this->NetCommonsForm->hidden('Plugin.key'); ?>
+			<?php echo $this->Button->save(__d('plugin_manager', 'Update')); ?>
+
+		<?php echo $this->NetCommonsForm->end(); ?>
+	</div>
 </div>

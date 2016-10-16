@@ -8,17 +8,25 @@
 
 ul.plugin-manager-autors-ul {
 	margin-bottom: 0px;
+	list-style-type: disc;
+	padding-left: 16px;
 }
 ul.plugin-manager-autors-ul > li {
-	padding-right: 15px;
+	padding-right: 16px;
 }
 
+.plugin-manager-list:first-child {
+	margin-top: 4px;
+}
+.plugin-manager-list:last-child {
+	margin-bottom: 4px;
+}
 .plugin-manager-list {
-	margin-top: 15px;
-	margin-bottom: 15px;
+	margin-top: 16px;
+	margin-bottom: 16px;
 }
 .plugin-manager-description {
-	margin-bottom: 25px;
+	margin-bottom: 24px;
 }
 
 .plugin-checkbox-outer > .checkbox {
@@ -27,4 +35,8 @@ ul.plugin-manager-autors-ul > li {
 	margin-bottom: 1em;
 	float: left;
 	white-space: nowrap;
+}
+
+.plugin-version {
+	overflow-wrap : break-word;
 }

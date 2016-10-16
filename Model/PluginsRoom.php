@@ -10,6 +10,7 @@
  */
 
 App::uses('AppModel', 'Model');
+App::uses('Plugin', 'PluginManager.Model');
 
 /**
  * PluginsRoom Model
@@ -64,10 +65,9 @@ class PluginsRoom extends AppModel {
 		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = Current::read('Language.id');
 
 		//pluginsテーブルの取得
-		$Plugin = $this->Plugin;
 		$plugins = $this->find('all', array(
 			'conditions' => array(
-				'Plugin.type' => $Plugin::PLUGIN_TYPE_FOR_FRAME,
+				'Plugin.type' => Plugin::PLUGIN_TYPE_FOR_FRAME,
 				/* 'Plugin.language_id' => $langId, */
 				'Room.id' => $roomId
 			),
