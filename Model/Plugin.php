@@ -416,7 +416,9 @@ class Plugin extends AppModel {
 			),
 		));
 
-		$return = !empty(array_diff($latests, $currents)) || !empty(array_diff($currents, $latests));
+		$diffLatest = array_diff($latests, $currents);
+		$diffCurrent = array_diff($currents, $latests);
+		$return = !empty($diffLatest) || !empty($diffCurrent);
 		return $return;
 	}
 
