@@ -258,10 +258,11 @@ class PluginBehavior extends ModelBehavior {
 		$model->Plugin->begin();
 
 		if (is_string($packages)) {
-			$package = $model->Plugin->find('count', array(
+			$package = $model->Plugin->find('first', array(
 				'recursive' => -1,
 				'conditions' => array(
-					'key' => $packages
+					'key' => $packages,
+					'language_id' => array(Current::read('Language.id'), '0')
 				),
 			));
 			$packages = array($package);
@@ -281,6 +282,11 @@ class PluginBehavior extends ModelBehavior {
 					$conditions = array('namespace' => $package['namespace']);
 				}
 
+				$plugin = $model->Plugin->find('first', array(
+					'recursive' => -1,
+					'conditions' => $conditions,
+				));
+
 				$count = $model->Plugin->find('count', array(
 					'recursive' => -1,
 					'conditions' => $conditions,
@@ -293,7 +299,7 @@ class PluginBehavior extends ModelBehavior {
 						'serialize_data' => '\'' . serialize($package) . '\'',
 					);
 					if (! $model->Plugin->updateAll($update, $conditions)) {
-						CakeLog::info(sprintf('[update version] Error(' . __LINE__ . ')'));
+						CakeLog::info(sprintf('[update version] Line(' . __LINE__ . ') Error'));
 						CakeLog::info(var_export($update, true));
 						CakeLog::info(var_export($conditions, true));
 
@@ -318,7 +324,7 @@ class PluginBehavior extends ModelBehavior {
 					);
 					$model->Plugin->create(false);
 					if (! $model->Plugin->save($data)) {
-						CakeLog::info(sprintf('[update version] Error(' . __LINE__ . ')'));
+						CakeLog::info(sprintf('[update version] Line(' . __LINE__ . ') Error'));
 						CakeLog::info(var_export($data, true));
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}

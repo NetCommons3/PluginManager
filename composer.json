@@ -21,10 +21,13 @@
         }
     },
     "require": {
-        "cakedc/migrations":            "~2.2",
-        "netcommons/control-panel":     "@dev",
-        "netcommons/net-commons":       "@dev",
-        "netcommons/rooms":             "@dev"
+        "cakedc/migrations": "~2.2",
+        "netcommons/control-panel": "@dev",
+        "netcommons/net-commons": "@dev",
+        "netcommons/rooms": "@dev"
+    },
+    "require-dev": {
+        "netcommons/photo-albums": "@dev"
     },
     "config": {
         "vendor-dir": "vendors"

@@ -34,7 +34,8 @@ class TestPluginBehaviorModel extends AppModel {
 	public $actsAs = array(
 		'PluginManager.Plugin' => array(
 			'connection' => 'test'
-		)
+		),
+		'PluginManager.PluginComposer',
 	);
 
 }

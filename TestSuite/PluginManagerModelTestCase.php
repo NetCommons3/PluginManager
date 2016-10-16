@@ -24,7 +24,7 @@ class PluginManagerModelTestCase extends NetCommonsModelTestCase {
  *
  * @var array
  */
-	public $fixtures = array();
+	protected $_fixtures = array();
 
 /**
  * Plugin name
@@ -32,6 +32,22 @@ class PluginManagerModelTestCase extends NetCommonsModelTestCase {
  * @var string
  */
 	public $plugin = 'plugin_manager';
+
+/**
+ * Fixtures load
+ *
+ * @param string $name The name parameter on PHPUnit_Framework_TestCase::__construct()
+ * @param array  $data The data parameter on PHPUnit_Framework_TestCase::__construct()
+ * @param string $dataName The dataName parameter on PHPUnit_Framework_TestCase::__construct()
+ * @return void
+ */
+	public function __construct($name = null, array $data = array(), $dataName = '') {
+		if (! isset($this->fixtures)) {
+			$this->fixtures = array();
+		}
+		$this->fixtures = array_merge($this->_fixtures, $this->fixtures);
+		parent::__construct($name, $data, $dataName);
+	}
 
 /**
  * setUp method
