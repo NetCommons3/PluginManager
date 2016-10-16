@@ -57,6 +57,7 @@ class PluginBehaviorRunMigrationTest extends PluginManagerModelTestCase {
  * テーブルクリア
  *
  * @param string $plugin Plugin key
+ * @param array $dropTables 初期化するためにDrop Tableするリスト
  * @return void
  */
 	private function __databaseClear($plugin, $dropTables) {
@@ -146,7 +147,6 @@ class PluginBehaviorRunMigrationTest extends PluginManagerModelTestCase {
 
 		//チェック
 		$this->assertTrue($result);
-		var_export($logger->output);
 		$this->assertTextNotContains('Failure', $output);
 
 		$expected = 'Info: [migration] Start migrating "' . $plugin . '" for test connection';

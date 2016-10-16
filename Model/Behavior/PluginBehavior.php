@@ -282,11 +282,6 @@ class PluginBehavior extends ModelBehavior {
 					$conditions = array('namespace' => $package['namespace']);
 				}
 
-				$plugin = $model->Plugin->find('first', array(
-					'recursive' => -1,
-					'conditions' => $conditions,
-				));
-
 				$count = $model->Plugin->find('count', array(
 					'recursive' => -1,
 					'conditions' => $conditions,

@@ -76,7 +76,6 @@ class UpdateVersionPhotoAlbumsTest extends PluginManagerModelTestCase {
 
 		$result = $this->TestModel->updateVersion([$package]);
 		$logger = CakeLog::stream('TestMockLog');
-		$output = implode('', $logger->output);
 
 		//チェック
 		$this->assertTrue($result);

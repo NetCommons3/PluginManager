@@ -62,6 +62,7 @@ class PluginHasUpdateTest extends NetCommonsModelTestCase {
  *  - expected 期待値
  *
  * @return array データ
+ * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
  */
 	public function dataProvider() {
 		$composers = array(

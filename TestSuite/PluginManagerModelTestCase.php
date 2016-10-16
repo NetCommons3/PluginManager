@@ -40,6 +40,7 @@ class PluginManagerModelTestCase extends NetCommonsModelTestCase {
  * @param array  $data The data parameter on PHPUnit_Framework_TestCase::__construct()
  * @param string $dataName The dataName parameter on PHPUnit_Framework_TestCase::__construct()
  * @return void
+ * @codeCoverageIgnore
  */
 	public function __construct($name = null, array $data = array(), $dataName = '') {
 		if (! isset($this->fixtures)) {

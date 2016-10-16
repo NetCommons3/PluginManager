@@ -16,7 +16,7 @@ App::uses('PluginFixture', 'PluginManager.Test/Fixture');
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\PluginManager\Test\Fixture
  */
-class Plugin4photoAlbumsUnderScoreFixture extends PluginFixture {
+class Plugin4photoAlbumsFixture extends PluginFixture {
 
 /**
  * Model name
