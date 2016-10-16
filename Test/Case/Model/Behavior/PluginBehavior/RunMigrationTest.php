@@ -33,7 +33,7 @@ class PluginBehaviorRunMigrationTest extends PluginManagerModelTestCase {
  */
 	public $fixtures = array(
 		'plugin.m17n.language',
-		'plugin.migrations.schema_migration',
+		'plugin.migrations.schema_migrations',
 	);
 
 /**
