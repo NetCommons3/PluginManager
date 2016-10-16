@@ -54,7 +54,9 @@ class UpdateVersionPhotoAlbumsTest extends PluginManagerModelTestCase {
 	public function testUpdateVersion() {
 		//事前準備
 		$namespace = 'netcommons/photo-albums';
-		$package = $this->TestModel->getComposer($namespace);
+		$filePath = App::pluginPath('PluginManager');
+		$filePath .= 'Config' . DS . 'Migration' . DS . '1476173664_composer.lock';
+		$package = $this->TestModel->getComposer($namespace, $filePath);
 
 		//テスト実施
 		$this->TestModel->Plugin = $this->getMockForModel(
