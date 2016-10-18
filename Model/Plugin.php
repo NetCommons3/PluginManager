@@ -15,6 +15,7 @@
  */
 
 App::uses('AppModel', 'Model');
+App::uses('Current', 'NetCommons.Utility');
 
 /**
  * Plugin Model
@@ -234,7 +235,9 @@ class Plugin extends AppModel {
 			return array();
 		}
 		foreach ($plugins as $i => $plugin) {
-			$plugin['Plugin']['serialize_data'] = unserialize($plugin['Plugin']['serialize_data']);
+			$plugin['Plugin']['serialize_data'] = unserialize(
+				Hash::get($plugin, 'Plugin.serialize_data', serialize(array()))
+			);
 			if ($plugin['Plugin']['type'] === self::PLUGIN_TYPE_FOR_EXT_BOWER) {
 				$plugin['Plugin']['package_url'] = Hash::get($plugin, 'Plugin.serialize_data.source');
 				$plugin['latest'] = $this->getBower($plugin['Plugin']['namespace']);
