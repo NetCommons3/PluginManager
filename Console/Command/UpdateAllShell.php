@@ -45,6 +45,10 @@ class UpdateAllShell extends AppShell {
 		);
 		switch ($choice) {
 			case 's':
+				$this->Plugin = ClassRegistry::init('PluginManager.Plugin');
+				$this->Plugin->runMigration('plugin_manager');
+				$this->Plugin->runMigration('site_manager');
+
 				if (! isset($this->PluginUpdateUtil)) {
 					$this->PluginUpdateUtil = new PluginUpdateUtil();
 				}
