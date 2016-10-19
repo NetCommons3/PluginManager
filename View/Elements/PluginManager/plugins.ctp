@@ -68,7 +68,7 @@ App::uses('Plugin', 'PluginManager.Model');
 							</button>
 
 							<input type="hidden" ng-value="{{$index + 1}}"
-								   name="data[Plugins][{{getIndex('type<?php echo $pluginType; ?>', plugin.key)}}][Plugin][weight]">
+								   name="data[Plugins][{{getIndex('type<?php echo $pluginType; ?>', plugin.plugin.key)}}][Plugin][weight]">
 						<?php endif; ?>
 					</td>
 					<td>
