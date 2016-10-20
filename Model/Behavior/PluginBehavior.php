@@ -163,8 +163,8 @@ class PluginBehavior extends ModelBehavior {
 		$messages = array();
 		$ret = null;
 		exec(sprintf(
-			'cd %s && app/Console/cake Migrations.migration run all -p %s -c %s -i %s',
-			ROOT, $plugin, $this->connection, $this->connection
+			'cd %s && Console%scake Migrations.migration run all -p %s -c %s -i %s 2>&1',
+			ROOT . DS . APP_DIR, DS, escapeshellcmd($plugin), $this->connection, $this->connection
 		), $messages, $ret);
 
 		// Write logs
