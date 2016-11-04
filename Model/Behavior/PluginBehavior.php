@@ -151,20 +151,24 @@ class PluginBehavior extends ModelBehavior {
  *
  * @param Model $model 呼び出し元Model
  * @param string $plugin Plugin key
+ * @param string|null $connection DB接続先
  * @return bool True on success
  */
-	public function runMigration(Model $model, $plugin) {
+	public function runMigration(Model $model, $plugin, $connection = null) {
+		if (! $connection) {
+			$connection = $this->connection;
+		}
 		$plugin = Inflector::camelize($plugin);
 
 		CakeLog::info(
-			sprintf('[migration] Start migrating "%s" for %s connection', $plugin, $this->connection)
+			sprintf('[migration] Start migrating "%s" for %s connection', $plugin, $connection)
 		);
 
 		$messages = array();
 		$ret = null;
 		exec(sprintf(
 			'cd %s && Console%scake Migrations.migration run all -p %s -c %s -i %s 2>&1',
-			ROOT . DS . APP_DIR, DS, escapeshellcmd($plugin), $this->connection, $this->connection
+			ROOT . DS . APP_DIR, DS, escapeshellcmd($plugin), $connection, $connection
 		), $messages, $ret);
 
 		// Write logs
@@ -177,20 +181,20 @@ class PluginBehavior extends ModelBehavior {
 			$matches = preg_grep('/No migrations/', $messages);
 			if (count($matches) === 0) {
 				CakeLog::info(
-					sprintf('[migration] Failure migrated "%s" for %s connection', $plugin, $this->connection)
+					sprintf('[migration] Failure migrated "%s" for %s connection', $plugin, $connection)
 				);
 				$result = false;
 			} else {
 				//@codeCoverageIgnoreStart
 				//Migrationの戻り値が0になって処理が通らなくなったが、念のため処理として残しておく
 				CakeLog::info(
-					sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $this->connection)
+					sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $connection)
 				);
 				//@codeCoverageIgnoreEnd
 			}
 		} else {
 			CakeLog::info(
-				sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $this->connection)
+				sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $connection)
 			);
 		}
 
