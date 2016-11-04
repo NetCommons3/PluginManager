@@ -151,6 +151,7 @@ class PluginBehavior extends ModelBehavior {
  *
  * @param Model $model 呼び出し元Model
  * @param string $plugin Plugin key
+ * @param string|null $connection DB接続先
  * @return bool True on success
  */
 	public function runMigration(Model $model, $plugin, $connection = null) {
