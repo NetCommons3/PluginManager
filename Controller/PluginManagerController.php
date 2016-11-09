@@ -57,7 +57,16 @@ class PluginManagerController extends PluginManagerAppController {
 
 		//versionフィールドがない場合、Migrationを実行する
 		if (! $this->Plugin->hasField('version')) {
-			$this->Plugin->runMigration('plugin_manager');
+			if (! $this->Plugin->runMigration('plugin_manager')) {
+				$this->NetCommons->setFlashNotification(
+					__d('plugin_manager', 'Failure updated of "plugin_manager" plugin.'),
+					array(
+						'class' => 'danger',
+						'interval' => NetCommonsComponent::ALERT_VALIDATE_ERROR_INTERVAL
+					)
+				);
+				return $this->redirect('/control_panel/control_panel/index/');
+			}
 			$this->Plugin->runMigration('site_manager');
 
 			return $this->redirect('/plugin_manager/plugin_manager/index/');

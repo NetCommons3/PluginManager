@@ -114,3 +114,6 @@ msgstr "プラグインの表示順序を変更することができます。変
 
 msgid "Failure updated of all plugins."
 msgstr "一括アップデートが失敗しました。"
+
+msgid "Failure updated of \"plugin_manager\" plugins."
+msgstr "プラグイン管理のアップデートに失敗しました。"
