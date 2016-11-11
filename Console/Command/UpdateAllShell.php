@@ -46,8 +46,22 @@ class UpdateAllShell extends AppShell {
 		switch ($choice) {
 			case 's':
 				$this->Plugin = ClassRegistry::init('PluginManager.Plugin');
-				$this->Plugin->runMigration('plugin_manager');
-				$this->Plugin->runMigration('site_manager');
+				if (! $this->Plugin->runMigration('plugin_manager')) {
+					$this->out(
+						'<error>' .
+							__d('plugin_manager', 'Failure updated of "plugin_manager" plugin.') .
+						'</error>'
+					);
+					return $this->_stop();
+				}
+				if (! $this->Plugin->runMigration('site_manager')) {
+					$this->out(
+						'<error>' .
+							__d('plugin_manager', 'Failure updated of \"site_manager\" plugin.') .
+						'</error>'
+					);
+					return $this->_stop();
+				}
 
 				if (! isset($this->PluginUpdateUtil)) {
 					$this->PluginUpdateUtil = new PluginUpdateUtil();
