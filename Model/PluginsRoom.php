@@ -65,13 +65,13 @@ class PluginsRoom extends AppModel {
 		}
 
 		//plugins_languagesテーブルの取得
-		//$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = Current::read('Language.id');
+		$this->belongsTo['Plugin']['conditions']['Plugin.language_id'] = Current::read('Language.id');
 
 		//pluginsテーブルの取得
 		$plugins = $this->find('all', array(
 			'conditions' => array(
 				'Plugin.type' => Plugin::PLUGIN_TYPE_FOR_FRAME,
-				'Plugin.language_id' => Current::read('Language.id'),
+				//'Plugin.language_id' => Current::read('Language.id'),
 				'Room.id' => $roomId
 			),
 			'order' => $this->alias . '.id',
