@@ -11,6 +11,7 @@
 
 App::uses('AppModel', 'Model');
 App::uses('Plugin', 'PluginManager.Model');
+App::uses('Room', 'Rooms.Model');
 
 /**
  * PluginsRoom Model
@@ -56,9 +57,11 @@ class PluginsRoom extends AppModel {
  */
 	public function getPlugins($roomId) {
 		//ルームIDのセット
-		$roomId = (int)$roomId;
-		if (! $roomId) {
+		if (! $roomId || ! is_numeric($roomId)) {
 			return false;
+		}
+		if ($roomId === Room::WHOLE_SITE_PARENT_ID) {
+			$roomId = Room::PUBLIC_PARENT_ID;
 		}
 
 		//plugins_languagesテーブルの取得
@@ -68,7 +71,7 @@ class PluginsRoom extends AppModel {
 		$plugins = $this->find('all', array(
 			'conditions' => array(
 				'Plugin.type' => Plugin::PLUGIN_TYPE_FOR_FRAME,
-				/* 'Plugin.language_id' => $langId, */
+				//'Plugin.language_id' => Current::read('Language.id'),
 				'Room.id' => $roomId
 			),
 			'order' => $this->alias . '.id',
