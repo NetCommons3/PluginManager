@@ -117,7 +117,7 @@ class PluginsRoomGetPluginsTest extends NetCommonsGetTest {
 		//テスト実施
 		$result = $this->$model->$methodName($roomId);
 
-		$this->assertFalse($result);
+		$this->assertEmpty($result);
 	}
 
 }

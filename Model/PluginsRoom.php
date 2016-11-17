@@ -58,7 +58,7 @@ class PluginsRoom extends AppModel {
 	public function getPlugins($roomId) {
 		//ルームIDのセット
 		if (! $roomId || ! is_numeric($roomId)) {
-			return false;
+			return array();
 		}
 		if ($roomId === Room::WHOLE_SITE_PARENT_ID) {
 			$roomId = Room::PUBLIC_PARENT_ID;
