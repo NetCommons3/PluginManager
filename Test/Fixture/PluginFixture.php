@@ -81,6 +81,7 @@ class PluginFixture extends CakeTestFixture {
 		$this->fields = (new PluginManagerSchema())->tables[Inflector::tableize($this->name)];
 
 		if (class_exists('NetCommonsTestSuite') && NetCommonsTestSuite::$plugin) {
+			$records = array_keys($this->records);
 			foreach ($records as $i) {
 				if ($this->records[$i]['key'] === 'test_plugin') {
 					$this->records[$i]['key'] = NetCommonsTestSuite::$plugin;
