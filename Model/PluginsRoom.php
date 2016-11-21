@@ -12,6 +12,7 @@
 App::uses('AppModel', 'Model');
 App::uses('Plugin', 'PluginManager.Model');
 App::uses('Room', 'Rooms.Model');
+App::uses('Space', 'Rooms.Model');
 
 /**
  * PluginsRoom Model
@@ -60,8 +61,8 @@ class PluginsRoom extends AppModel {
 		if (! $roomId || ! is_numeric($roomId)) {
 			return array();
 		}
-		if ($roomId === Room::WHOLE_SITE_PARENT_ID) {
-			$roomId = Room::PUBLIC_PARENT_ID;
+		if ($roomId === Space::getRoomIdRoot(Space::WHOLE_SITE_ID)) {
+			$roomId = Space::getRoomIdRoot(Space::PUBLIC_SPACE_ID);
 		}
 
 		//plugins_languagesテーブルの取得
