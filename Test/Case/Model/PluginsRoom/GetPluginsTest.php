@@ -72,7 +72,7 @@ class PluginsRoomGetPluginsTest extends NetCommonsGetTest {
 		$methodName = $this->_methodName;
 
 		//データ生成
-		$roomId = '1';
+		$roomId = '2';
 
 		//テスト実施
 		$result = $this->$model->$methodName($roomId);
