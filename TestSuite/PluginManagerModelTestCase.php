@@ -9,13 +9,16 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
+//@codeCoverageIgnoreStart;
 App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
+//@codeCoverageIgnoreEnd;
 
 /**
  * PluginManagerのテスト
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\PluginManager\TestSuite
+ * @codeCoverageIgnore
  */
 class PluginManagerModelTestCase extends NetCommonsModelTestCase {
 

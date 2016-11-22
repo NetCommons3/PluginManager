@@ -9,13 +9,16 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
+//@codeCoverageIgnoreStart;
 App::uses('NetCommonsConsoleTestCase', 'NetCommons.TestSuite');
+//@codeCoverageIgnoreEnd;
 
 /**
  * PluginManagerConsoleTestCase TestCase
  *
  * @author Shohei Nakajima <nakajimashouhei@gmail.com>
  * @package NetCommons\PluginManager\TestSuite
+ * @codeCoverageIgnore
  */
 class PluginManagerConsoleTestCase extends NetCommonsConsoleTestCase {
 
