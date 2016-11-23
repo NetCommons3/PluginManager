@@ -66,53 +66,6 @@ class AddVersionFields extends NetCommonsMigration {
  * @return bool Should process continue
  */
 	public function after($direction) {
-		$this->loadModels([
-			'Plugin' => 'PluginManager.Plugin',
-		]);
-
-		if (Configure::read('NetCommons.installed')) {
-			if ($direction === 'up') {
-				$conditions = array(
-					'Plugin.key' => 'photo_albums'
-				);
-				$update = array(
-					'Plugin.namespace' => '\'netcommons/photo-albums\''
-				);
-				if (! $this->Plugin->updateAll($update, $conditions)) {
-					return false;
-				}
-
-				$filePath = App::pluginPath('PluginManager');
-				$filePath .= 'Config' . DS . 'Migration' . DS . '1476173664_composer.lock';
-				if (! $this->Plugin->updateVersionByComposer($filePath)) {
-					return false;
-				}
-
-				$filePath = App::pluginPath('PluginManager');
-				$filePath .= 'Config' . DS . 'Migration' . DS . '1476173664_bower.json';
-				$file = new File($filePath);
-				$contents = $file->read();
-				$file->close();
-				$packages = json_decode($contents, true);
-				if (! $this->Plugin->updateVersionByBower($packages)) {
-					return false;
-				}
-
-				if (! $this->Plugin->updateVersionByTheme()) {
-					return false;
-				}
-			} else {
-				$conditions = array('type' => array(
-					Plugin::PLUGIN_TYPE_CORE,
-					Plugin::PLUGIN_TYPE_FOR_THEME,
-					Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
-					Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
-				));
-				if (! $this->Plugin->deleteAll($conditions, false, false)) {
-					return false;
-				}
-			}
-		}
 		return true;
 	}
 
