@@ -13,35 +13,66 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: NetCommons/View/Helper/ComposerHelper.php:88
-#: PluginManager/View/PluginManager/view.ctp:78
+#: NetCommons/View/Helper/ComposerHelper.php:94
+#: PluginManager/View/PluginManager/view.ctp:89
 msgid "Author(s)"
 msgstr ""
 
-#: NetCommons/View/Helper/ComposerHelper.php:95
-#: PluginManager/View/PluginManager/view.ctp:88
+#: NetCommons/View/Helper/ComposerHelper.php:109
+#: PluginManager/View/PluginManager/view.ctp:99
 msgid "[Developer]"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/btn_form.ctp:24
-msgid "Update"
+#: PluginManager/Console/Command/UpdateAllShell.php:30
+#: PluginManager/Test/Case/Console/Command/UpdateAllShell/StartupTest.php:54
+msgid "Update of all plugins"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/btn_form.ctp:29
-msgid "Do you want to update the plugin?"
+#: PluginManager/Console/Command/UpdateAllShell.php:40
+msgid "[S]tart"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/plugins.ctp:36
+#: PluginManager/Console/Command/UpdateAllShell.php:41
+msgid "[Q]uit"
+msgstr ""
+
+#: PluginManager/Console/Command/UpdateAllShell.php:52
+#: PluginManager/Controller/PluginManagerController.php:62
+msgid "Failure updated of \"plugin_manager\" plugin."
+msgstr ""
+
+#: PluginManager/Console/Command/UpdateAllShell.php:60
+msgid "Failure updated of \\\"site_manager\\\" plugin."
+msgstr ""
+
+#: PluginManager/Console/Command/UpdateAllShell.php:71
+msgid "Successfully updated of all plugins."
+msgstr ""
+
+#: PluginManager/Console/Command/UpdateAllShell.php:74
+#: PluginManager/Controller/PluginManagerController.php:238
+msgid "Failure updated of all plugins."
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:17
+msgid "Can change the display order of the plug-ins. If you want to change, please press \"OK\"."
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:43
+msgid "Theme name"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:45
 msgid "Plugin name"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/plugins.ctp:39
-#: PluginManager/View/PluginManager/view.ctp:42
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:49
+#: PluginManager/View/PluginManager/view.ctp:27
 msgid "Package"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/plugins.ctp:42
-#: PluginManager/View/PluginManager/view.ctp:55
+#: PluginManager/View/Elements/PluginManager/plugins.ctp:52
+#: PluginManager/View/PluginManager/view.ctp:42
 msgid "Version"
 msgstr ""
 
@@ -50,30 +81,58 @@ msgid "Installed plugins"
 msgstr ""
 
 #: PluginManager/View/Elements/PluginManager/tabs.ctp:24
-msgid "Plugins not yet installed"
-msgstr ""
-
-#: PluginManager/View/Elements/PluginManager/tabs.ctp:30
 msgid "System plugins"
 msgstr ""
 
-#: PluginManager/View/Elements/PluginManager/tabs.ctp:36
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:30
+msgid "Core plugins"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:37
+msgid "Plugins not yet installed"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:44
+msgid "Themes"
+msgstr ""
+
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:50
 msgid "External libraries"
 msgstr ""
 
+#: PluginManager/View/Elements/PluginManager/tabs.ctp:56
+msgid "Js libraries"
+msgstr ""
+
 #: PluginManager/View/Elements/PluginManager/title.ctp:15
-msgid "NetCommons3: "
+msgid "NetCommons: "
 msgstr ""
 
-#: PluginManager/View/PluginManager/view.ctp:65
-msgid "Source"
+#: PluginManager/View/Helper/PluginsFormHelper.php:101
+msgid "Select plugin"
 msgstr ""
 
-#: PluginManager/View/PluginManager/view.ctp:109
+#: PluginManager/View/PluginManager/index.ctp:23
+msgid "There is a version-up plugins and libraries. If you want to all update, please press the \"Update all\"."
+msgstr ""
+
+#: PluginManager/View/PluginManager/index.ctp:33
+msgid "Update all"
+msgstr ""
+
+#: PluginManager/View/PluginManager/index.ctp:35
+msgid "Updating the all plugins. Are you sure to proceed?"
+msgstr ""
+
+#: PluginManager/View/PluginManager/view.ctp:122
 msgid "License"
 msgstr ""
 
-#: PluginManager/View/PluginManager/view.ctp:120
+#: PluginManager/View/PluginManager/view.ctp:133
 msgid "Home page"
+msgstr ""
+
+#: PluginManager/View/PluginManager/view.ctp:150
+msgid "Update"
 msgstr ""
 
