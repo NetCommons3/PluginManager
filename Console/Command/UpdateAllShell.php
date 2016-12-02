@@ -78,8 +78,7 @@ class UpdateAllShell extends AppShell {
 				return $this->_stop();
 			default:
 				$this->out(
-					__d('net_commons', 'You have made an invalid selection. ' .
-								'Please choose a command to execute by entering %s.', '[S, H, Q]')
+					__d('net_commons', 'You have made an invalid selection. Please choose a command to execute by entering %s.', '[S, H, Q]')
 				);
 		}
 		$this->hr();
