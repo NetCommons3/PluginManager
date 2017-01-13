@@ -56,6 +56,7 @@ class PluginManagerSchema extends CakeSchema {
 		'is_origin' => array('type' => 'boolean', 'null' => false, 'default' => '1', 'comment' => 'オリジナルかどうか'),
 		'is_translation' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => '翻訳したかどうか'),
 		'key' => array('type' => 'string', 'null' => false, 'default' => null, 'key' => 'index', 'collate' => 'utf8_general_ci', 'comment' => 'プラグインKey', 'charset' => 'utf8'),
+		'is_m17n' => array('type' => 'boolean', 'null' => true, 'default' => '1', 'comment' => '多言語を有効にするプラグインかどうか'),
 		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'プラグイン名', 'charset' => 'utf8'),
 		'namespace' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'packagistのネームスペース', 'charset' => 'utf8'),
 		'weight' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => '表示順序'),

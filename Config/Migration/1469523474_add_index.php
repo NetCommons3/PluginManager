@@ -31,7 +31,7 @@ class AddIndex extends CakeMigration {
 		'up' => array(
 			'alter_field' => array(
 				'plugins' => array(
-					'key' => array('type' => 'string', 'null' => false, 'default' => null, 'key' => 'index', 'collate' => 'utf8_general_ci', 'comment' => 'Key to identify plugin. Must be equivalent to plugin name used in router url.  e.g.) user_manager, auth, pages', 'charset' => 'utf8'),
+					'key' => array('type' => 'string', 'null' => false, 'default' => null, 'key' => 'index', 'collate' => 'utf8_general_ci', 'comment' => 'プラグインKey', 'charset' => 'utf8'),
 				),
 				'plugins_roles' => array(
 					'role_key' => array('type' => 'string', 'null' => false, 'default' => null, 'key' => 'index', 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
@@ -61,7 +61,7 @@ class AddIndex extends CakeMigration {
 		'down' => array(
 			'alter_field' => array(
 				'plugins' => array(
-					'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'Key to identify plugin. Must be equivalent to plugin name used in router url.  e.g.) user_manager, auth, pages', 'charset' => 'utf8'),
+					'key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'プラグインKey', 'charset' => 'utf8'),
 				),
 				'plugins_roles' => array(
 					'role_key' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
