@@ -90,6 +90,30 @@ class AddIsM17n1 extends NetCommonsMigration {
 			if (! $Plugin->updateAll($update, $conditions)) {
 				return false;
 			}
+
+			$update = array(
+				'is_origin' => true,
+				'is_translation' => true,
+			);
+			$conditions = array(
+				'type' => array('1', '2', '3'),
+				'language_id' => '2'
+			);
+			if (! $Plugin->updateAll($update, $conditions)) {
+				return false;
+			}
+
+			$update = array(
+				'is_origin' => false,
+				'is_translation' => true,
+			);
+			$conditions = array(
+				'type' => array('1', '2', '3'),
+				'language_id' => '1'
+			);
+			if (! $Plugin->updateAll($update, $conditions)) {
+				return false;
+			}
 		}
 
 		return true;

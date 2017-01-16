@@ -45,6 +45,8 @@ class PluginRecords extends NetCommonsMigration {
 			array(
 				'language_id' => '2',
 				'key' => 'plugin_manager',
+				'is_origin' => true,
+				'is_translation' => true,
 				'namespace' => 'netcommons/plugin-manager',
 				'name' => 'プラグイン管理',
 				'type' => 3,
@@ -56,6 +58,8 @@ class PluginRecords extends NetCommonsMigration {
 			//英語
 			array(
 				'language_id' => '1',
+				'is_origin' => false,
+				'is_translation' => true,
 				'key' => 'plugin_manager',
 				'namespace' => 'netcommons/plugin-manager',
 				'name' => 'Plugin Manager',
