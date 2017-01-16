@@ -102,6 +102,7 @@ class PluginBehaviorUpdateVersionTest extends PluginManagerModelTestCase {
 			'commit_version' => $package['commit_version'],
 			'commited' => $package['commited'],
 			'serialize_data' => serialize($package),
+			'is_m17n' => null,
 		);
 		$this->TestModel->Plugin->expects($this->once())
 				->method('save')

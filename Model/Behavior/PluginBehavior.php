@@ -305,22 +305,23 @@ class PluginBehavior extends ModelBehavior {
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}
 				} else {
-					if (preg_match('#^netcommons/#', $package['namespace'])) {
-						$type = Hash::get($package, 'type', Plugin::PLUGIN_TYPE_CORE);
-					} else {
-						$type = $package['type'];
-					}
 					$data = array(
 						'language_id' => '0',
 						'name' => $package['name'],
 						'key' => $package['key'],
 						'namespace' => $package['namespace'],
-						'type' => $type,
+						//'type' => $type,
 						'version' => $package['version'],
 						'commit_version' => $package['commit_version'],
 						'commited' => $package['commited'],
 						'serialize_data' => serialize($package),
 					);
+					if (preg_match('#^netcommons/#', $package['namespace'])) {
+						$data['type'] = Hash::get($package, 'type', Plugin::PLUGIN_TYPE_CORE);
+					} else {
+						$data['type'] = $package['type'];
+					}
+					$data['is_m17n'] = null;
 					$model->Plugin->create(false);
 					if (! $model->Plugin->save($data)) {
 						CakeLog::info(sprintf('[update version] Line(' . __LINE__ . ') Error'));

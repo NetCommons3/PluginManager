@@ -396,6 +396,41 @@ class Plugin extends AppModel {
 	}
 
 /**
+ * 多言語化するプラグインの選択
+ *
+ * 呼び出しもとでbeginを実行する
+ *
+ * @param array $data リクエストデータ
+ * @return bool
+ * @throws InternalErrorException
+ */
+	public function saveEnableM17n($data) {
+		$update = array(
+			'Plugin.is_m17n' => true,
+		);
+		$conditions = array(
+			'Plugin.key' => $data['Plugin']['key'],
+			'Plugin.type' => self::PLUGIN_TYPE_FOR_FRAME
+		);
+		if (! $this->updateAll($update, $conditions)) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		$update = array(
+			'Plugin.is_m17n' => false,
+		);
+		$conditions = array(
+			'Plugin.key NOT IN' => $data['Plugin']['key'],
+			'Plugin.type' => self::PLUGIN_TYPE_FOR_FRAME
+		);
+		if (! $this->updateAll($update, $conditions)) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		return true;
+	}
+
+/**
  * 更新があるかどうか
  *
  * @return bool
