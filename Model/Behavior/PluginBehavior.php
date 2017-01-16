@@ -173,6 +173,7 @@ class PluginBehavior extends ModelBehavior {
 
 		// Write logs
 		foreach ($messages as $message) {
+			var_dump(sprintf('[migration]   %s', $message));
 			CakeLog::info(sprintf('[migration]   %s', $message));
 		}
 
