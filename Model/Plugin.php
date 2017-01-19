@@ -405,6 +405,9 @@ class Plugin extends AppModel {
  * @throws InternalErrorException
  */
 	public function saveEnableM17n($data) {
+		if (! $data['Plugin']['key']) {
+			return true;
+		}
 		$update = array(
 			'Plugin.is_m17n' => true,
 		);
