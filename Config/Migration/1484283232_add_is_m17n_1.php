@@ -60,7 +60,7 @@ class AddIsM17n1 extends NetCommonsMigration {
 			$count = $Plugin->find('count', array(
 				'recursive' => -1,
 				'conditions' => array(
-					'key' => array(
+					'Plugin.key' => array(
 						'access_counters', 'bbses', 'circular_notices', 'iframes', 'menus',
 						'rss_readers', 'searches', 'topics'
 					),
@@ -68,10 +68,10 @@ class AddIsM17n1 extends NetCommonsMigration {
 			));
 			if ($count > 0) {
 				$update = array(
-					'is_m17n' => false
+					'Plugin.is_m17n' => false
 				);
 				$conditions = array(
-					'key' => array(
+					'Plugin.key' => array(
 						'access_counters', 'bbses', 'circular_notices', 'iframes', 'menus',
 						'rss_readers', 'searches', 'topics'
 					),
@@ -82,34 +82,34 @@ class AddIsM17n1 extends NetCommonsMigration {
 			}
 
 			$update = array(
-				'is_m17n' => null
+				'Plugin.is_m17n' => null
 			);
 			$conditions = array(
-				'type !=' => '1'
+				'Plugin.type !=' => '1'
 			);
 			if (! $Plugin->updateAll($update, $conditions)) {
 				return false;
 			}
 
 			$update = array(
-				'is_origin' => true,
-				'is_translation' => true,
+				'Plugin.is_origin' => true,
+				'Plugin.is_translation' => true,
 			);
 			$conditions = array(
-				'type' => array('1', '2', '3'),
-				'language_id' => '2'
+				'Plugin.type' => array('1', '2', '3'),
+				'Plugin.language_id' => '2'
 			);
 			if (! $Plugin->updateAll($update, $conditions)) {
 				return false;
 			}
 
 			$update = array(
-				'is_origin' => false,
-				'is_translation' => true,
+				'Plugin.is_origin' => false,
+				'Plugin.is_translation' => true,
 			);
 			$conditions = array(
-				'type' => array('1', '2', '3'),
-				'language_id' => '1'
+				'Plugin.type' => array('1', '2', '3'),
+				'Plugin.language_id' => '1'
 			);
 			if (! $Plugin->updateAll($update, $conditions)) {
 				return false;
