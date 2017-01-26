@@ -193,9 +193,17 @@ class PluginBehavior extends ModelBehavior {
 				//@codeCoverageIgnoreEnd
 			}
 		} else {
-			CakeLog::info(
-				sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $connection)
-			);
+			$matches = preg_grep('/Error: |SQLSTATE/', $messages);
+			if (count($matches) === 0) {
+				CakeLog::info(
+					sprintf('[migration] Successfully migrated "%s" for %s connection', $plugin, $connection)
+				);
+			} else {
+				CakeLog::info(
+					sprintf('[migration] Failure migrated "%s" for %s connection', $plugin, $connection)
+				);
+				$result = false;
+			}
 		}
 
 		return $result;
