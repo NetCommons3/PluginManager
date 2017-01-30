@@ -162,7 +162,7 @@ class PluginBehavior extends ModelBehavior {
 	}
 
 /**
- * パッケージのディレクトリ削除
+ * Migrationの実行処理
  *
  * @param string $plugin Plugin key
  * @param string|null $connection DB接続先
