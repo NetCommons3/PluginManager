@@ -158,6 +158,17 @@ class PluginBehavior extends ModelBehavior {
 		if (! $connection) {
 			$connection = $this->connection;
 		}
+		return self::staticRunMigration($plugin, $connection);
+	}
+
+/**
+ * Migrationの実行処理
+ *
+ * @param string $plugin Plugin key
+ * @param string|null $connection DB接続先
+ * @return bool True on success
+ */
+	public static function staticRunMigration($plugin, $connection = null) {
 		$plugin = Inflector::camelize($plugin);
 
 		CakeLog::info(
