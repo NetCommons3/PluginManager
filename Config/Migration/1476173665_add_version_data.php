@@ -59,7 +59,7 @@ class AddVersionData extends NetCommonsMigration {
 			'Plugin' => 'PluginManager.Plugin',
 		]);
 
-		if (Configure::read('NetCommons.installed')) {
+		if (Configure::read('NetCommons.installed') && $this->Plugin->useDbConfig !== 'test') {
 			if ($direction === 'up') {
 				$conditions = array(
 					'Plugin.key' => 'photo_albums'

@@ -10,7 +10,6 @@
  */
 
 App::uses('AppShell', 'Console/Command');
-App::uses('PluginUpdateUtil', 'PluginManager.Utility');
 
 /**
  * 一括アップデートシェル
@@ -19,6 +18,15 @@ App::uses('PluginUpdateUtil', 'PluginManager.Utility');
  * @package NetCommons\Install\Console\Command
  */
 class UpdateAllShell extends AppShell {
+
+/**
+ * Contains tasks to load and instantiate
+ *
+ * @var array
+ */
+	public $tasks = array(
+		'PluginManager.UpdateAll',
+	);
 
 /**
  * Override startup
@@ -39,49 +47,40 @@ class UpdateAllShell extends AppShell {
 	public function main() {
 		$this->out(__d('plugin_manager', '[S]tart'));
 		$this->out(__d('plugin_manager', '[Q]uit'));
+		$this->out(__d('net_commons', '[H]elp'));
 
 		$choice = strtolower(
-			$this->in(__d('net_commons', 'What would you like to do?'), ['S', 'Q'], 'Q')
+			$this->in(__d('net_commons', 'What would you like to do?'), ['S', 'Q', 'H'], 'Q')
 		);
 		switch ($choice) {
 			case 's':
-				$this->Plugin = ClassRegistry::init('PluginManager.Plugin');
-				if (! $this->Plugin->runMigration('plugin_manager')) {
-					$this->out(
-						'<error>' .
-							__d('plugin_manager', 'Failure updated of "plugin_manager" plugin.') .
-						'</error>'
-					);
-					return $this->_stop();
-				}
-				if (! $this->Plugin->runMigration('site_manager')) {
-					$this->out(
-						'<error>' .
-							__d('plugin_manager', 'Failure updated of \"site_manager\" plugin.') .
-						'</error>'
-					);
-					return $this->_stop();
-				}
-
-				if (! isset($this->PluginUpdateUtil)) {
-					$this->PluginUpdateUtil = new PluginUpdateUtil();
-				}
-				if ($this->PluginUpdateUtil->updateAll()) {
-					$this->out(
-						'<success>' . __d('plugin_manager', 'Successfully updated of all plugins.') . '</success>'
-					);
-				} else {
-					$this->out('<error>' . __d('plugin_manager', 'Failure updated of all plugins.') . '</error>');
-				}
+				$this->UpdateAll->execute();
 				return $this->_stop();
 			case 'q':
 				return $this->_stop();
+			case 'h':
+				$this->out($this->getOptionParser()->help());
+				break;
 			default:
 				$this->out(
 					__d('net_commons', 'You have made an invalid selection. Please choose a command to execute by entering %s.', '[S, H, Q]')
 				);
 		}
 		$this->hr();
+	}
+
+/**
+ * Get the option parser.
+ *
+ * @return ConsoleOptionParser
+ */
+	public function getOptionParser() {
+		$parser = parent::getOptionParser();
+		return $parser->description(__d('install', 'NetCommons Install'))
+			->addSubcommand('update_all', array(
+				'help' => __d('plugin_manager', 'Update of all plugins'),
+				'parser' => $this->UpdateAll->getOptionParser(),
+			));
 	}
 
 }
