@@ -51,14 +51,15 @@ class PluginsRole extends AppModel {
  * @param mixed $pluginType array|int プラグインタイプ
  * @param int $roleKey ロールKey
  * @param string $joinType JOINタイプ(LEFT or INNER)
+ * @param string $queryType クエリタイプ(all or first)
  * @return mixed array|bool
  */
-	public function getPlugins($pluginType, $roleKey, $joinType = 'LEFT') {
+	public function getPlugins($pluginType, $roleKey, $joinType = 'LEFT', $queryType = 'all') {
 		if (! $roleKey) {
 			return false;
 		}
 
-		$plugins = $this->Plugin->find('all', array(
+		$plugins = $this->Plugin->find($queryType, array(
 			'recursive' => -1,
 			'fields' => array(
 				$this->alias . '.*',
