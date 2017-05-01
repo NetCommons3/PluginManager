@@ -81,19 +81,84 @@ class PluginsRoomBehavior extends ModelBehavior {
 		$model->begin();
 
 		try {
+			$this->__savePluginsRoomsByRoomId($model, $roomId, $pluginKeys);
+
+			//トランザクションCommit
+			$model->commit();
+
+		} catch (Exception $ex) {
+			//トランザクションRollback
+			$model->rollback($ex);
+		}
+
+		return true;
+	}
+
+/**
+ * plugin_keyを基準にPluginsRoomの登録
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param int $roomId ルームID
+ * @param array $pluginKeys プラグインKeyリスト
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	public function savePluginsRoomsByPrivateRoomId(Model $model, $roomId, $pluginKeys) {
+		$model->loadModels([
+			'PluginsRoom' => 'PluginManager.PluginsRoom',
+			'Room' => 'Rooms.Room',
+		]);
+
+		//トランザクションBegin
+		$model->begin();
+
+		$db = $model->getDataSource();
+
+		try {
+			$this->__savePluginsRoomsByRoomId($model, $roomId, $pluginKeys);
+
+			//プライベートのIDを取得
+			$rooms = $model->Room->children($roomId, false, 'Room.id', 'Room.rght');
+			$roomIds = Hash::extract($rooms, '{n}.Room.id');
+
+			//※処理をDELETE + INSERTにしているが、必要なところだけINSERTにした方が良い。
+			//　ただ大量データを考慮すると、DELETE + INSERTの方が早い。
 			$conditions = array(
-				$model->alias . '.room_id' => $roomId,
-				$model->alias . '.plugin_key NOT' => $pluginKeys,
+				$model->alias . '.room_id' => $roomIds,
 			);
 			if (! $model->deleteAll($conditions, false)) {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
+			$pluginRoomTable = $model->PluginsRoom->tablePrefix . $model->PluginsRoom->table;
+			$pluginRoomTableAs = $pluginRoomTable . ' AS ' . $model->PluginsRoom->alias;
+			$roomTable = $model->Room->tablePrefix . $model->Room->table . ' AS ' . $model->Room->alias;
+
+			//リクエストデータを使うため、escapeする
+			$dbRoomId = $db->value($roomId, 'string');
+
+			$values = array(
+				'room_id' => $model->Room->escapeField('id'),
+				'plugin_key' => $model->PluginsRoom->escapeField('plugin_key'),
+				'created' => $model->PluginsRoom->escapeField('created'),
+				'created_user' => $model->PluginsRoom->escapeField('created_user'),
+				'modified' => $model->PluginsRoom->escapeField('modified'),
+				'modified_user' => $model->PluginsRoom->escapeField('modified_user'),
+			);
+
+			$fields = implode(', ', array_keys($values));
+
+			$sql = 'INSERT INTO ' . $pluginRoomTable . '(' . $fields . ') ' .
+					'SELECT ' . implode(', ', $values) . ' ' .
+					'FROM ' . $pluginRoomTableAs . ', ' . $roomTable . ' ' .
+					'WHERE ' . $model->PluginsRoom->escapeField('room_id') . ' = ' . $dbRoomId . ' ' .
+					'AND ' . $model->Room->escapeField('id') . ' IN ' . '(' . implode(',', $roomIds) . ')';
+
 			//PluginsRoomテーブルの登録
-			foreach ($pluginKeys as $pluginKey) {
-				$this->__savePluginRoom($model, array(
-					'room_id' => $roomId, 'plugin_key' => $pluginKey
-				));
+			$model->PluginsRoom->query($sql);
+			$result = $model->PluginsRoom->getAffectedRows() > 0;
+			if (! $result) {
+				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 
 			//トランザクションCommit
@@ -102,6 +167,34 @@ class PluginsRoomBehavior extends ModelBehavior {
 		} catch (Exception $ex) {
 			//トランザクションRollback
 			$model->rollback($ex);
+		}
+
+		return true;
+	}
+
+/**
+ * plugin_keyを基準にPluginsRoomの登録
+ *
+ * @param Model $model ビヘイビア呼び出し元モデル
+ * @param int $roomId ルームID
+ * @param array $pluginKeys プラグインKeyリスト
+ * @return bool True on success
+ * @throws InternalErrorException
+ */
+	private function __savePluginsRoomsByRoomId(Model $model, $roomId, $pluginKeys) {
+		$conditions = array(
+			$model->alias . '.room_id' => $roomId,
+			$model->alias . '.plugin_key NOT' => $pluginKeys,
+		);
+		if (! $model->deleteAll($conditions, false)) {
+			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
+		}
+
+		//PluginsRoomテーブルの登録
+		foreach ($pluginKeys as $pluginKey) {
+			$this->__savePluginRoom($model, array(
+				'room_id' => $roomId, 'plugin_key' => $pluginKey
+			));
 		}
 
 		return true;
