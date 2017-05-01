@@ -112,6 +112,8 @@ class PluginsRoomBehavior extends ModelBehavior {
 		//トランザクションBegin
 		$model->begin();
 
+		$db = $model->getDataSource();
+
 		try {
 			$this->__savePluginsRoomsByRoomId($model, $roomId, $pluginKeys);
 
