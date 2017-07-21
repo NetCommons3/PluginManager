@@ -72,7 +72,7 @@ App::uses('Plugin', 'PluginManager.Model');
 						<?php endif; ?>
 					</td>
 					<td>
-						<a href="" ng-click="showView('<?php echo $pluginType; ?>', plugin.plugin.key)">
+						<a href="" ng-click="showView(plugin.plugin.type, plugin.plugin.key)">
 							{{plugin.plugin.name}}
 						</a>
 					</td>
