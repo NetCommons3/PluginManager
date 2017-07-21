@@ -196,6 +196,10 @@ class PluginManagerController extends PluginManagerAppController {
 			));
 		}
 
+		if ($pluginType === Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER) {
+			$pluginType = Plugin::PLUGIN_TYPE_FOR_CONTROL_PANEL;
+		}
+
 		if ($pluginType === Plugin::PLUGIN_TYPE_FOR_NOT_YET &&
 				!(bool)$this->Plugin->getNewPlugins(Plugin::PLUGIN_TYPE_FOR_NOT_YET)) {
 			$redirectUrl = NetCommonsUrl::actionUrl(array(
