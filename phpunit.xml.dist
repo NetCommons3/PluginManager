@@ -9,6 +9,7 @@
                 <directory suffix=".php">app/Plugin/PluginManager/Config/Schema</directory>
                 <directory suffix=".php">app/Plugin/PluginManager/Test/Case</directory>
                 <directory suffix=".php">app/Plugin/PluginManager/Test/Fixture</directory>
+                <directory suffix=".php">app/Plugin/PluginManager/TestSuite</directory>
             </exclude>
         </whitelist>
     </filter>
