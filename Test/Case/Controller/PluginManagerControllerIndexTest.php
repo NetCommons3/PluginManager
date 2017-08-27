@@ -49,7 +49,13 @@ class PluginManagerControllerIndexTest extends NetCommonsControllerTestCase {
 		// PluginsRole.plugin_key が 'test_plugin' しかないので Permission denied になる
 		// fixture に追加でも良かったが、とりあえずMockで対応
 		// @see https://github.com/NetCommons3/NetCommons/blob/3.1.3/Utility/Current.php#L450
-		$this->controller = $this->generate('PluginManager.PluginManager');
+		$this->controller = $this->generate('PluginManager.PluginManager',
+			array(
+				'components' => array(
+					'Security',
+				)
+			)
+		);
 		$MockPermission = $this->getMock('PermissionComponent', ['startup'], [$this->controller->Components]);
 		$MockPermission
 			->expects($this->once())

@@ -20,7 +20,7 @@ App::uses('NetCommonsModelTestCase', 'NetCommons.TestSuite');
  * @package NetCommons\PluginManager\TestSuite
  * @codeCoverageIgnore
  */
-class PluginManagerModelTestCase extends NetCommonsModelTestCase {
+abstract class PluginManagerModelTestCase extends NetCommonsModelTestCase {
 
 /**
  * Fixtures
