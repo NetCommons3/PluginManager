@@ -251,10 +251,10 @@ class Plugin extends AppModel {
 			$plugins[$i] = $plugin;
 		}
 
-		if ($key) {
-			return Hash::get($plugins, '0', array());
-		} else {
+		if (count($plugins) > 1) {
 			return $plugins;
+		} else {
+			return $plugins[0];
 		}
 	}
 
