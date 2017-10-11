@@ -30,6 +30,19 @@ class PluginComposerBehavior extends ModelBehavior {
 	public $composers = array();
 
 /**
+ * Setup this behavior with the specified configuration settings.
+ *
+ * @param Model $model 呼び出し元のモデル
+ * @param array $config Configuration settings for $model
+ * @return void
+ */
+	public function setup(Model $model, $config = array()) {
+		parent::setup($model, $config);
+
+		$this->ignorePatterns = Hash::get($config, 'ignorePatterns', ['#^netcommons/#']);
+	}
+
+/**
  * composer.lockから情報取得
  *
  * @param Model $model 呼び出し元Model
@@ -76,18 +89,24 @@ class PluginComposerBehavior extends ModelBehavior {
  * @return mixed array
  */
 	protected function _parseComposer($package) {
-		if (preg_match('#^netcommons/#', $package['name'])) {
-			$key = strtr(preg_replace('#^netcommons/#', '', $package['name']), '-', '_');
-			$name = Inflector::humanize($key);
-			$originalSource = Inflector::camelize($key);
-		} elseif (Hash::get($package, 'type') === 'cakephp-plugin') {
+		foreach ($this->ignorePatterns as $pattern) {
+			if (preg_match($pattern, $package['name'])) {
+				$key = strtr(preg_replace($pattern, '', $package['name']), '-', '_');
+				$name = Inflector::humanize($key);
+				$originalSource = Inflector::camelize($key);
+				$composerType = false;
+			}
+		}
+		if (Hash::get($package, 'type') === 'cakephp-plugin') {
 			$key = strtr(substr($package['name'], strrpos($package['name'], '/') + 1), '-', '_');
 			$name = Inflector::humanize(strtr($package['name'], '/', ' '));
 			$originalSource = Inflector::camelize($key);
-		} else {
+			$composerType = false;
+		} elseif (empty($key)) {
 			$key = $package['name'];
 			$name = $package['name'];
 			$originalSource = $package['name'];
+			$composerType = true;
 		}
 
 		$result = array(
@@ -113,7 +132,7 @@ class PluginComposerBehavior extends ModelBehavior {
 		}
 		if (isset($package['plugin-type'])) {
 			$result['type'] = $package['plugin-type'];
-		} elseif (! preg_match('#^netcommons/#', $package['name'])) {
+		} elseif ($composerType) {
 			$result['type'] = Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER;
 		}
 

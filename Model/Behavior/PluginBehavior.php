@@ -33,6 +33,10 @@ class PluginBehavior extends ModelBehavior {
 		parent::setup($model, $config);
 
 		$this->connection = Hash::get($config, 'connection', 'master');
+
+		$this->corePluginPatterns = Hash::get($config, 'corePluginPatterns', [
+			'#^netcommons/#' => Plugin::PLUGIN_TYPE_CORE,
+		]);
 	}
 
 /**
@@ -335,9 +339,13 @@ class PluginBehavior extends ModelBehavior {
 						'commited' => $package['commited'],
 						'serialize_data' => serialize($package),
 					);
-					if (preg_match('#^netcommons/#', $package['namespace'])) {
-						$data['type'] = Hash::get($package, 'type', Plugin::PLUGIN_TYPE_CORE);
-					} else {
+					foreach ($this->corePluginPatterns as $pattern => $type) {
+						if (preg_match($pattern, $package['namespace'])) {
+							$data['type'] = Hash::get($package, 'type', $type);
+							break;
+						}
+					}
+					if (!isset($data['type'])) {
 						$data['type'] = $package['type'];
 					}
 					$data['is_m17n'] = null;
