@@ -275,6 +275,7 @@ class PluginBehavior extends ModelBehavior {
  * @param array $packages パッケージリスト
  * @return bool
  * @throws InternalErrorException
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
  */
 	public function updateVersion(Model $model, $packages) {
 		$model->loadModels([

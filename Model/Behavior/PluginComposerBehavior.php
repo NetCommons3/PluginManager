@@ -87,6 +87,8 @@ class PluginComposerBehavior extends ModelBehavior {
  *
  * @param array $package jsonファイルの情報
  * @return mixed array
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 	protected function _parseComposer($package) {
 		foreach ($this->ignorePatterns as $pattern) {
