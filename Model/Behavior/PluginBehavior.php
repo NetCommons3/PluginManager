@@ -346,8 +346,8 @@ class PluginBehavior extends ModelBehavior {
 							break;
 						}
 					}
-					if (!isset($data['type'])) {
-						$data['type'] = $package['type'];
+					if (! isset($data['type'])) {
+						$data['type'] = Hash::get($package, 'type');
 					}
 					$data['is_m17n'] = null;
 					$model->Plugin->create(false);
