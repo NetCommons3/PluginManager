@@ -1,10 +1,14 @@
 {
-    "name":        "netcommons/plugin-manager",
+    "name": "netcommons/plugin-manager",
     "description": "PluginManager Plugin for NetCommons",
-    "type":        "cakephp-plugin",
-    "keywords":    ["cakephp", "plugin-manager"],
-    "homepage":    "http://www.netcommons.org/",
-    "license":     "NetCommons License",
+    "type": "cakephp-plugin",
+    "keywords": [
+        "cakephp",
+        "plugin-manager"
+    ],
+    "homepage": "http://www.netcommons.org/",
+    "license": "LicenseRef-NetCommons",
+    "license-ref-net-commons": "https://raw.githubusercontent.com/NetCommons3/NetCommons3/master/license.txt",
     "authors": [
         {
             "name": "NetCommons Community",
@@ -17,7 +21,9 @@
     ],
     "extra": {
         "installer-paths": {
-            "app/Plugin/{$name}": ["type:cakephp-plugin"]
+            "app/Plugin/{$name}": [
+                "type:cakephp-plugin"
+            ]
         }
     },
     "require": {
@@ -33,4 +39,3 @@
         "vendor-dir": "vendors"
     }
 }
-
