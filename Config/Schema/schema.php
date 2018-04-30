@@ -100,7 +100,7 @@ class PluginManagerSchema extends CakeSchema {
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'role_key' => array('column' => 'role_key', 'unique' => 0)
+			'role_key' => array('column' => array('role_key', 'plugin_key'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
