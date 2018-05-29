@@ -78,21 +78,21 @@ class PluginManagerControllerEditTest extends NetCommonsControllerTestCase {
 /**
  * testGetAction
  *
- * @expectedException BadRequestException
  * @return void
  */
 	public function testGetAction() {
+		$this->setExpectedException('BadRequestException');
 		$this->testAction('plugin_manager/plugin_manager/edit', ['method' => 'GET']);
 	}
 
 /**
  * testNoPluginData
  *
- * @expectedException BadRequestException
  * @return void
  */
 	public function testNoPluginData() {
 		$data['Plugin']['key'] = 'dummy';
+		$this->setExpectedException('BadRequestException');
 		$this->testAction('plugin_manager/plugin_manager/edit/99', ['data' => $data]);
 	}
 
