@@ -91,24 +91,23 @@ class PluginComposerBehavior extends ModelBehavior {
  * @SuppressWarnings(PHPMD.NPathComplexity)
  */
 	protected function _parseComposer($package) {
+		$composerExtType = true;
 		foreach ($this->ignorePatterns as $pattern) {
 			if (preg_match($pattern, $package['name'])) {
 				$key = strtr(preg_replace($pattern, '', $package['name']), '-', '_');
 				$name = Inflector::humanize($key);
 				$originalSource = Inflector::camelize($key);
-				$composerType = false;
+				$composerExtType = false;
 			}
 		}
 		if (Hash::get($package, 'type') === 'cakephp-plugin') {
 			$key = strtr(substr($package['name'], strrpos($package['name'], '/') + 1), '-', '_');
 			$name = Inflector::humanize(strtr($package['name'], '/', ' '));
 			$originalSource = Inflector::camelize($key);
-			$composerType = false;
 		} elseif (empty($key)) {
 			$key = $package['name'];
 			$name = $package['name'];
 			$originalSource = $package['name'];
-			$composerType = true;
 		}
 
 		$result = array(
@@ -134,7 +133,7 @@ class PluginComposerBehavior extends ModelBehavior {
 		}
 		if (isset($package['plugin-type'])) {
 			$result['type'] = $package['plugin-type'];
-		} elseif ($composerType) {
+		} elseif ($composerExtType) {
 			$result['type'] = Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER;
 		}
 
