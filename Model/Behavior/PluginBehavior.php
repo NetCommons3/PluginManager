@@ -181,10 +181,12 @@ class PluginBehavior extends ModelBehavior {
 
 		$messages = array();
 		$ret = null;
-		exec(sprintf(
+		$cmd = sprintf(
 			'cd %s && Console%scake Migrations.migration run all -p %s -c %s -i %s 2>&1',
 			ROOT . DS . APP_DIR, DS, escapeshellcmd($plugin), $connection, $connection
-		), $messages, $ret);
+		);
+		CakeLog::info('[migration]   ' . $cmd);
+		exec($cmd, $messages, $ret);
 
 		// Write logs
 		foreach ($messages as $message) {
