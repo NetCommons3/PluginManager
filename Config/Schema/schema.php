@@ -52,7 +52,7 @@ class PluginManagerSchema extends CakeSchema {
  */
 	public $plugins = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'unsigned' => false, 'key' => 'primary'),
-		'language_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 6, 'unsigned' => false),
+		'language_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'length' => 6, 'unsigned' => false, 'key' => 'index'),
 		'is_origin' => array('type' => 'boolean', 'null' => false, 'default' => '1', 'comment' => 'オリジナルかどうか'),
 		'is_translation' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => '翻訳したかどうか'),
 		'is_original_copy' => array('type' => 'boolean', 'null' => false, 'default' => '0', 'comment' => 'オリジナルのコピー。言語を新たに追加したときに使用する'),
@@ -60,8 +60,8 @@ class PluginManagerSchema extends CakeSchema {
 		'is_m17n' => array('type' => 'boolean', 'null' => true, 'default' => '1', 'comment' => '多言語を有効にするプラグインかどうか'),
 		'name' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'プラグイン名', 'charset' => 'utf8'),
 		'namespace' => array('type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'packagistのネームスペース', 'charset' => 'utf8'),
-		'weight' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => '表示順序'),
-		'type' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'comment' => 'プラグインタイプ 1:一般プラグイン,2:コントロールパネル/サイト管理プラグイン,3:システム管理プラグイン,4:未インストールのため抜け番,5:テーマ,6:外部ライブラリ composer,7:外部ライブラリ bower'),
+		'weight' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'key' => 'index', 'comment' => '表示順序'),
+		'type' => array('type' => 'integer', 'null' => true, 'default' => null, 'unsigned' => false, 'key' => 'index', 'comment' => 'プラグインタイプ 1:一般プラグイン,2:コントロールパネル/サイト管理プラグイン,3:システム管理プラグイン,4:未インストールのため抜け番,5:テーマ,6:外部ライブラリ composer,7:外部ライブラリ bower'),
 		'version' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'バージョン', 'charset' => 'utf8'),
 		'commit_version' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => 'コミットバージョン', 'charset' => 'utf8'),
 		'commited' => array('type' => 'datetime', 'null' => true, 'default' => null),
@@ -77,7 +77,10 @@ class PluginManagerSchema extends CakeSchema {
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'key' => array('column' => array('key', 'language_id'), 'unique' => 0)
+			'key' => array('column' => array('key', 'language_id'), 'unique' => 0),
+			'language_id' => array('column' => 'language_id', 'unique' => 0),
+			'weight' => array('column' => 'weight', 'unique' => 0),
+			'types' => array('column' => array('type', 'language_id'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
@@ -97,7 +100,7 @@ class PluginManagerSchema extends CakeSchema {
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1),
-			'role_key' => array('column' => 'role_key', 'unique' => 0)
+			'role_key' => array('column' => array('role_key', 'plugin_key'), 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);

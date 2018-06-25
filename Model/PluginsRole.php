@@ -62,8 +62,15 @@ class PluginsRole extends AppModel {
 		$plugins = $this->Plugin->find($queryType, array(
 			'recursive' => -1,
 			'fields' => array(
-				$this->alias . '.*',
-				$this->Plugin->alias . '.*',
+				$this->alias . '.id',
+				$this->alias . '.role_key',
+				$this->alias . '.plugin_key',
+				$this->Plugin->alias . '.id',
+				$this->Plugin->alias . '.key',
+				$this->Plugin->alias . '.name',
+				$this->Plugin->alias . '.weight',
+				$this->Plugin->alias . '.type',
+				$this->Plugin->alias . '.default_action',
 			),
 			'joins' => array(
 				array(
