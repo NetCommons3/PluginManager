@@ -71,7 +71,6 @@ class PluginBehavior extends ModelBehavior {
 				}
 
 				//img,js,cssをwebrootにコピー。エラーとはしない
-CakeLog::debug(__METHOD__ . '(' . __LINE__ . ') ' . var_export($plugin, true));
 				$this->copyToWebroot($model, $plugin);
 
 				if (! $model->updateVersion(array(Hash::get($plugin, 'latest')))) {
