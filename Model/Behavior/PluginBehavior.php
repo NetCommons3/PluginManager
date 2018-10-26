@@ -437,6 +437,9 @@ class PluginBehavior extends ModelBehavior {
  */
 	public function deleteFromWebroot(Model $model, $plugin) {
 		$pluginKey = Hash::get($plugin, 'Plugin.key');
+		if (! $pluginKey) {
+			return true;
+		}
 
 		if (file_exists(IMAGES . $pluginKey)) {
 			$Folder = new Folder(IMAGES . $pluginKey);
