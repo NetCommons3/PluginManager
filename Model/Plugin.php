@@ -91,6 +91,7 @@ class Plugin extends AppModel {
 		'PluginManager.PluginBower',
 		'PluginManager.PluginComposer',
 		'PluginManager.PluginTheme',
+		'PluginManager.PluginWebroot',
 	);
 
 /**
