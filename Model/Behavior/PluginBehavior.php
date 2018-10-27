@@ -55,16 +55,24 @@ class PluginBehavior extends ModelBehavior {
 			$model->begin();
 
 			if (! Hash::get($plugin, 'latest') && Hash::get($plugin, 'Plugin.id')) {
-				if (! $model->uninstallPlugin(Hash::get($plugin, 'Plugin.key'))) {
+				$pluginKey = Hash::get($plugin, 'Plugin.key');
+				if (! $model->uninstallPlugin($pluginKey)) {
 					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 				}
 				$model->deleteOldPackageDir($plugin, true);
+
+				//img,js,cssをwebrootから削除。エラーとはしない
+				$model->deleteFromWebroot($plugin);
 			} else {
 				if (Hash::get($plugin, 'latest.packageType') === 'cakephp-plugin') {
 					if (! $model->runMigration(Hash::get($plugin, 'latest.key'))) {
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}
 				}
+
+				//img,js,cssをwebrootにコピー。エラーとはしない
+				$model->copyToWebroot($plugin);
+
 				if (! $model->updateVersion(array(Hash::get($plugin, 'latest')))) {
 					throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 				}
