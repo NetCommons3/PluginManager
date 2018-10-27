@@ -235,6 +235,22 @@ class Plugin extends AppModel {
 		if (! $plugins) {
 			return array();
 		}
+		$plugins = $this->convertSerializeData($plugins);
+
+		if (count($plugins) > 1) {
+			return $plugins;
+		} else {
+			return $plugins[0];
+		}
+	}
+
+/**
+ * serialize_dataのデータをコンバートする
+ *
+ * @param array $plugins PluginモデルからfindAllしたもの
+ * @return array
+ */
+	public function convertSerializeData($plugins) {
 		foreach ($plugins as $i => $plugin) {
 			$plugin['Plugin']['serialize_data'] = unserialize(
 				Hash::get($plugin, 'Plugin.serialize_data', serialize(array()))
@@ -252,11 +268,7 @@ class Plugin extends AppModel {
 			$plugins[$i] = $plugin;
 		}
 
-		if (count($plugins) > 1) {
-			return $plugins;
-		} else {
-			return $plugins[0];
-		}
+		return $plugins;
 	}
 
 /**

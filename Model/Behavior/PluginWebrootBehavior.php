@@ -21,7 +21,7 @@ App::uses('Folder', 'Utility');
 class PluginWebrootBehavior extends ModelBehavior {
 
 /**
- * 各プラグインにあるapp/webroot/img(css,js)にコピーする
+ * 各プラグインにあるimg(css,js)をapp/webroot/img(css,js)にコピーする
  *
  * @param Model $model 呼び出し元Model
  * @param array $plugin プラグイン情報
