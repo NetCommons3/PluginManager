@@ -49,7 +49,7 @@ class PluginWebrootBehavior extends ModelBehavior {
 
 		if (file_exists($pluginWebrootPath . 'img')) {
 			$Folder = new Folder($pluginWebrootPath . 'img');
-			$Folder->copy(IMAGES . $pluginKey);
+			$Folder->copy(IMAGES . DS . $pluginKey);
 		}
 
 		if (file_exists($pluginWebrootPath . 'css')) {
