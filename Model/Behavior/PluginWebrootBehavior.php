@@ -37,29 +37,30 @@ class PluginWebrootBehavior extends ModelBehavior {
 		$this->deleteFromWebroot($model, $plugin);
 		$camelPlugin = Inflector::camelize($pluginKey);
 		$originalSource = Hash::get($plugin, 'latest.originalSource');
-
 		if (CakePlugin::loaded($camelPlugin)) {
 			$pluginWebrootPath = CakePlugin::path($camelPlugin);
+			$pluginWebrootPath .= WEBROOT_DIR . DS;
+			if (file_exists($pluginWebrootPath . 'img')) {
+				$Folder = new Folder($pluginWebrootPath . 'img');
+				$Folder->copy(IMAGES . DS . $pluginKey);
+			}
+			if (file_exists($pluginWebrootPath . 'css')) {
+				$Folder = new Folder($pluginWebrootPath . 'css');
+				$Folder->copy(CSS . DS . $pluginKey);
+			}
+			if (file_exists($pluginWebrootPath . 'js')) {
+				$Folder = new Folder($pluginWebrootPath . 'js');
+				$Folder->copy(JS . DS . $pluginKey);
+			}
 		} elseif (file_exists(APP . 'View' . DS . 'Themed' . DS . $originalSource)) {
 			$pluginWebrootPath = APP . 'View' . DS . 'Themed' . DS . $originalSource . DS;
+			$pluginWebrootPath .= WEBROOT_DIR;
+			if (file_exists($pluginWebrootPath)) {
+				$Folder = new Folder($pluginWebrootPath);
+				$Folder->copy(WWW_ROOT . 'theme' . DS . $originalSource);
+			}
 		} else {
 			return true;
-		}
-		$pluginWebrootPath .= WEBROOT_DIR . DS;
-
-		if (file_exists($pluginWebrootPath . 'img')) {
-			$Folder = new Folder($pluginWebrootPath . 'img');
-			$Folder->copy(IMAGES . DS . $pluginKey);
-		}
-
-		if (file_exists($pluginWebrootPath . 'css')) {
-			$Folder = new Folder($pluginWebrootPath . 'css');
-			$Folder->copy(CSS . DS . $pluginKey);
-		}
-
-		if (file_exists($pluginWebrootPath . 'js')) {
-			$Folder = new Folder($pluginWebrootPath . 'js');
-			$Folder->copy(JS . DS . $pluginKey);
 		}
 
 		return true;
@@ -77,19 +78,24 @@ class PluginWebrootBehavior extends ModelBehavior {
 		if (! $pluginKey) {
 			return true;
 		}
+		$camelPlugin = Inflector::camelize($pluginKey);
+		$originalSource = Hash::get($plugin, 'latest.originalSource');
 
-		if (file_exists(IMAGES . $pluginKey)) {
-			$Folder = new Folder(IMAGES . $pluginKey);
-			$Folder->delete();
-		}
-
-		if (file_exists(CSS . $pluginKey)) {
-			$Folder = new Folder(CSS . $pluginKey);
-			$Folder->delete();
-		}
-
-		if (file_exists(JS . $pluginKey)) {
-			$Folder = new Folder(JS . $pluginKey);
+		if (CakePlugin::loaded($camelPlugin)) {
+			if (file_exists(IMAGES . $pluginKey)) {
+				$Folder = new Folder(IMAGES . $pluginKey);
+				$Folder->delete();
+			}
+			if (file_exists(CSS . $pluginKey)) {
+				$Folder = new Folder(CSS . $pluginKey);
+				$Folder->delete();
+			}
+			if (file_exists(JS . $pluginKey)) {
+				$Folder = new Folder(JS . $pluginKey);
+				$Folder->delete();
+			}
+		} elseif (file_exists(WWW_ROOT . 'theme' . DS . $originalSource)) {
+			$Folder = new Folder(WWW_ROOT . 'theme' . DS . $originalSource);
 			$Folder->delete();
 		}
 
