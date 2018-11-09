@@ -197,19 +197,22 @@ class Plugin extends AppModel {
  *
  * @param int $type プラグインタイプ
  * @param string $key プラグインキー
+ * @param string|array|null $langId 取得する言語。nullの場合、typeにより共通言語もしくCurrentにセットされているものを使用する
  * @return array
  */
-	public function getPlugins($type, $key = null) {
-		$notLangTypes = array(
-			self::PLUGIN_TYPE_CORE,
-			self::PLUGIN_TYPE_FOR_THEME,
-			self::PLUGIN_TYPE_FOR_EXT_COMPOSER,
-			self::PLUGIN_TYPE_FOR_EXT_BOWER
-		);
-		if (! is_array($type) && in_array($type, $notLangTypes)) {
-			$langId = '0';
-		} else {
-			$langId = Current::read('Language.id');
+	public function getPlugins($type, $key = null, $langId = null) {
+		if (! $langId) {
+			$notLangTypes = array(
+				self::PLUGIN_TYPE_CORE,
+				self::PLUGIN_TYPE_FOR_THEME,
+				self::PLUGIN_TYPE_FOR_EXT_COMPOSER,
+				self::PLUGIN_TYPE_FOR_EXT_BOWER
+			);
+			if (! is_array($type) && in_array($type, $notLangTypes)) {
+				$langId = '0';
+			} else {
+				$langId = Current::read('Language.id');
+			}
 		}
 
 		$conditions = array(
@@ -474,6 +477,34 @@ class Plugin extends AppModel {
 		$diffCurrent = array_diff($currents, $latests);
 		$return = !empty($diffLatest) || !empty($diffCurrent);
 		return $return;
+	}
+
+/**
+ * プラグインの全タイプを取得
+ *
+ * 一括アップデートで使用する
+ *
+ * @return array
+ */
+	public function getTypes() {
+		//pluginsテーブルの取得
+		$plugins = $this->find('all', array(
+			'recursive' => -1,
+			'fields' => ['type'],
+			'group' => 'type',
+			'order' => ['type' => 'asc'],
+			'callbacks' => false,
+		));
+		if (! $plugins) {
+			return array();
+		}
+
+		$result = [];
+		foreach ($plugins as $plugin) {
+			$result[] = $plugin[$this->alias]['type'];
+		}
+
+		return $result;
 	}
 
 }

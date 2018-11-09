@@ -26,6 +26,7 @@ class UpdateAllShell extends AppShell {
  */
 	public $tasks = array(
 		'PluginManager.UpdateAll',
+		'PluginManager.CopyAllWebrootFiles',
 	);
 
 /**
@@ -79,6 +80,10 @@ class UpdateAllShell extends AppShell {
 		return $parser->description(__d('install', 'NetCommons Install'))
 			->addSubcommand('update_all', array(
 				'help' => __d('plugin_manager', 'Update of all plugins'),
+				'parser' => $this->UpdateAll->getOptionParser(),
+			))
+			->addSubcommand('copy_all_webroot_files', array(
+				'help' => __d('plugin_manager', 'Webroot files copy of all plugins'),
 				'parser' => $this->UpdateAll->getOptionParser(),
 			));
 	}
