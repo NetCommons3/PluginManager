@@ -33,17 +33,9 @@ class PluginUpdateUtil {
  */
 	public function updateAll() {
 		$result = true;
-		$types = array(
-			Plugin::PLUGIN_TYPE_CORE,
-			Plugin::PLUGIN_TYPE_FOR_FRAME,
-			Plugin::PLUGIN_TYPE_FOR_SITE_MANAGER,
-			Plugin::PLUGIN_TYPE_FOR_SYSTEM_MANGER,
-			Plugin::PLUGIN_TYPE_FOR_THEME,
-			Plugin::PLUGIN_TYPE_FOR_EXT_COMPOSER,
-			Plugin::PLUGIN_TYPE_FOR_EXT_BOWER
-		);
+		$types = $this->Plugin->getTypes();
 		foreach ($types as $type) {
-			$plugins = $this->Plugin->getPlugins($type);
+			$plugins = $this->Plugin->getPlugins($type, null, ['0', '2']);
 			if (! $this->__updatePackages($plugins)) {
 				$result = false;
 				break;
@@ -86,6 +78,22 @@ class PluginUpdateUtil {
 			}
 		}
 
+		return true;
+	}
+
+/**
+ * 一括アップデート
+ *
+ * @return bool
+ */
+	public function copyAllWebrootFiles() {
+		$types = $this->Plugin->getTypes();
+		foreach ($types as $type) {
+			$plugins = $this->Plugin->getPlugins($type, null, ['0', '2']);
+			foreach ($plugins as $plugin) {
+				$this->Plugin->copyToWebroot($plugin);
+			}
+		}
 		return true;
 	}
 
