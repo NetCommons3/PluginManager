@@ -33,7 +33,9 @@ class CopyAllWebrootFilesTask extends AppShell {
 		}
 		if ($this->PluginUpdateUtil->copyAllWebrootFiles()) {
 			$this->out(
-				'<success>' . __d('plugin_manager', 'Successfully webroot files copy of all plugins.') . '</success>'
+				'<success>' .
+					__d('plugin_manager', 'Successfully webroot files copy of all plugins.') .
+				'</success>'
 			);
 		} else {
 			$this->out(
