@@ -92,6 +92,7 @@ class Plugin extends AppModel {
 		'PluginManager.PluginComposer',
 		'PluginManager.PluginTheme',
 		'PluginManager.PluginWebroot',
+		'NetCommons.NetCommonsCache',
 	);
 
 /**
@@ -230,7 +231,7 @@ class Plugin extends AppModel {
 		}
 
 		//pluginsテーブルの取得
-		$plugins = $this->find('all', array(
+		$plugins = $this->cacheFindQuery('all', array(
 			'recursive' => -1,
 			'conditions' => $conditions,
 			'order' => $order,
@@ -315,7 +316,7 @@ class Plugin extends AppModel {
 		}
 		$packages = Hash::combine($packages, '{s}.key', '{s}');
 
-		$currents = $this->find('list', array(
+		$currents = $this->cacheFindQuery('list', array(
 			'recursive' => -1,
 			'fields' => array('key', 'commit_version'),
 			'conditions' => $conditions,
@@ -445,6 +446,9 @@ class Plugin extends AppModel {
 		if (! $this->updateAll($update, $conditions)) {
 			throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 		}
+
+		//キャッシュのクリア
+		$this->cacheClear();
 
 		return true;
 	}

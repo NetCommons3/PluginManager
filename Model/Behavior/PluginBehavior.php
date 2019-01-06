@@ -80,6 +80,9 @@ class PluginBehavior extends ModelBehavior {
 				$model->deleteOldPackageDir($plugin);
 			}
 
+			//キャッシュのクリア
+			$model->cacheClear();
+
 			CakeLog::info(
 				sprintf('[version up] Successfully version up "%s"', Hash::get($plugin, 'Plugin.name'))
 			);
@@ -144,6 +147,9 @@ class PluginBehavior extends ModelBehavior {
 			}
 
 			CakeLog::info(sprintf('[uninstall] Successfully uninstall plugin "%s"', $key));
+
+			//キャッシュのクリア
+			$model->Plugin->cacheClear();
 
 			//トランザクションCommit
 			$model->commit();

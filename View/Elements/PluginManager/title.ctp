@@ -12,10 +12,9 @@
 
 <?php $this->start('subtitle'); ?>
 <div class="pull-right">
-	<?php echo __d('plugin_manager', 'NetCommons: '); ?>
-	<a href="<?php echo h(Hash::get($nc3plugin, 'Plugin.serialize_data.commit_url', '')); ?>" target="_blank">
-		<?php echo h($nc3plugin['Plugin']['version']); ?>
-		<small><span class="text-muted">(<?php echo h(substr($nc3plugin['Plugin']['commit_version'], 0, 10)); ?>)</span></small>
+	<?php echo __d('plugin_manager', 'NetCommons3: '); ?>
+	<a href="<?php echo h('https://github.com/NetCommons3/NetCommons3/tree/' . NC3_VERSION); ?>" target="_blank">
+		<?php echo h(NC3_VERSION); ?>
 	</a>
 </div>
 <?php $this->end();
