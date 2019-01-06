@@ -59,7 +59,7 @@ class PluginsRole extends AppModel {
 			return false;
 		}
 
-		$plugins = $this->Plugin->find($queryType, array(
+		$plugins = $this->Plugin->cacheFindQuery($queryType, array(
 			'recursive' => -1,
 			'fields' => array(
 				$this->alias . '.id',
@@ -126,6 +126,9 @@ class PluginsRole extends AppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
+
+		//キャッシュのクリア
+		$this->Plugin->cacheClear();
 
 		return true;
 	}
