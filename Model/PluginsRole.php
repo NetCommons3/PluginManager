@@ -46,6 +46,15 @@ class PluginsRole extends AppModel {
 	);
 
 /**
+ * Behaviors
+ *
+ * @var array
+ */
+	public $actsAs = array(
+		'NetCommons.NetCommonsCache',
+	);
+
+/**
  * RoleKeyに対するプラグインデータ取得
  *
  * @param mixed $pluginType array|int プラグインタイプ
@@ -97,6 +106,23 @@ class PluginsRole extends AppModel {
 	}
 
 /**
+ * Called after each successful save operation.
+ *
+ * @param bool $created True if this save created a new record
+ * @param array $options Options passed from Model::save().
+ * @return void
+ * @throws InternalErrorException
+ * @link http://book.cakephp.org/2.0/en/models/callback-methods.html#aftersave
+ * @see Model::save()
+ */
+	public function afterSave($created, $options = array()) {
+		parent::afterSave($created, $options);
+
+		//キャッシュクリア
+		$this->Plugin->cacheClear();
+	}
+
+/**
  * Save plugin roles
  * Here does not transaction. Please do the transaction and validation in the caller.
  *
@@ -126,9 +152,6 @@ class PluginsRole extends AppModel {
 				throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 			}
 		}
-
-		//キャッシュのクリア
-		$this->Plugin->cacheClear();
 
 		return true;
 	}
