@@ -140,9 +140,9 @@ class PluginManagerControllerIndexTest extends NetCommonsControllerTestCase {
 			'latest' => null
 		];
 
-		$count = 2;
+		$count = 1;
 		if ($type == Plugin::PLUGIN_TYPE_FOR_NOT_YET) {
-			$count = 1;
+			$count = 0;
 		}
 		$this->controller->Plugin
 			->expects($this->exactly($count))

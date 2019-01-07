@@ -9,6 +9,8 @@
  * @copyright Copyright 2014, NetCommons Project
  */
 
+App::uses('NetCommonsCache', 'NetCommons.Utility');
+
 /**
  * PluginUpdate Utility
  *
@@ -58,6 +60,10 @@ class PluginUpdateUtil {
 			}
 		}
 
+		if (file_exists(APP . 'VERSION')) {
+			$ncCache = new NetCommonsCache('version', false, 'netcommons_core');
+			$ncCache->write(trim(file_get_contents(APP . 'VERSION')));
+		}
 		return $result;
 	}
 

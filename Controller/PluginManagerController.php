@@ -117,10 +117,11 @@ class PluginManagerController extends PluginManagerAppController {
 		$this->set('plugins', $plugins);
 		$this->set('pluginsMap', $pluginsMap);
 
-		$nc3plugin = $this->Plugin->getPlugins(
-			Plugin::PLUGIN_TYPE_CORE, 'net_commons'
-		);
-		$this->set('nc3plugin', $nc3plugin);
+		if (file_exists(APP . 'VERSION')) {
+			$this->set('nc3version', trim(file_get_contents(APP . 'VERSION')));
+		} else {
+			$this->set('nc3version', '3.2.1');
+		}
 
 		$this->set('hasNewPlugin', (bool)$this->Plugin->getNewPlugins(Plugin::PLUGIN_TYPE_FOR_NOT_YET));
 		$this->set('hasUpdate', $this->Plugin->hasUpdate());
@@ -152,11 +153,6 @@ class PluginManagerController extends PluginManagerAppController {
 			$this->request->data['Plugin'] = $plugins['Plugin'];
 			$this->set('plugin', $plugins);
 		}
-
-		$nc3plugin = $this->Plugin->getPlugins(
-			Plugin::PLUGIN_TYPE_CORE, 'net_commons'
-		);
-		$this->set('nc3plugin', $nc3plugin);
 
 		$this->set('pluginType', $pluginType);
 
