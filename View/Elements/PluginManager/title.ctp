@@ -16,5 +16,10 @@
 	<a href="<?php echo h('https://github.com/NetCommons3/NetCommons3/tree/' . NC3_VERSION); ?>" target="_blank">
 		<?php echo h(NC3_VERSION); ?>
 	</a>
+	<?php if (NC3_VERSION !== $nc3version) : ?>
+		<small>(<?php
+			echo NC3_VERSION . '<span class="text-danger"> <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"> </span> ' . $nc3version;
+		?></span>)</small>
+	<?php endif; ?>
 </div>
 <?php $this->end();
