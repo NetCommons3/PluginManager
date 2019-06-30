@@ -67,7 +67,10 @@ class PluginComposerBehavior extends ModelBehavior {
 			$composers = array();
 			foreach ($packages['packages'] as $package) {
 				$composer = $this->_parseComposer($package);
-				$composers[$composer['namespace']] = $composer;
+				if ($composer['packageType'] !== 'netcommons-theme') {
+					//テーマは別途設定するため除外する
+					$composers[$composer['namespace']] = $composer;
+				}
 			}
 
 			if (! $filePath) {
