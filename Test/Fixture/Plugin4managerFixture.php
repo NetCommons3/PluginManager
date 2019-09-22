@@ -19,6 +19,20 @@ App::uses('PluginFixture', 'PluginManager.Test/Fixture');
 class Plugin4managerFixture extends PluginFixture {
 
 /**
+ * Model name
+ *
+ * @var string
+ */
+	public $name = 'Plugin';
+
+/**
+ * Full Table Name
+ *
+ * @var string
+ */
+	public $table = 'plugins';
+
+/**
  * Records
  *
  * @var array
