@@ -104,6 +104,13 @@ class PluginManagerControllerEditTest extends NetCommonsControllerTestCase {
 	public function testRunVersionUpTrue() {
 		$this->__setMockPluginRunVersionUp(true);
 
+		$data['Plugin']['key'] = 'plugin_manager';
+
+		$this->controller->Plugin
+			->expects($this->once())
+			->method('getPlugins')
+			->will($this->returnValue($data));
+
 		$MockNetCommons = $this->getMock('NetCommonsComponent', ['setFlashNotification'], [$this->controller->Components]);
 		$MockNetCommons
 			->expects($this->once())
@@ -115,7 +122,6 @@ class PluginManagerControllerEditTest extends NetCommonsControllerTestCase {
 		$this->controller->Components->set('NetCommons', $MockNetCommons);
 		$this->controller->Components->enable('NetCommons');
 
-		$data['Plugin']['key'] = 'plugin_manager';
 		$this->testAction('plugin_manager/plugin_manager/edit/2', ['data' => $data]);
 		$this->assertStringEndsWith('plugin_manager/plugin_manager/index/2', $this->headers['Location']);
 	}
@@ -127,6 +133,13 @@ class PluginManagerControllerEditTest extends NetCommonsControllerTestCase {
  */
 	public function testRunVersionUpFalse() {
 		$this->__setMockPluginRunVersionUp(false);
+
+		$data['Plugin']['key'] = 'plugin_manager';
+
+		$this->controller->Plugin
+			->expects($this->once())
+			->method('getPlugins')
+			->will($this->returnValue($data));
 
 		$MockNetCommons = $this->getMock('NetCommonsComponent', ['setFlashNotification'], [$this->controller->Components]);
 		$MockNetCommons
@@ -142,7 +155,6 @@ class PluginManagerControllerEditTest extends NetCommonsControllerTestCase {
 		$this->controller->Components->set('NetCommons', $MockNetCommons);
 		$this->controller->Components->enable('NetCommons');
 
-		$data['Plugin']['key'] = 'plugin_manager';
 		$this->testAction('plugin_manager/plugin_manager/edit/2', ['data' => $data]);
 		$this->assertStringEndsWith('plugin_manager/plugin_manager/index/2', $this->headers['Location']);
 	}
@@ -156,6 +168,12 @@ class PluginManagerControllerEditTest extends NetCommonsControllerTestCase {
 		$this->__setMockPluginRunVersionUp(true);
 
 		$data['Plugin']['key'] = 'plugin_manager';
+
+		$this->controller->Plugin
+			->expects($this->once())
+			->method('getPlugins')
+			->will($this->returnValue($data));
+
 		$this->testAction('plugin_manager/plugin_manager/edit/3', ['data' => $data]);
 		$this->assertStringEndsWith('plugin_manager/plugin_manager/index/2', $this->headers['Location']);
 	}
@@ -188,7 +206,10 @@ class PluginManagerControllerEditTest extends NetCommonsControllerTestCase {
  * @return void
  */
 	private function __setMockPluginRunVersionUp($returnValue) {
-		$this->controller->Plugin = $this->getMockForModel('PluginManager.Plugin', ['runVersionUp', 'getNewPlugins']);
+		$this->controller->Plugin = $this->getMockForModel(
+			'PluginManager.Plugin',
+			['runVersionUp', 'getPlugins', 'getNewPlugins']
+		);
 		$this->controller->Plugin
 			->expects($this->once())
 			->method('runVersionUp')

@@ -10,6 +10,7 @@
  */
 
 App::uses('NetCommonsGetTest', 'NetCommons.TestSuite');
+App::uses('CurrentLib', 'NetCommons.Lib');
 
 /**
  * PluginsRole::getPlugins()のテスト
@@ -61,7 +62,8 @@ class PluginsRoleGetPluginsTest extends NetCommonsGetTest {
 		$methodName = $this->_methodName;
 
 		//データ生成
-		$pluginType = '2';
+		CurrentLib::write('Language.id', '2');
+		$pluginType = '1';
 		$roleKey = 'system_administrator';
 		$joinType = 'LEFT';
 
