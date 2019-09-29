@@ -32,7 +32,7 @@ class PluginBehavior extends ModelBehavior {
 	public function setup(Model $model, $config = array()) {
 		parent::setup($model, $config);
 
-		$this->connection = Hash::get($config, 'connection', 'master');
+		$this->connection = Hash::get($config, 'connection', $model->useDbConfig);
 
 		$this->corePluginPatterns = Hash::get($config, 'corePluginPatterns', [
 			'#^netcommons/#' => Plugin::PLUGIN_TYPE_CORE,
