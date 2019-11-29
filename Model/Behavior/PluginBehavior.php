@@ -37,6 +37,9 @@ class PluginBehavior extends ModelBehavior {
 		$this->corePluginPatterns = Hash::get($config, 'corePluginPatterns', [
 			'#^netcommons/#' => Plugin::PLUGIN_TYPE_CORE,
 		]);
+		$this->migrationPlugins = Hash::get($config, 'migrationPlugins', [
+			'cakephp-plugin',
+		]);
 	}
 
 /**
@@ -64,7 +67,7 @@ class PluginBehavior extends ModelBehavior {
 				//img,js,cssをwebrootから削除。エラーとはしない
 				$model->deleteFromWebroot($plugin);
 			} else {
-				if (Hash::get($plugin, 'latest.packageType') === 'cakephp-plugin') {
+				if (in_array(Hash::get($plugin, 'latest.packageType'), $this->migrationPlugins, true)) {
 					if (! $model->runMigration(Hash::get($plugin, 'latest.key'))) {
 						throw new InternalErrorException(__d('net_commons', 'Internal Server Error'));
 					}
