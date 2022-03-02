@@ -66,7 +66,7 @@ class UpdateVersionPhotoAlbumsTest extends PluginManagerModelTestCase {
 			'version' => '\'' . $package['version'] . '\'',
 			'commit_version' => '\'' . $package['commit_version'] . '\'',
 			'commited' => '\'' . $package['commited'] . '\'',
-			'serialize_data' => '\'' . serialize($package) . '\'',
+			'serialize_data' => $this->TestModel->Plugin->getDataSource()->value(serialize($package), 'string'),
 		);
 		$expectedConditions = array(
 			'namespace' => array('netcommons/photo-albums', 'netcommons/photo_albums')
