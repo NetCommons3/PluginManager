@@ -338,7 +338,7 @@ class PluginBehavior extends ModelBehavior {
 						'version' => '\'' . $package['version'] . '\'',
 						'commit_version' => '\'' . $package['commit_version'] . '\'',
 						'commited' => '\'' . $package['commited'] . '\'',
-						'serialize_data' => '\'' . serialize($package) . '\'',
+						'serialize_data' => $model->Plugin->getDataSource()->value(serialize($package), 'string'),
 					);
 					if (! $model->Plugin->updateAll($update, $conditions)) {
 						CakeLog::info(sprintf('[update version] Line(' . __LINE__ . ') Error'));
