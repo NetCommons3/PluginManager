@@ -94,7 +94,7 @@ class PluginWebrootBehavior extends ModelBehavior {
 				$Folder = new Folder(JS . $pluginKey);
 				$Folder->delete();
 			}
-		} elseif (file_exists(WWW_ROOT . 'theme' . DS . $originalSource)) {
+		} elseif (!empty($originalSource) && file_exists(WWW_ROOT . 'theme' . DS . $originalSource)) {
 			$Folder = new Folder(WWW_ROOT . 'theme' . DS . $originalSource);
 			$Folder->delete();
 		}
